@@ -1,0 +1,36 @@
+# Copy this file to a workload directory and fill in every workload-specific value.
+# The runner scripts source it as trusted bash configuration.
+WORKLOAD="example"
+WORKLOAD_DESC="short description of the workload and input size"
+RESULTS_DIR="/absolute/path/to/results"
+
+# Files required before launch.
+REQUIRED_FILES=()
+
+# Match a line from the application's own output, if it has one.
+PERF_GREP=""
+
+stage_inputs() {
+    :
+}
+
+app_env() {
+    :
+}
+
+app_cmd() {
+    # Set APP_CMD as an array. Do not include the scheduler launcher.
+    APP_CMD=(/path/to/application --input /path/to/input)
+}
+
+# Environment setup is explicit so this works with modules, containers, virtualenvs,
+# or no setup at all.
+setup_env() {
+    :
+}
+
+# Optional profiler wrapper. The function must set
+# PROFILE_CMD as an array and may use APP_CMD as its final command.
+profile_cmd() {
+    PROFILE_CMD=("${APP_CMD[@]}")
+}
