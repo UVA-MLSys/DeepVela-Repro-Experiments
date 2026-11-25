@@ -1,4 +1,6 @@
-# DeepVELA-Repro
+# DeepVELA-Repro Experiments
+
+This repository adds experiment code, datasets and results to the skills and evaluation harness of [DeepVELA-Repro](https://github.com/UVA-MLSys/DeepVELA-Repro). See [Experiments](#experiments).
 
 Agent skills for benchmark reproduction with Claude Code and Codex. A coding agent that follows these skills prepares, runs, repairs, and verifies a benchmark from its task prompt and repository documentation, and writes a measured report. The skills are written for researchers who reproduce a benchmark on their own hardware. A harness sets up MLPerf Inference tasks, starts comparable runs with and without the skills, and scores each finished run against a rubric and a reference.
 
@@ -14,6 +16,7 @@ The architecture has three layers. The knowledge layer holds the benchmark ontol
 - [What a run produces](#what-a-run-produces)
 - [Scoring a benchmark with the builder](#scoring-a-benchmark-with-the-builder)
 - [C0–C6 masking conditions](#c0c6-masking-conditions)
+- [Experiments](#experiments)
 - [Repository layout](#repository-layout)
 
 ## Configurations
@@ -136,6 +139,57 @@ The conditions test one hypothesis: an agent can recover information that belong
 | C5 | Reference solution | Published evidence of secondary-metric evaluation | 4.3 | Inference harness that runs the model under LoadGen | 3.9 | No |
 | C6 | Documentation | Benchmark motivation and rationale | 4.3 | Overview, background, and motivation | 3.7 | No |
 
+## Experiments
+
+> [!WARNING]
+> `dataset/mlperf-c0-c6/` contains reference answers. A benchmark agent must not be able to read it.
+
+### MLPerf C0–C6 masking study
+
+[`dataset/mlperf-c0-c6/`](dataset/mlperf-c0-c6/README.md) holds the task bundles and a subset of the run outputs for 3D U-Net (KiTS19) and BERT (SQuAD), each without and with prior artifacts. Its README describes the studies, the layout, scoring, and the differences from the source files. U-Net `v1` and `v2` in that folder are named `v4` and `v5` in the run records.
+
+To launch a task from this study:
+
+1. Copy the bundle outside the repository and the runs root. `evaluation.prepare` rejects a bundle root that overlaps either one.
+
+   ```bash
+   cp -r dataset/mlperf-c0-c6 ../mlperf-c0-c6-bundle
+   export EVALUATION_BUNDLE_DIR="$(realpath ../mlperf-c0-c6-bundle)"
+   ```
+
+2. Set up the task's inputs (dataset and model checkpoint), which are not included. Some manifests contain absolute paths from the original machine.
+3. Answer [`docs/local-preferences.md`](docs/local-preferences.md), set `REPRODUCTION_RUNS_DIR`, and run `python -m evaluation.prepare reproduce <version>/<condition> --arm <arm>`.
+
+A task whose manifest lists `prior_artifacts` also needs `--trial <n>`. `prepare` copies selected files from the earlier run of the same arm and trial into `ws/prior-artifacts/`, read-only. The `v2` manifests point to run folders on the original machine, which are not included. A full prepare, run and score cycle has not been tested from this repository.
+
+### Result sheets
+
+[`docs/reports/`](docs/reports/) holds the tool-call count and error incident sheets, named by the run records:
+
+| Benchmark | Counts | Error incidents |
+| --- | --- | --- |
+| 3D U-Net | `mlperf-c0-c6-counts-v4.xlsx`, `-v5.xlsx` | `mlperf-c0-c6-error-incidents-v4.xlsx`, `-v5.xlsx` |
+| BERT | `mlperf-c0-c6-bert-counts-v1.xlsx`, `-v2.xlsx` | `mlperf-c0-c6-bert-error-incidents-v1.xlsx`, `-v2.xlsx` |
+
+The scripts that build these sheets are not included. [`dataset/failure_taxonomy/`](dataset/failure_taxonomy/README.md) defines the labels for failed tool calls.
+
+### Additional tools
+
+| Tool | Purpose |
+| --- | --- |
+| `python -m evaluation.departures <launch.json> [--write]` | A judge model counts departures from the documented route. Run `--write` after `scorer --write`. |
+| `python -m evaluation.table` | Prints agent resource use for the runs under `REPRODUCTION_RUNS_DIR`. |
+| [`benchmark-runner`](skills/benchmark-runner/SKILL.md) | Skill for repeatable runs and profiling after a successful reproduction. |
+
+`departures` and `table` find only Claude Code sessions, so they do not cover Codex runs.
+
+### Known gaps
+
+- `dataset/paper_runs.json` and the study README refer to files under `docs/MLSys/`, which is not part of this repository.
+- `dataset/build_dataset.py` still reads sources from `../OSS/`. Do not run it: it writes into `dataset/tasks/` and can overwrite the current records.
+- `evaluation.table --write` needs `docs/reports/README.md`, which is not included.
+- `benchmark-runner` refers to the `baseline-reproduce` skill, which is named `reproduce` here.
+
 ## Repository layout
 
 <details>
@@ -147,11 +201,15 @@ skills/
   claude/builder-reproduce/    Builder + Reproduce package for Claude Code
   codex/reproduce/             Reproduce package for Codex
   codex/builder-reproduce/     Builder + Reproduce package for Codex
+  benchmark-runner/            skill for repeatable runs and profiling
   agent-evaluation-profile/    harness skill: set up a task and prepare each arm's workspace
   SOURCES.json                 package names, the agent each targets, and file digests
 .claude/skills/, .agents/skills/   links that load the harness skill in this repository
-evaluation/                    task_prompt.py (render prompts), bundle.py (seal bundles), prepare.py (build arm workspaces), launch.py (start and freeze runs), scorer.py, checkers.py, transcript.py, schema.py (score a frozen run)
-dataset/tasks/                 MLPerf Inference task records
+evaluation/                    task_prompt.py (render prompts), bundle.py (seal bundles), prepare.py (build arm workspaces), launch.py (start and freeze runs), scorer.py, checkers.py, transcript.py, schema.py (score a frozen run), departures.py, table.py (see Experiments)
+dataset/tasks/                 task records (MLPerf Inference and other benchmarks)
+dataset/mlperf-c0-c6/          C0–C6 task bundles and run outputs
+dataset/failure_taxonomy/      labels for failed tool calls
+docs/reports/                  C0–C6 result sheets
 docs/local-preferences.md      deployment answers, filled by the agent on first use
 docs/dataset-schema.md         task record format
 docs/images/                   figures used in this README
