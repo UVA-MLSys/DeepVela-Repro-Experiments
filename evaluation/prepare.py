@@ -1,7 +1,7 @@
 """Builds one arm's workspace for a reproduction run, so every run of a task starts the same way
 (protocol.md, "Launch"). Run by `agent-evaluation-profile` launch mode, from a chat in this repository:
 
-    python -m evaluation.prepare <profile_id> <task_id> --arm {plain,skill,builder-skill} [--compute {slurm,local,hybrid,cpu}] [--autonomy] [--model ID] [--effort LEVEL]
+    python -m evaluation.prepare <profile_id> <task_id> --arm {plain,skill,builder-skill} [--trial N] [--compute {slurm,local,hybrid,cpu}] [--autonomy] [--model ID] [--effort LEVEL]
 
 Without --compute, the Compute wording is the dataset `policy.compute` of the manifest's `source_id`.
 
@@ -79,6 +79,17 @@ REPRODUCE_REQUIREMENT = {
     "hybrid": "./reproduce.sh --target <target id> must run its GPU work on this machine and submit its CPU-only work as Slurm jobs, starting each step after the jobs whose output it reads have finished.",
     "local": "./reproduce.sh --target <target id> must run on this machine.",
 }
+PRIOR_ROOT_ARTIFACTS = {
+    "BENCHMARK_CARD.md", "SCORE_REPORT.md", "effect_ledger.jsonl", "plan.md", "report.json",
+    "reproduce.sh", "rubric.yaml",
+}
+PRIOR_EXCLUDED_DIRS = {
+    ".agents", ".claude", ".git", ".venv", "__pycache__", "preprocessed", "preprocessed_data", "venv",
+}
+PRIOR_EXCLUDED_FILES = {"mlperf_log_accuracy.json", "mlperf_log_trace.json"}
+PRIOR_EXCLUDED_SUFFIXES = {".nii", ".gz", ".pkl", ".pickle", ".ptc", ".pth", ".so"}
+
+
 # Appended with --autonomy. The default, without it, is to stop and ask (reproduce, Situations).
 AUTONOMY_INSTRUCTION = (
     "No human will reply to this session. Do not stop to ask or wait for approval: apply a change the task "
@@ -139,8 +150,81 @@ def access_scope(source_id: str | None, ws: Path, runs_root: Path) -> dict | Non
     return {"guarded": [str(REPO_ROOT), str(runs_root)], "allowed": [str(ws), str(REPO_ROOT / ".cache")]}
 
 
+def _copy_prior_workspace(source: Path, destination: Path, arm: str, trial: int, targets: set[str]) -> dict:
+    """Copy one prior run's retained products read-only into destination and return its provenance record.
+
+    Retained: the root artifacts and each target's directory (`targets`, the manifest's target ids)."""
+    if not source.is_dir():
+        raise SystemExit(f"configured prior-artifact workspace does not exist: {source}")
+    destination.mkdir(parents=True)
+    copied = []
+    environments = {config.parent for config in source.rglob("pyvenv.cfg")}  # a venv has any name the agent chose
+    for path in sorted(source.rglob("*")):
+        if path.is_symlink() or not path.is_file():
+            continue
+        if any(root in path.parents for root in environments):
+            continue
+        relative = path.relative_to(source)
+        if relative.parts[0] not in targets and relative.as_posix() not in PRIOR_ROOT_ARTIFACTS:
+            continue
+        if any(part in PRIOR_EXCLUDED_DIRS for part in relative.parts):
+            continue
+        if path.name in PRIOR_EXCLUDED_FILES or any(path.name.endswith(suffix) for suffix in PRIOR_EXCLUDED_SUFFIXES):
+            continue
+        target = destination / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, target)
+        target.chmod(target.stat().st_mode & ~0o222)
+        copied.append({
+            "path": relative.as_posix(),
+            "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+            "size": target.stat().st_size,
+        })
+    if not copied:
+        raise SystemExit(f"configured prior-artifact workspace supplied no retained artifacts: {source}")
+    provenance = {
+        "source_workspace": str(source),
+        "source_launch": str(source.parent / "launch.json"),
+        "arm": arm,
+        "trial": trial,
+        "files": copied,
+    }
+    provenance_path = destination / "provenance.json"
+    provenance_path.write_text(json.dumps(provenance, indent=2) + "\n")
+    provenance_path.chmod(provenance_path.stat().st_mode & ~0o222)
+    for directory in sorted((path for path in destination.rglob("*") if path.is_dir()), reverse=True):
+        directory.chmod(directory.stat().st_mode & ~0o222)
+    destination.chmod(destination.stat().st_mode & ~0o222)
+    return provenance
+
+
+def _stage_prior_artifacts(manifest: dict, arm: str, trial: int | None, ws: Path) -> dict | None:
+    """Copy the configured same-arm, same-trial run products into this run's access scope.
+
+    A source is one workspace path, staged at ./prior-artifacts, or a mapping label -> path (one entry per
+    earlier campaign), staged at ./prior-artifacts/<label>.
+    """
+    config = manifest.get("prior_artifacts")
+    if config is None:
+        return None
+    if trial is None:
+        raise SystemExit("this task configures prior artifacts, so --trial is required")
+    trials = config.get("trials", {})
+    trial_sources = trials.get(trial, trials.get(str(trial), {}))
+    source_value = trial_sources.get(arm) if isinstance(trial_sources, dict) else None
+    if not source_value:
+        raise SystemExit(f"manifest prior_artifacts has no source for trial {trial}, arm {arm!r}")
+    root = ws / "prior-artifacts"
+    targets = set(manifest.get("targets", {}))
+    if isinstance(source_value, dict):
+        return {"sources": {label: _copy_prior_workspace(Path(path).expanduser().resolve(), root / label, arm, trial, targets)
+                            for label, path in source_value.items()}}
+    return _copy_prior_workspace(Path(source_value).expanduser().resolve(), root, arm, trial, targets)
+
+
 def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None, autonomy: bool = False,
-            model: str | None = None, effort: str | None = None) -> Path:
+            model: str | None = None, effort: str | None = None,
+            trial: int | None = None) -> Path:
     check_id("task_id", task_id)
     profile_dir = bundle_profile_dir(profile_id)
     task_dir = bundle_task_dir(profile_dir, task_id)
@@ -174,6 +258,7 @@ def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None,
     with tarfile.open(source) as archive:
         archive.extractall(ws / "repo", filter="data")
     shutil.copyfile(task_dir / "tasks.json", ws / "tasks.json")
+    prior_artifacts = _stage_prior_artifacts(manifest, arm, trial, ws)
     (ws / ".claude").mkdir()
     (ws / ".claude" / "settings.json").write_text(json.dumps({"claudeMdExcludes": [str(USER_CLAUDE_MD)]}, indent=2) + "\n")
     skills = SKILL_FOR_ARM[arm]
@@ -182,6 +267,16 @@ def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None,
     text = prompt.read_text().rstrip("\n")
     text += "\n\n" + wording[compute] + " " + REPRODUCE_REQUIREMENT[compute]
     text += "\n\n" + shared + " " + WORKSPACE_INSTRUCTION + "\n"
+    if prior_artifacts:
+        if "sources" in prior_artifacts:
+            labels = ", ".join(f"./prior-artifacts/{label}" for label in prior_artifacts["sources"])
+            text += (f"\nRead-only snapshots of trial {trial} from the same arm's earlier campaigns are available in "
+                     f"{labels}. You may inspect and reuse those artifacts; each provenance.json identifies its "
+                     "source and hashes.\n")
+        else:
+            text += (f"\nA read-only snapshot of trial {trial} from the same arm's prior campaign is available in "
+                     "./prior-artifacts. You may inspect and reuse those artifacts; provenance.json identifies their "
+                     "source and hashes.\n")
     if autonomy:
         text += "\n" + AUTONOMY_INSTRUCTION + "\n"
     if arm == "builder-skill":
@@ -203,6 +298,7 @@ def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None,
         "ended": None,
         "skill": skills[-1] if skills else None,
         "skills": skills, "compute": compute,
+        "trial": trial, "prior_artifacts": prior_artifacts,
         "access_scope": access_scope(source_id, ws, runs_root), "autonomy": autonomy, "model": model, "effort": effort,
         "codex_home": str(codex_home), "codex_command": codex_command(root, ws, autonomy),
         "prepared": dt.datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -221,8 +317,9 @@ def main() -> None:
     parser.add_argument("--autonomy", action="store_true", help="tell the session no human will reply, so it does not stop to ask")
     parser.add_argument("--model", help="the study's Codex model ID (docs/local-preferences.md, section 4); written to the run's CODEX_HOME and recorded")
     parser.add_argument("--effort", help="the study's Codex reasoning effort; written to the run's CODEX_HOME and recorded")
+    parser.add_argument("--trial", type=int, help="trial number, required when the task stages prior artifacts")
     args = parser.parse_args()
-    root = prepare(args.profile_id, args.task_id, args.arm, args.compute, args.autonomy, args.model, args.effort)
+    root = prepare(args.profile_id, args.task_id, args.arm, args.compute, args.autonomy, args.model, args.effort, args.trial)
     launch = json.loads((root / "launch.json").read_text())
     print(f"workspace: {root / 'ws'}")
     print(f"prompt:    {launch['prompt']}")

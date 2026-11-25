@@ -108,6 +108,17 @@ def _answer_text(record: dict[str, Any], asked: set[str]) -> str | None:
     return None
 
 
+# Commands whose exit status 1 is an answer (difference found, no match, test false), not an error.
+ANSWER_COMMANDS = {"diff", "cmp", "grep", "egrep", "fgrep", "rg", "test", "[", "[["}
+
+
+def _answer_exit(command: str, code: int | None) -> bool:
+    """Exit 1 from a command line whose last command is in ANSWER_COMMANDS: the shell reports the last
+    command's status, so the line answered a question rather than failed."""
+    heads = _heads(command) if code == 1 else None
+    return bool(heads) and heads[-1] in ANSWER_COMMANDS
+
+
 def _outcome(block: dict[str, Any], result: Any) -> tuple[str, int | None]:
     if isinstance(result, dict):
         if result.get("backgroundTaskId"):
@@ -207,6 +218,8 @@ def extract(sessions: list[Path], workspace: Path | None = None) -> tuple[list[I
             if b.get("type") == "tool_result" and b.get("tool_use_id") in calls:
                 source, timestamp, command = calls.pop(b["tool_use_id"])
                 outcome, exit_code = _outcome(b, rec.get("toolUseResult"))
+                if outcome == "exit_nonzero" and _answer_exit(command, exit_code):
+                    outcome = "answer_nonzero"
                 text = _result_text(b)
                 executions.append(Execution(
                     source=source, timestamp=timestamp, command=command, outcome=outcome,
@@ -434,7 +447,8 @@ def codex_extract(sessions: list[Path], before: str | None = None) -> tuple[list
         elif kind == "CommandExecution":
             command = item.get("command")
             code = item.get("exit_code")
-            outcome = ("ok" if code == 0 else "exit_nonzero" if code is not None
+            text = command[-1] if isinstance(command, list) and command else str(command or "")
+            outcome = ("ok" if code == 0 else "answer_nonzero" if _answer_exit(text, code) else "exit_nonzero" if code is not None
                        else "ok" if item.get("status") == "completed" else "tool_error")
             executions.append(Execution(
                 source="codex", timestamp=timestamp, outcome=outcome, exit_code=code,

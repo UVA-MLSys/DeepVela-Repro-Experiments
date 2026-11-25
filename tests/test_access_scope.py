@@ -23,3 +23,16 @@ def test_reports_and_other_runs_are_flagged_cache_is_not():
     assert flagged("cat /p/runs/t/plain-1/ws/report.json") == ["/p/runs/t/plain-1/ws/report.json"]
     assert flagged("ls /p/repo/.cache/sources /p/repo/.cache/huggingface") == []
     assert flagged("cat /p/repo/docs/reports/notes.md") == ["/p/repo/docs/reports/notes.md"]
+
+
+def test_search_pattern_is_not_an_access_but_a_read_is():
+    from evaluation.scorer import without_search_patterns
+    import re
+    forbidden = r"inference_results|github\.com/mlcommons/inference|runs\.csv"
+    hit = lambda text: bool(re.search(forbidden, without_search_patterns(text)))
+    assert not hit("if rg -n 'inference_results|github.com/mlcommons/inference' reproduce.sh; then exit 1; fi")
+    assert not hit("grep -rn -e 'runs.csv' src/")
+    assert hit("cat runs.csv")
+    assert hit("rg -n 'x' inference_results/a.txt")
+    assert hit("rg -n 'runs.csv' f; curl https://github.com/mlcommons/inference")
+    assert hit("rg -n 'runs.csv' f; cat runs.csv")

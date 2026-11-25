@@ -3,6 +3,7 @@
 import io
 import json
 import tarfile
+import time
 
 import pytest
 
@@ -113,3 +114,39 @@ def test_codex_home_holds_only_the_study_model_not_the_operators_config(bundle, 
     config = (root / "codex-home/config.toml").read_text()
     assert 'model = "m1"' in config and 'model_reasoning_effort = "medium"' in config
     assert "secret" not in config and "enabled = false" in config
+
+
+def test_prior_artifacts_are_staged_read_only_per_trial_and_arm(bundle, tmp_path):
+    prior = tmp_path / "earlier/ws"
+    for name in ("reproduce.sh", "report.json", "3d-unet/out/accuracy.txt", "3d-unet/out/mlperf_log_accuracy.json",
+                 "3d-unet/work/preprocessed/case.pkl", "3d-unet/my-env/pyvenv.cfg", "3d-unet/my-env/lib/mod.py"):
+        (prior / name).parent.mkdir(parents=True, exist_ok=True)
+        (prior / name).write_text("x\n")
+    manifest = (bundle / "manifest.yaml").read_text() + "targets:\n  3d-unet: {}\nprior_artifacts:\n  trials:\n"
+    (bundle / "manifest.yaml").write_text(
+        manifest + f"    2:\n      plain: {prior}\n    3:\n      plain:\n        v4: {prior}\n        v5: {prior}\n")
+    seal("p", "t")
+    with pytest.raises(SystemExit, match="--trial is required"):
+        prepare("p", "t", "plain", compute="local")
+    time.sleep(1.1)  # run folders are named by the second
+
+    root = prepare("p", "t", "plain", compute="local", trial=2)
+    snapshot = root / "ws/prior-artifacts"
+    assert (snapshot / "reproduce.sh").is_file()
+    assert (snapshot / "3d-unet/out/accuracy.txt").is_file()
+    assert not (snapshot / "3d-unet/out/mlperf_log_accuracy.json").exists()
+    assert not (snapshot / "3d-unet/work/preprocessed/case.pkl").exists()
+    assert not (snapshot / "3d-unet/my-env").exists()
+    assert snapshot.stat().st_mode & 0o222 == 0
+    launch = json.loads((root / "launch.json").read_text())
+    assert launch["prior_artifacts"]["source_workspace"] == str(prior.resolve())
+    assert launch["trial"] == 2
+    assert "same arm's prior campaign" in (root / "ws/prompt.md").read_text()
+
+    time.sleep(1.1)  # run folders are named by the second
+    root = prepare("p", "t", "plain", compute="local", trial=3)
+    for label in ("v4", "v5"):
+        assert (root / "ws/prior-artifacts" / label / "reproduce.sh").is_file()
+        assert (root / "ws/prior-artifacts" / label / "provenance.json").is_file()
+    assert "./prior-artifacts/v4, ./prior-artifacts/v5" in (root / "ws/prompt.md").read_text()
+    assert set(json.loads((root / "launch.json").read_text())["prior_artifacts"]["sources"]) == {"v4", "v5"}

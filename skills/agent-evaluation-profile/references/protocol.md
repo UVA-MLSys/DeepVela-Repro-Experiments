@@ -317,5 +317,4 @@ interventions, executions, failed executions and tokens (from recorded usage), r
 over every tool call against the task's `forbidden_access`, and computes `end_to_end_success` once
 `launch.json` records the frozen trace identity. It reads Claude Code and Codex transcripts, and job
 states from Slurm (`sacct`) only, for Claude Code sessions. Not built: judge validation against hand
-labels, the judge labels for interventions, and comparisons across runs. Not published in this repository:
-the route-departure judge and the per-agent resource table.
+labels, the judge labels for interventions, and comparisons across runs.

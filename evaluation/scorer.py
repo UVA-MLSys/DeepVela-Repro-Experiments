@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shlex
 from dataclasses import replace
 from pathlib import Path
 from typing import Any
@@ -64,6 +65,36 @@ def _section(report: dict[str, Any] | None, path: list[str]) -> dict[str, Any] |
 
 # An absolute path in a tool call's input. A path reached by `cd` and a relative one is not resolved.
 _ABS_PATH = re.compile(r"(?<![\w.~$})])/[^\s\"'`;|&<>(){}\[\],:=*?\\]+")
+
+
+_SEARCH_COMMAND = re.compile(r"\b(?:rg|grep|egrep|fgrep)\b")
+
+
+def without_search_patterns(target: str) -> str:
+    """`target` minus the pattern a local `rg`/`grep` searches for: the pattern names a resource without reaching it."""
+    out = target
+    for found in reversed(list(_SEARCH_COMMAND.finditer(target))):
+        lexer = shlex.shlex(target[found.end():], posix=True, punctuation_chars=True)
+        lexer.whitespace_split = True
+        words = []
+        try:  # the call's text holds more commands than this one; read only up to its end
+            while (word := lexer.get_token()) is not None and not set(word) <= set(lexer.punctuation_chars):
+                words.append(word)
+        except ValueError:
+            pass
+        pattern = None
+        for i, word in enumerate(words):
+            if word in ("-e", "--regexp") and i + 1 < len(words):
+                pattern = words[i + 1]
+                break
+            if not word.startswith("-"):
+                pattern = word
+                break
+        if pattern:
+            at = out.find(pattern, found.end())
+            if at >= 0:
+                out = out[:at] + out[at + len(pattern):]
+    return out
 
 
 def outside_scope(target: str, scope: dict | None) -> list[str]:
@@ -151,7 +182,7 @@ def score_run(launch: dict[str, Any]) -> tuple[RunEvaluation, list[CheckResult],
     if scope and launch.get("codex_home"):  # the session's own CODEX_HOME, where Codex itself lists skills
         scope = {**scope, "allowed": [*scope["allowed"], launch["codex_home"]]}
     violations = [f"{t[11:19]} {tool}: {target[:160]}" for t, tool, target in calls
-                  if any(re.search(pattern, target) for pattern in task.forbidden_access)
+                  if any(re.search(pattern, without_search_patterns(target)) for pattern in task.forbidden_access)
                   or outside_scope(target, scope)]
     skills = launch.get("skills") or ([launch["skill"]] if launch.get("skill") else [])
     method_access = {skill: _method_access(skill, calls, slashed) for skill in skills} or None
@@ -278,6 +309,7 @@ def score_run(launch: dict[str, Any]) -> tuple[RunEvaluation, list[CheckResult],
         targets=target_results,
         # Departure judging is a separately requested study, not part of routine scoring.
         route_departures=None,
+        answer_executions=sum(e.outcome == "answer_nonzero" for e in executions) if sessions else None,
         target_success_rate=(sum(t.success for t in target_results.values()) / len(target_results)
                              if target_results else None),
         not_applicable=not_applicable,

@@ -53,6 +53,7 @@ class Policy(BaseModel):
 class Task(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: str
+    selector_id: str | None = None  # record-local selection key when controlled conditions share one target id
     task_prompt: str  # the entry instruction, as in CORE-Bench and SocSci-Repro-Bench
     results: list[str]  # names the evaluator prints; the values are in the gold file
     outputs: dict[str, str] | None = None  # files ./reproduce.sh writes to OUTPUT_DIR -> what each holds
@@ -60,6 +61,8 @@ class Task(BaseModel):
     log_lines: dict[str, str] | None = None  # line prefix -> what follows it
     hints: list[str] | None = None  # help fixed before the run (RExBench hints)
     inputs: list[str] | None = None  # repository-relative input files the agent fetches itself
+    input_path_overrides: dict[str, str] | None = None  # named policy inputs whose path differs for this task
+    forbidden_override: str | None = None  # condition-specific access restriction for a selected task
 
 
 class Source(BaseModel):
@@ -116,9 +119,10 @@ def undocumented_commands(source: Source, tasks: list[Task]) -> list[str]:
 
 def render(source: Source, task_ids: list[str] | None = None) -> tuple[str, str]:
     """The prompt and the agent-visible `tasks.json` (the selected tasks' records, in run order)."""
-    tasks = [t for t in source.tasks if task_ids is None or t.id in task_ids]
+    tasks = [t for t in source.tasks if task_ids is None or (t.selector_id or t.id) in task_ids]
     if task_ids is not None and len(tasks) != len(task_ids):
-        raise SystemExit(f"{source.source_id} has no task {sorted(set(task_ids) - {t.id for t in tasks})}")
+        selected = {t.selector_id or t.id for t in tasks}
+        raise SystemExit(f"{source.source_id} has no task {sorted(set(task_ids) - selected)}")
     policy = source.policy
     missing = [f"policy.{f}" for f in ("platform", "inputs", "forbidden") if getattr(policy, f) is None]
     missing += [f"{t.id}.outputs" for t in tasks if not t.outputs]
@@ -138,7 +142,11 @@ def render(source: Source, task_ids: list[str] | None = None) -> tuple[str, str]
         warnings.warn(f"{source.source_id}: task_prompt quotes a command its documentation does not give whole: "
                       f"{'; '.join(undocumented)}", stacklevel=2)
 
-    paths = {name: REPO_ROOT / i.path for name, i in (policy.inputs or {}).items()}
+    overrides = {name: path for task in tasks for name, path in (task.input_path_overrides or {}).items()}
+    unknown = sorted(set(overrides) - set(policy.inputs or {}))
+    if unknown:
+        raise SystemExit(f"{source.source_id}: task input_path_overrides names unknown policy input(s) {', '.join(unknown)}")
+    paths = {name: REPO_ROOT / overrides.get(name, i.path) for name, i in (policy.inputs or {}).items()}
     root = cache_root(policy)
     if root is not None:  # a path prefix shared by the paths is stated once
         paths = {name: f"$CACHE_ROOT/{p.relative_to(root)}" for name, p in paths.items()}
@@ -154,13 +162,14 @@ def render(source: Source, task_ids: list[str] | None = None) -> tuple[str, str]
         inputs += ("\n" + " ".join(held)) if held else ""
     else:
         inputs = "Inputs: none provided." + (" Fetch each target's `inputs` yourself." if any(t.inputs for t in tasks) else "")
-    records = [t.model_dump(exclude_none=True) for t in tasks]
+    records = [t.model_dump(exclude_none=True, exclude={"selector_id", "input_path_overrides", "forbidden_override"}) for t in tasks]
     example = json.dumps({t.id: {r: "<value>" for r in t.results} for t in tasks[:2]})
     time_limit = f"Time limit: {policy.wall_clock_cap} of wall clock.\n" if policy.wall_clock_cap else ""
+    forbidden = next((task.forbidden_override for task in tasks if task.forbidden_override), policy.forbidden)
     prompt = Template(TEMPLATE.read_text()).substitute(
         commit=source.repo["commit"], fields=", ".join(FIELDS[f] for f in FIELDS if any(f in r for r in records)),
         platform=policy.platform, inputs=inputs, uv_cache=uv_cache, cache_named=" and the package cache" if python else "",
-        report_example=example, forbidden=policy.forbidden, time_limit=time_limit).rstrip("\n") + "\n"
+        report_example=example, forbidden=forbidden, time_limit=time_limit).rstrip("\n") + "\n"
     # The per-target fields go to the agent as a file, as SocSci-Repro-Bench gives papers_tasks/<id>.json.
     return prompt, "[\n" + ",\n".join(json.dumps(r) for r in records) + "\n]\n"  # one entry per line
 

@@ -16,7 +16,10 @@ SuiteRole = Literal["development", "regression", "held_out"]
 Verdict = Literal["pass", "fail", "not_applicable"]
 # Intervention types an LLM judge assigns from the recorded context (protocol.md, "Effort").
 InterventionType = Literal["clarification", "error-fixing", "correction", "approval"]
-ExecutionOutcome = Literal["ok", "exit_nonzero", "timed_out", "backgrounded", "interrupted", "tool_error", "harness_denied"]
+# `answer_nonzero`: exit 1 from a command whose 1 means "no" (a test, comparison or search found a difference
+# or no match), not an error; `failed` leaves it out.
+ExecutionOutcome = Literal["ok", "exit_nonzero", "answer_nonzero", "timed_out", "backgrounded", "interrupted", "tool_error", "harness_denied"]
+UsageQuality = Literal["measured", "estimated", "unavailable"]
 UsageQuality = Literal["measured", "estimated", "unavailable"]
 
 
@@ -362,6 +365,8 @@ class RunEvaluation(BaseModel):
     targets: dict[str, TargetResult] = Field(default_factory=dict)
     # The opt-in post-run judge's departures (`departures.py`); null when it was not run or could not judge.
     route_departures: RouteDepartures | None = None
+    # Executions that exited 1 as an answer (`answer_nonzero`), counted apart from failures.
+    answer_executions: int | None = None
     # Fraction of targets whose `success` is true.
     target_success_rate: float | None = None
     not_applicable: list[NotApplicableRubric] = Field(default_factory=list)
