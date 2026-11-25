@@ -1,0 +1,62 @@
+task_id: bert-squad-v1/c6
+source_id: mlperf-c0-c6/bert-squad
+profile_id: reproduce
+profile_version: 1
+suite_role: development
+source_revision: 3fbc329939999c13d0a7b5e67fb2092287e06047
+objective: Reproduce MLPerf Inference language/bert (BERT-Large fp32 PyTorch model from zenodo record 3733896, SQuAD v1.1
+  validation set, 10,833 features), PyTorch backend, Offline scenario, LoadGen accuracy mode, scored by evaluate_v1.1.py (exact_match,
+  f1), on one A100 80GB GPU.
+targets:
+  bert-squad:
+    model_variant_precision: BERT-Large, PyTorch, fp32 (model.pytorch)
+    dataset_split: SQuAD v1.1 validation set (dev-v1.1.json, 10,833 features)
+    scenario: Offline
+    mode: accuracy
+    evaluator: language/bert/accuracy-squad.py (calls language/bert/evaluate_v1.1.py)
+    quality_rubric_id: quality_rule_satisfied
+    shared_rubrics:
+    - squad_dataset_available
+    - model_available
+    quality_contract:
+      evaluator_identity: language/bert/evaluate_v1.1.py
+      result_name_type_and_direction: f1, float (percent), higher_is_better; exact_match is reported but not scored
+      reference_value: 90.874
+      acceptance_rule: 'relative error to the README f1_score 90.874 at most 0.01 (user choice 2026-10-06: README value, tolerance
+        1%)'
+      source_path_sha256_excerpt:
+        path: language/bert/README.md
+        sha256: c9ecf84c05f74109a89e93119e620591e0478abcb8bfa80c3314dddaef83fa2a
+        excerpt: '| BERT-Large | PyTorch | f1_score=90.874% | SQuAD v1.1 validation set |'
+input_reuse_contract:
+  cache_condition_id: warm_raw_inputs_v1
+  allowed_cache_roots:
+  - /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/bert-squad/data
+  - /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/bert-squad/model
+  - /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/bert-squad/DeepLearningExamples
+  allowed_artifact_classes:
+  - raw_dataset_download
+  - model_checkpoint_download
+  package_cache_class: pip_wheel_cache
+  forbidden_artifact_classes:
+  - environment
+  - preprocessed_data
+  - converted_model
+  - log
+  - output
+  - metric
+authored_by:
+  model_id: claude-sonnet-5-5
+  authored_at: '2026-10-06'
+  source_revision: 3fbc329939999c13d0a7b5e67fb2092287e06047
+  reviewed_by: pending
+artifact_paths:
+  squad_dev_file: /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/bert-squad/data/dev-v1.1.json
+  model_file: /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/bert-squad/model/model.pytorch
+forbidden_access:
+- evaluation-profiles/(?!reproduce/tasks/[^/]+/prompt\.md)
+- inference_results
+- mlcommons\.org/benchmarks/inference|mlperf\.org/inference-results
+- runs\.csv
+- github\.com/mlcommons/inference
+- raw\.githubusercontent\.com/mlcommons/inference

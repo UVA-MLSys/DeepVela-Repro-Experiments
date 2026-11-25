@@ -1,0 +1,32 @@
+rubric_id: route_used
+phase_id: execution
+claim: The benchmark's own language/bert/run.py with the pytorch backend ran the BERT-Large fp32 model on the SQuAD v1.1 validation
+  set through LoadGen, on the GPU.
+target: bert-squad
+critical: true
+cache_conditions: []
+source_refs:
+- path: language/bert/run.py
+  sha256: 35a3cd8f47897254a205bc2b090a42a904551a2ee30246d91abd17e7f2c9d931
+  excerpt: choices=["tf", "pytorch", "onnxruntime", "tf_estimator", "ray"],
+- path: language/bert/README.md
+  sha256: c9ecf84c05f74109a89e93119e620591e0478abcb8bfa80c3314dddaef83fa2a
+  excerpt: python3 run.py --backend=[tf|pytorch|onnxruntime|tf_estimator] --scenario=[Offline|SingleStream|MultiStream|Server]
+    [--accuracy] [--quantized]
+prerequisites:
+- squad_dataset_available
+- model_available
+evidence_contract:
+  artifacts: []
+checker:
+  kind: builtin.judge
+  args:
+    files:
+    - '**/bert-squad/**/*.log'
+    - '**/bert-squad/**/*.out'
+    - '**/bert-squad/**/*.err'
+    - bert-squad/reproduce.sh
+    - reproduce.sh
+    hint: run\.py|backend|pytorch|model\.pytorch|dev-v1\.1|--accuracy|accuracy-squad
+applicable: true
+pass_threshold: 1.0

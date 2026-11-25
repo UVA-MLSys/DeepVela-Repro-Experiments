@@ -1,0 +1,15 @@
+Condition: C5
+Pinned source: 3fbc329939999c13d0a7b5e67fb2092287e06047
+
+Masked or removed:
+- base_SUT.py: the LoadGen system under test that receives queries, runs sliding-window inference per case, and returns predictions
+- pytorch_SUT.py, pytorch_checkpoint_SUT.py, onnxruntime_SUT.py, tensorflow_SUT.py: the backend wrappers that load and run the model
+- unet_pytorch_to_onnx.py: the model-loading lines (torch.jit.load and eval), the only other place the repository loads the model
+
+Retained execution-path evidence:
+- the staged fp32 TorchScript model 3dunet_kits19_pytorch.ptc
+- run.py, which imports get_sut from the backend module named by --backend
+- inference_utils.py (sliding-window helpers: window positions, Gaussian weights, normalization), kits_QSL.py, preprocess.py, global_vars.py, LoadGen, accuracy_kits.py
+- README lines describing the SUT, the QSL, and the supported backends
+
+Published README results (mean = 0.86170, kidney = 0.9347, tumor = 0.7887) are visible in this view.

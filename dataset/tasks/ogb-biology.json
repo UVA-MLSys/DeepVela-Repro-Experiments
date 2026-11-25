@@ -1,0 +1,139 @@
+{
+  "source_id": "ogb-biology",
+  "repo": {
+    "path": "../OSS/ogb",
+    "commit": "61e9784ca76edeaa6e259ba0f836099608ff0586"
+  },
+  "domain": "biological graphs",
+  "language": "Python",
+  "support_level": "readme_only",
+  "policy": {
+    "compute": "slurm",
+    "platform": "one NVIDIA A100 80GB GPU per run.",
+    "inputs": {
+      "DATA_DIR": {
+        "path": ".cache/ogb-biology",
+        "holds": "proteins.zip, ppassoc.zip and ddi.zip, the ogbn-proteins, ogbl-ppa and ogbl-ddi archives from snap.stanford.edu/ogb/data that ogb's dataset classes download"
+      }
+    },
+    "forbidden": "the OGB paper's result tables, the OGB leaderboards at ogb.stanford.edu, or other published OGB results",
+    "wall_clock_cap": "8 hours"
+  },
+  "env_groups": [
+    {
+      "id": "ogb-env",
+      "tasks": [
+        "ogbn-proteins-mlp",
+        "ogbn-proteins-gcn",
+        "ogbn-proteins-sage",
+        "ogbl-ppa-gcn",
+        "ogbl-ppa-sage",
+        "ogbl-ppa-mf",
+        "ogbl-ddi-gcn",
+        "ogbl-ddi-sage",
+        "ogbl-ddi-mf"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "ogbn-proteins-mlp",
+      "task_prompt": "In examples/nodeproppred/proteins, run `python mlp.py` on ogbn-proteins; the `Final Test` line under `All runs:` prints the test mean ± std over its runs.",
+      "results": [
+        "test ROC-AUC (%) mean",
+        "test ROC-AUC (%) std"
+      ],
+      "outputs": {
+        "run.log": "the example script's stdout and stderr"
+      }
+    },
+    {
+      "id": "ogbn-proteins-gcn",
+      "task_prompt": "In examples/nodeproppred/proteins, run `python gnn.py` on ogbn-proteins; the `Final Test` line under `All runs:` prints the test mean ± std over its runs.",
+      "results": [
+        "test ROC-AUC (%) mean",
+        "test ROC-AUC (%) std"
+      ],
+      "outputs": {
+        "run.log": "the example script's stdout and stderr"
+      }
+    },
+    {
+      "id": "ogbn-proteins-sage",
+      "task_prompt": "In examples/nodeproppred/proteins, run `python gnn.py --use_sage` on ogbn-proteins; the `Final Test` line under `All runs:` prints the test mean ± std over its runs.",
+      "results": [
+        "test ROC-AUC (%) mean",
+        "test ROC-AUC (%) std"
+      ],
+      "outputs": {
+        "run.log": "the example script's stdout and stderr"
+      }
+    },
+    {
+      "id": "ogbl-ppa-gcn",
+      "task_prompt": "In examples/linkproppred/ppa, run `python gnn.py` on ogbl-ppa; the `Final Test` line under `All runs:` prints the test mean ± std over its runs.",
+      "results": [
+        "test Hits@100 (%) mean",
+        "test Hits@100 (%) std"
+      ],
+      "outputs": {
+        "run.log": "the example script's stdout and stderr"
+      }
+    },
+    {
+      "id": "ogbl-ppa-sage",
+      "task_prompt": "In examples/linkproppred/ppa, run `python gnn.py --use_sage` on ogbl-ppa; the `Final Test` line under `All runs:` prints the test mean ± std over its runs.",
+      "results": [
+        "test Hits@100 (%) mean",
+        "test Hits@100 (%) std"
+      ],
+      "outputs": {
+        "run.log": "the example script's stdout and stderr"
+      }
+    },
+    {
+      "id": "ogbl-ppa-mf",
+      "task_prompt": "In examples/linkproppred/ppa, run `python mf.py` on ogbl-ppa; the `Final Test` line under `All runs:` prints the test mean ± std over its runs.",
+      "results": [
+        "test Hits@100 (%) mean",
+        "test Hits@100 (%) std"
+      ],
+      "outputs": {
+        "run.log": "the example script's stdout and stderr"
+      }
+    },
+    {
+      "id": "ogbl-ddi-gcn",
+      "task_prompt": "In examples/linkproppred/ddi, run `python gnn.py` on ogbl-ddi; the `Final Test` line under `All runs:` prints the test mean ± std over its runs.",
+      "results": [
+        "test Hits@20 (%) mean",
+        "test Hits@20 (%) std"
+      ],
+      "outputs": {
+        "run.log": "the example script's stdout and stderr"
+      }
+    },
+    {
+      "id": "ogbl-ddi-sage",
+      "task_prompt": "In examples/linkproppred/ddi, run `python gnn.py --use_sage` on ogbl-ddi; the `Final Test` line under `All runs:` prints the test mean ± std over its runs.",
+      "results": [
+        "test Hits@20 (%) mean",
+        "test Hits@20 (%) std"
+      ],
+      "outputs": {
+        "run.log": "the example script's stdout and stderr"
+      }
+    },
+    {
+      "id": "ogbl-ddi-mf",
+      "task_prompt": "In examples/linkproppred/ddi, run `python mf.py` on ogbl-ddi; the `Final Test` line under `All runs:` prints the test mean ± std over its runs.",
+      "results": [
+        "test Hits@20 (%) mean",
+        "test Hits@20 (%) std"
+      ],
+      "outputs": {
+        "run.log": "the example script's stdout and stderr"
+      }
+    }
+  ]
+}

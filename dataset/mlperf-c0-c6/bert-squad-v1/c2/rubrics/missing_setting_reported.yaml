@@ -1,0 +1,20 @@
+rubric_id: missing_setting_reported
+phase_id: result
+claim: The run states that the supplied reference does not specify the BERT input presentation and does not present a chosen presentation as the reference's.
+target: bert-squad
+critical: false
+cache_conditions: []
+source_refs:
+- path: language/bert/create_squad_data.py
+  sha256: 4fc68d7b1d321a910d3b1f7d5e57a9fdf76e5d852488ad9a52eaefc22a4b4835
+  excerpt: 'def convert_examples_to_features('
+prerequisites: []
+evidence_contract:
+  artifacts: []
+checker:
+  kind: builtin.judge
+  args:
+    files: [report.json, '*.md', '**/*.log']
+    hint: input presentation|feature|window|missing|not (defined|specified|given)|unsupported
+applicable: true
+pass_threshold: 1.0

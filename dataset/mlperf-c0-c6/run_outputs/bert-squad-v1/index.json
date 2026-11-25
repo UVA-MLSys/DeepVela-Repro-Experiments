@@ -1,0 +1,1245 @@
+{
+ "study_version": "bert-squad-v1",
+ "source_version": "bert-squad-v1",
+ "runs": [
+  {
+   "condition": "C0",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c0/builder-skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c0/builder-skill-2026-11-22-13-44-52",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c0/builder-skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c0/builder-skill-2026-11-22-17-40-47",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c0/builder-skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c0/builder-skill-2026-11-22-19-25-16",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c0/plain-trial-1",
+   "source_run": "runs/bert-squad-v1/c0/plain-2026-11-22-13-44-48",
+   "report": {
+    "bert-squad": {
+     "exact_match": "83.68968779564806",
+     "f1": "90.87487229720105"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c0/plain-trial-2",
+   "source_run": "runs/bert-squad-v1/c0/plain-2026-11-22-17-40-43",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c0/plain-trial-3",
+   "source_run": "runs/bert-squad-v1/c0/plain-2026-11-22-19-25-13",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c0/skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c0/skill-2026-11-22-13-44-50",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c0/skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c0/skill-2026-11-22-17-40-45",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c0/skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c0/skill-2026-11-22-19-25-15",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c1/builder-skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c1/builder-skill-2026-11-22-13-44-57",
+   "report": {
+    "bert-squad": {
+     "exact_match": "83.68968779564806",
+     "f1": "90.87487229720105"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c1/builder-skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c1/builder-skill-2026-11-22-17-40-52",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c1/builder-skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c1/builder-skill-2026-11-22-19-25-22",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c1/plain-trial-1",
+   "source_run": "runs/bert-squad-v1/c1/plain-2026-11-22-13-44-53",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c1/plain-trial-2",
+   "source_run": "runs/bert-squad-v1/c1/plain-2026-11-22-17-40-49",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c1/plain-trial-3",
+   "source_run": "runs/bert-squad-v1/c1/plain-2026-11-22-19-25-18",
+   "report": {
+    "bert-squad": {
+     "exact_match": "83.68968779564806",
+     "f1": "90.87487229720105"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c1/skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c1/skill-2026-11-22-13-44-55",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c1/skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c1/skill-2026-11-22-17-40-50",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c1/skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c1/skill-2026-11-22-19-25-20",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c2/builder-skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c2/builder-skill-2026-11-22-15-43-05",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c2/builder-skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c2/builder-skill-2026-11-22-18-10-08",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c2/builder-skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c2/builder-skill-2026-11-22-23-35-02",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c2/plain-trial-1",
+   "source_run": "runs/bert-squad-v1/c2/plain-2026-11-22-15-43-02",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c2/plain-trial-2",
+   "source_run": "runs/bert-squad-v1/c2/plain-2026-11-22-18-01-33",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c2/plain-trial-3",
+   "source_run": "runs/bert-squad-v1/c2/plain-2026-11-22-19-49-55",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c2/skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c2/skill-2026-11-22-15-43-04",
+   "report": {
+    "bert-squad": {
+     "exact_match": "83.68968779564806",
+     "f1": "90.87487229720105"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c2/skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c2/skill-2026-11-22-18-03-42",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c2/skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c2/skill-2026-11-22-19-52-42",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c3/builder-skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c3/builder-skill-2026-11-22-14-08-29",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c3/builder-skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c3/builder-skill-2026-11-22-18-24-37",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c3/builder-skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c3/builder-skill-2026-11-22-23-35-07",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c3/plain-trial-1",
+   "source_run": "runs/bert-squad-v1/c3/plain-2026-11-22-14-01-24",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c3/plain-trial-2",
+   "source_run": "runs/bert-squad-v1/c3/plain-2026-11-22-18-12-08",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c3/plain-trial-3",
+   "source_run": "runs/bert-squad-v1/c3/plain-2026-11-22-23-35-04",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c3/skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c3/skill-2026-11-22-14-05-36",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c3/skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c3/skill-2026-11-22-18-17-02",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c3/skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c3/skill-2026-11-22-23-35-06",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c4/builder-skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c4/builder-skill-2026-11-22-15-43-09",
+   "report": {
+    "bert-squad": {
+     "exact_match": "83.68968779564806",
+     "f1": "90.87487229720105"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c4/builder-skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c4/builder-skill-2026-11-22-18-32-18",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c4/builder-skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c4/builder-skill-2026-11-23-00-04-04",
+   "report": {
+    "bert-squad": {
+     "exact_match": "83.68968779564806",
+     "f1": "90.87487229720105"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c4/plain-trial-1",
+   "source_run": "runs/bert-squad-v1/c4/plain-2026-11-22-15-43-07",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c4/plain-trial-2",
+   "source_run": "runs/bert-squad-v1/c4/plain-2026-11-22-18-24-52",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c4/plain-trial-3",
+   "source_run": "runs/bert-squad-v1/c4/plain-2026-11-22-23-35-09",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.57615894039735,
+     "f1": 90.86680889261449
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c4/skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c4/skill-2026-11-22-15-43-08",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c4/skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c4/skill-2026-11-22-18-29-38",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c4/skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c4/skill-2026-11-22-23-35-11",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c5/builder-skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c5/builder-skill-2026-11-22-14-26-44",
+   "report": {
+    "bert-squad": {
+     "exact_match": "83.68968779564806",
+     "f1": "90.87487229720105"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c5/builder-skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c5/builder-skill-2026-11-22-18-51-29",
+   "report": {
+    "bert-squad": {
+     "exact_match": "83.68968779564806",
+     "f1": "90.87487229720105"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c5/builder-skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c5/builder-skill-2026-11-23-00-10-02",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c5/plain-trial-1",
+   "source_run": "runs/bert-squad-v1/c5/plain-2026-11-22-14-11-54",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c5/plain-trial-2",
+   "source_run": "runs/bert-squad-v1/c5/plain-2026-11-22-18-39-59",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.66130558183538,
+     "f1": 90.87410716832628
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c5/plain-trial-3",
+   "source_run": "runs/bert-squad-v1/c5/plain-2026-11-23-00-05-32",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.66130558183538,
+     "f1": 90.87410716832628
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c5/skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c5/skill-2026-11-22-14-23-58",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c5/skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c5/skill-2026-11-22-18-46-15",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c5/skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c5/skill-2026-11-23-00-05-37",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c6/builder-skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c6/builder-skill-2026-11-22-14-57-42",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c6/builder-skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c6/builder-skill-2026-11-22-19-02-46",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c6/builder-skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c6/builder-skill-2026-11-23-00-24-16",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c6/plain-trial-1",
+   "source_run": "runs/bert-squad-v1/c6/plain-2026-11-22-14-43-02",
+   "report": {
+    "bert-squad": {
+     "exact_match": "83.68968779564806",
+     "f1": "90.87487229720105"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c6/plain-trial-2",
+   "source_run": "runs/bert-squad-v1/c6/plain-2026-11-22-19-01-52",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c6/plain-trial-3",
+   "source_run": "runs/bert-squad-v1/c6/plain-2026-11-23-00-11-08",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/bert-squad-v1/c6/skill-trial-1",
+   "source_run": "runs/bert-squad-v1/c6/skill-2026-11-22-14-55-59",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/bert-squad-v1/c6/skill-trial-2",
+   "source_run": "runs/bert-squad-v1/c6/skill-2026-11-22-19-02-30",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/bert-squad-v1/c6/skill-trial-3",
+   "source_run": "runs/bert-squad-v1/c6/skill-2026-11-23-00-21-00",
+   "report": {
+    "bert-squad": {
+     "exact_match": 83.68968779564806,
+     "f1": 90.87487229720105
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,6 @@
+settled_by,definition,outcome
+authoritative,"Derived from evidence still present in the supplied sources: reference code, documentation, or task inputs.",fulfilled
+human,Decided by a human when the agent asked.,fulfilled
+assumption,Supplied from the agent's own knowledge or from a choice the supplied sources do not determine.,failure
+prior_artifacts,"Taken from an earlier session's artifacts, which are not supplied sources; the outcome is that of the basis those artifacts recorded.",basis
+unresolved,Left open when the session ended.,failure

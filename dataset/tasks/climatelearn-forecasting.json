@@ -1,0 +1,139 @@
+{
+  "source_id": "climatelearn-forecasting",
+  "repo": {
+    "path": "../OSS/climate-learn",
+    "commit": "b48fb0242acc47e365af86bfbd9dd86e9dcbd6d2"
+  },
+  "domain": "weather forecasting",
+  "language": "Python",
+  "support_level": "readme_only",
+  "env_groups": [
+    {
+      "id": "climatelearn-env",
+      "tasks": [
+        "forecast-era5-resnet-6h",
+        "forecast-era5-resnet-24h",
+        "forecast-era5-resnet-72h",
+        "forecast-era5-resnet-120h",
+        "forecast-era5-resnet-240h",
+        "forecast-era5-unet-6h",
+        "forecast-era5-unet-24h",
+        "forecast-era5-unet-72h",
+        "forecast-era5-unet-120h",
+        "forecast-era5-unet-240h",
+        "forecast-era5-vit-6h",
+        "forecast-era5-vit-24h",
+        "forecast-era5-vit-72h",
+        "forecast-era5-vit-120h",
+        "forecast-era5-vit-240h"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "forecast-era5-resnet-6h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model resnet, direct forecasting and pred_range 6 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-resnet-24h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model resnet, direct forecasting and pred_range 24 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-resnet-72h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model resnet, direct forecasting and pred_range 72 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-resnet-120h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model resnet, direct forecasting and pred_range 120 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-resnet-240h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model resnet, direct forecasting and pred_range 240 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-unet-6h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model unet, direct forecasting and pred_range 6 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-unet-24h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model unet, direct forecasting and pred_range 24 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-unet-72h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model unet, direct forecasting and pred_range 72 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-unet-120h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model unet, direct forecasting and pred_range 120 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-unet-240h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model unet, direct forecasting and pred_range 240 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-vit-6h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model vit, direct forecasting and pred_range 6 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-vit-24h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model vit, direct forecasting and pred_range 24 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-vit-72h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model vit, direct forecasting and pred_range 72 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-vit-120h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model vit, direct forecasting and pred_range 120 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    },
+    {
+      "id": "forecast-era5-vit-240h",
+      "task_prompt": "Run experiments/forecasting/era5_era5_deep_learning.py with model vit, direct forecasting and pred_range 240 on WeatherBench ERA5 5.625 deg (download utility: src/climate_learn/data/download.py).",
+      "results": [
+        "T2M latitude-weighted RMSE"
+      ]
+    }
+  ]
+}

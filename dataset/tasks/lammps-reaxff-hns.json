@@ -1,0 +1,46 @@
+{
+  "source_id": "lammps-reaxff-hns",
+  "repo": {
+    "path": "../OSS/lammps",
+    "commit": "9f06a79b033159c606ca880ee63f0ec82b37dc3a",
+    "directory": "examples/reaxff/HNS"
+  },
+  "domain": "molecular dynamics",
+  "language": "C++",
+  "support_level": "readme_only",
+  "policy": {
+    "compute": "cpu",
+    "platform": "CPU only, no GPU: one node of Slurm partition standard.",
+    "inputs": {},
+    "forbidden": "published LAMMPS benchmark results or logs (including the log.* files under examples/), or an installed LAMMPS module or binary (build lmp from the repository)",
+    "wall_clock_cap": "30 minutes"
+  },
+  "env_groups": [
+    {
+      "id": "lammps-env",
+      "tasks": [
+        "hns-16812"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "hns-16812",
+      "task_prompt": "Build `lmp` from the repository with the REAXFF, QEQ and KOKKOS (OpenMP backend, double precision) packages and run `lmp -k on t 1 -sf kk -pk kokkos neigh half neigh/qeq full newton on -v x 16 -v y 8 -v z 12 -in examples/reaxff/HNS/in.reaxff.hns -nocite` under MPI on one node (466,944 atoms, 100 steps). Report the thermo row of step 0.",
+      "results": [
+        "PotEng",
+        "E_vdwl",
+        "E_coul"
+      ],
+      "outputs": {
+        "build.log": "the build's stdout and stderr",
+        "run.log": "the run's stdout and stderr",
+        "log.lammps": "the LAMMPS log (-log)"
+      },
+      "log_lines": {
+        "exit status: ": "the run's exit code, as the last line of run.log",
+        "Loop time of ": "the loop time, ranks, steps and atom count"
+      }
+    }
+  ]
+}

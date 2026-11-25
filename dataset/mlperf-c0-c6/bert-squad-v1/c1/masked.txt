@@ -1,0 +1,9 @@
+Condition: C1
+Pinned source: 3fbc329939999c13d0a7b5e67fb2092287e06047
+
+Masked or removed:
+- language/bert/Dockerfile: removed.
+- language/bert/Makefile: Docker detection, image construction, base-image tag, and launch targets removed.
+- language/bert/README.md: Docker and MLCFlow setup instructions removed.
+
+Published README F1 rows are visible in this view.

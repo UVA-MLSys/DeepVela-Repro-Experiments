@@ -1,0 +1,25 @@
+rubric_id: gpu_used
+phase_id: environment
+claim: The model ran on a CUDA device, as the benchmark log records. The stock backend chooses cuda only if torch.cuda.is_available()
+  and otherwise runs on the CPU without a message.
+target: 3d-unet
+critical: true
+cache_conditions: []
+source_refs:
+- path: vision/medical_imaging/3d-unet-kits19/pytorch_SUT.py
+  sha256: 7173301932c4fe58be303de21564e36419825e75dbbbae0e072e716e0877299d
+  excerpt: '"cuda:0" if torch.cuda.is_available() else "cpu")'
+prerequisites:
+- kits19_raw_data_available
+- model_available
+evidence_contract:
+  artifacts: []
+checker:
+  kind: builtin.landmark
+  args:
+    files:
+    - '**/3d-unet/**/*.log'
+    - '**/3d-unet/**/*.out'
+    pattern: 'pytorch device: cuda'
+applicable: true
+pass_threshold: 1.0

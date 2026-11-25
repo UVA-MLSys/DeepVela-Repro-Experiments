@@ -1,0 +1,515 @@
+{
+ "description": "Each v5 run started from a read-only copy of one v4 run's finished workspace (reproduce.sh, plan.md, report.json, small 3d-unet/ outputs), placed at <v5_run>/ws/prior-artifacts. This file maps every v5 run to that v4 source run.",
+ "root": "../mlperf-c0-c6/runs",
+ "paths": "v5_run and v4_run are relative to root, which is relative to this repository's root (same convention as dataset/paper_runs.json). Each run directory holds launch.json, codex-home/sessions (agent session log, named in launch.json canonical_trace) and ws/ (agent workspace).",
+ "sources_of_truth": [
+  "3d-unet-kits19-v5/campaign.json",
+  "<v5_run>/ws/prior-artifacts/provenance.json (source_workspace, file hashes)"
+ ],
+ "runs": [
+  {
+   "condition": "C0",
+   "trial": 1,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c0/builder-skill-2026-11-19-13-31-44",
+   "v4_run": "3d-unet-kits19-v4/c0/builder-skill-2026-11-18-23-15-42",
+   "files": 272
+  },
+  {
+   "condition": "C0",
+   "trial": 1,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c0/plain-2026-11-19-13-31-31",
+   "v4_run": "3d-unet-kits19-v4/c0/plain-2026-11-18-18-52-21",
+   "files": 3881
+  },
+  {
+   "condition": "C0",
+   "trial": 1,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c0/skill-2026-11-19-13-31-42",
+   "v4_run": "3d-unet-kits19-v4/c0/skill-2026-11-18-23-15-41",
+   "files": 134
+  },
+  {
+   "condition": "C1",
+   "trial": 1,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c1/builder-skill-2026-11-19-13-31-52",
+   "v4_run": "3d-unet-kits19-v4/c1/builder-skill-2026-11-18-23-15-46",
+   "files": 232
+  },
+  {
+   "condition": "C1",
+   "trial": 1,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c1/plain-2026-11-19-13-31-47",
+   "v4_run": "3d-unet-kits19-v4/c1/plain-2026-11-18-18-52-28",
+   "files": 154
+  },
+  {
+   "condition": "C1",
+   "trial": 1,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c1/skill-2026-11-19-13-31-49",
+   "v4_run": "3d-unet-kits19-v4/c1/skill-2026-11-18-23-15-44",
+   "files": 151
+  },
+  {
+   "condition": "C2",
+   "trial": 1,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c2/builder-skill-2026-11-19-13-46-39",
+   "v4_run": "3d-unet-kits19-v4/c2/builder-skill-2026-11-18-23-15-49",
+   "files": 147
+  },
+  {
+   "condition": "C2",
+   "trial": 1,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c2/plain-2026-11-19-13-42-23",
+   "v4_run": "3d-unet-kits19-v4/c2/plain-2026-11-18-19-10-44",
+   "files": 36
+  },
+  {
+   "condition": "C2",
+   "trial": 1,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c2/skill-2026-11-19-13-45-57",
+   "v4_run": "3d-unet-kits19-v4/c2/skill-2026-11-18-23-15-48",
+   "files": 265
+  },
+  {
+   "condition": "C3",
+   "trial": 1,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c3/builder-skill-2026-11-19-13-53-21",
+   "v4_run": "3d-unet-kits19-v4/c3/builder-skill-2026-11-18-23-36-46",
+   "files": 233
+  },
+  {
+   "condition": "C3",
+   "trial": 1,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c3/plain-2026-11-19-13-49-23",
+   "v4_run": "3d-unet-kits19-v4/c3/plain-2026-11-18-19-21-12",
+   "files": 37
+  },
+  {
+   "condition": "C3",
+   "trial": 1,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c3/skill-2026-11-19-13-53-08",
+   "v4_run": "3d-unet-kits19-v4/c3/skill-2026-11-18-23-34-03",
+   "files": 134
+  },
+  {
+   "condition": "C4",
+   "trial": 1,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c4/builder-skill-2026-11-19-14-01-36",
+   "v4_run": "3d-unet-kits19-v4/c4/builder-skill-2026-11-18-23-42-08",
+   "files": 270
+  },
+  {
+   "condition": "C4",
+   "trial": 1,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c4/plain-2026-11-19-13-55-19",
+   "v4_run": "3d-unet-kits19-v4/c4/plain-2026-11-18-22-00-45",
+   "files": 127
+  },
+  {
+   "condition": "C4",
+   "trial": 1,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c4/skill-2026-11-19-14-01-26",
+   "v4_run": "3d-unet-kits19-v4/c4/skill-2026-11-18-23-39-19",
+   "files": 177
+  },
+  {
+   "condition": "C5",
+   "trial": 1,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c5/builder-skill-2026-11-19-14-11-20",
+   "v4_run": "3d-unet-kits19-v4/c5/builder-skill-2026-11-18-23-56-43",
+   "files": 71
+  },
+  {
+   "condition": "C5",
+   "trial": 1,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c5/plain-2026-11-19-14-08-30",
+   "v4_run": "3d-unet-kits19-v4/c5/plain-2026-11-18-23-42-15",
+   "files": 36
+  },
+  {
+   "condition": "C5",
+   "trial": 1,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c5/skill-2026-11-19-14-11-13",
+   "v4_run": "3d-unet-kits19-v4/c5/skill-2026-11-18-23-50-09",
+   "files": 152
+  },
+  {
+   "condition": "C6",
+   "trial": 1,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c6/builder-skill-2026-11-19-14-17-52",
+   "v4_run": "3d-unet-kits19-v4/c6/builder-skill-2026-11-19-00-06-20",
+   "files": 144
+  },
+  {
+   "condition": "C6",
+   "trial": 1,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c6/plain-2026-11-19-14-11-50",
+   "v4_run": "3d-unet-kits19-v4/c6/plain-2026-11-18-23-59-28",
+   "files": 137
+  },
+  {
+   "condition": "C6",
+   "trial": 1,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c6/skill-2026-11-19-14-15-28",
+   "v4_run": "3d-unet-kits19-v4/c6/skill-2026-11-19-00-04-39",
+   "files": 81
+  },
+  {
+   "condition": "C0",
+   "trial": 2,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c0/builder-skill-2026-11-19-14-28-27",
+   "v4_run": "3d-unet-kits19-v4/c0/builder-skill-2026-11-19-00-17-46",
+   "files": 272
+  },
+  {
+   "condition": "C0",
+   "trial": 2,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c0/plain-2026-11-19-14-21-31",
+   "v4_run": "3d-unet-kits19-v4/c0/plain-2026-11-19-00-06-25",
+   "files": 40
+  },
+  {
+   "condition": "C0",
+   "trial": 2,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c0/skill-2026-11-19-14-25-32",
+   "v4_run": "3d-unet-kits19-v4/c0/skill-2026-11-19-00-11-46",
+   "files": 267
+  },
+  {
+   "condition": "C1",
+   "trial": 2,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c1/builder-skill-2026-11-19-14-36-15",
+   "v4_run": "3d-unet-kits19-v4/c1/builder-skill-2026-11-19-00-31-41",
+   "files": 266
+  },
+  {
+   "condition": "C1",
+   "trial": 2,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c1/plain-2026-11-19-14-30-07",
+   "v4_run": "3d-unet-kits19-v4/c1/plain-2026-11-19-00-22-15",
+   "files": 35
+  },
+  {
+   "condition": "C1",
+   "trial": 2,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c1/skill-2026-11-19-14-35-31",
+   "v4_run": "3d-unet-kits19-v4/c1/skill-2026-11-19-00-30-44",
+   "files": 133
+  },
+  {
+   "condition": "C2",
+   "trial": 2,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c2/builder-skill-2026-11-19-14-42-17",
+   "v4_run": "3d-unet-kits19-v4/c2/builder-skill-2026-11-19-00-38-19",
+   "files": 75
+  },
+  {
+   "condition": "C2",
+   "trial": 2,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c2/plain-2026-11-19-14-36-42",
+   "v4_run": "3d-unet-kits19-v4/c2/plain-2026-11-19-00-32-22",
+   "files": 33
+  },
+  {
+   "condition": "C2",
+   "trial": 2,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c2/skill-2026-11-19-14-41-54",
+   "v4_run": "3d-unet-kits19-v4/c2/skill-2026-11-19-00-34-05",
+   "files": 384
+  },
+  {
+   "condition": "C3",
+   "trial": 2,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c3/builder-skill-2026-11-19-14-50-07",
+   "v4_run": "3d-unet-kits19-v4/c3/builder-skill-2026-11-19-00-49-34",
+   "files": 43
+  },
+  {
+   "condition": "C3",
+   "trial": 2,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c3/plain-2026-11-19-14-48-01",
+   "v4_run": "3d-unet-kits19-v4/c3/plain-2026-11-19-00-40-17",
+   "files": 139
+  },
+  {
+   "condition": "C3",
+   "trial": 2,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c3/skill-2026-11-19-14-48-48",
+   "v4_run": "3d-unet-kits19-v4/c3/skill-2026-11-19-00-48-05",
+   "files": 44
+  },
+  {
+   "condition": "C4",
+   "trial": 2,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c4/builder-skill-2026-11-19-15-03-25",
+   "v4_run": "3d-unet-kits19-v4/c4/builder-skill-2026-11-19-01-06-44",
+   "files": 143
+  },
+  {
+   "condition": "C4",
+   "trial": 2,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c4/plain-2026-11-19-14-56-25",
+   "v4_run": "3d-unet-kits19-v4/c4/plain-2026-11-19-00-59-11",
+   "files": 38
+  },
+  {
+   "condition": "C4",
+   "trial": 2,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c4/skill-2026-11-19-14-57-05",
+   "v4_run": "3d-unet-kits19-v4/c4/skill-2026-11-19-01-02-18",
+   "files": 267
+  },
+  {
+   "condition": "C5",
+   "trial": 2,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c5/builder-skill-2026-11-19-15-09-38",
+   "v4_run": "3d-unet-kits19-v4/c5/builder-skill-2026-11-19-01-16-12",
+   "files": 39
+  },
+  {
+   "condition": "C5",
+   "trial": 2,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c5/plain-2026-11-19-15-03-52",
+   "v4_run": "3d-unet-kits19-v4/c5/plain-2026-11-19-01-14-07",
+   "files": 17
+  },
+  {
+   "condition": "C5",
+   "trial": 2,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c5/skill-2026-11-19-15-04-03",
+   "v4_run": "3d-unet-kits19-v4/c5/skill-2026-11-19-01-15-58",
+   "files": 133
+  },
+  {
+   "condition": "C6",
+   "trial": 2,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c6/builder-skill-2026-11-19-15-19-09",
+   "v4_run": "3d-unet-kits19-v4/c6/builder-skill-2026-11-19-01-32-49",
+   "files": 175
+  },
+  {
+   "condition": "C6",
+   "trial": 2,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c6/plain-2026-11-19-15-10-54",
+   "v4_run": "3d-unet-kits19-v4/c6/plain-2026-11-19-01-17-28",
+   "files": 39
+  },
+  {
+   "condition": "C6",
+   "trial": 2,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c6/skill-2026-11-19-15-14-15",
+   "v4_run": "3d-unet-kits19-v4/c6/skill-2026-11-19-01-23-35",
+   "files": 212
+  },
+  {
+   "condition": "C0",
+   "trial": 3,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c0/builder-skill-2026-11-19-15-25-55",
+   "v4_run": "3d-unet-kits19-v4/c0/builder-skill-2026-11-19-01-38-16",
+   "files": 139
+  },
+  {
+   "condition": "C0",
+   "trial": 3,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c0/plain-2026-11-19-15-22-22",
+   "v4_run": "3d-unet-kits19-v4/c0/plain-2026-11-19-01-36-39",
+   "files": 130
+  },
+  {
+   "condition": "C0",
+   "trial": 3,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c0/skill-2026-11-19-15-23-48",
+   "v4_run": "3d-unet-kits19-v4/c0/skill-2026-11-19-01-37-11",
+   "files": 47
+  },
+  {
+   "condition": "C1",
+   "trial": 3,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c1/builder-skill-2026-11-19-15-33-57",
+   "v4_run": "3d-unet-kits19-v4/c1/builder-skill-2026-11-19-01-49-17",
+   "files": 141
+  },
+  {
+   "condition": "C1",
+   "trial": 3,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c1/plain-2026-11-19-15-27-21",
+   "v4_run": "3d-unet-kits19-v4/c1/plain-2026-11-19-01-38-53",
+   "files": 133
+  },
+  {
+   "condition": "C1",
+   "trial": 3,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c1/skill-2026-11-19-15-33-33",
+   "v4_run": "3d-unet-kits19-v4/c1/skill-2026-11-19-01-44-30",
+   "files": 265
+  },
+  {
+   "condition": "C2",
+   "trial": 3,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c2/builder-skill-2026-11-19-15-43-02",
+   "v4_run": "3d-unet-kits19-v4/c2/builder-skill-2026-11-19-01-55-45",
+   "files": 138
+  },
+  {
+   "condition": "C2",
+   "trial": 3,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c2/plain-2026-11-19-15-41-52",
+   "v4_run": "3d-unet-kits19-v4/c2/plain-2026-11-19-01-55-18",
+   "files": 131
+  },
+  {
+   "condition": "C2",
+   "trial": 3,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c2/skill-2026-11-19-15-42-40",
+   "v4_run": "3d-unet-kits19-v4/c2/skill-2026-11-19-12-32-17",
+   "files": 67
+  },
+  {
+   "condition": "C3",
+   "trial": 3,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c3/builder-skill-2026-11-19-15-53-44",
+   "v4_run": "3d-unet-kits19-v4/c3/builder-skill-2026-11-19-02-11-47",
+   "files": 274
+  },
+  {
+   "condition": "C3",
+   "trial": 3,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c3/plain-2026-11-19-15-44-15",
+   "v4_run": "3d-unet-kits19-v4/c3/plain-2026-11-19-02-04-40",
+   "files": 35
+  },
+  {
+   "condition": "C3",
+   "trial": 3,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c3/skill-2026-11-19-15-50-17",
+   "v4_run": "3d-unet-kits19-v4/c3/skill-2026-11-19-02-11-36",
+   "files": 143
+  },
+  {
+   "condition": "C4",
+   "trial": 3,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c4/builder-skill-2026-11-19-16-00-44",
+   "v4_run": "3d-unet-kits19-v4/c4/builder-skill-2026-11-19-02-22-35",
+   "files": 138
+  },
+  {
+   "condition": "C4",
+   "trial": 3,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c4/plain-2026-11-19-15-54-34",
+   "v4_run": "3d-unet-kits19-v4/c4/plain-2026-11-19-02-15-58",
+   "files": 133
+  },
+  {
+   "condition": "C4",
+   "trial": 3,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c4/skill-2026-11-19-15-55-12",
+   "v4_run": "3d-unet-kits19-v4/c4/skill-2026-11-19-02-18-13",
+   "files": 238
+  },
+  {
+   "condition": "C5",
+   "trial": 3,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c5/builder-skill-2026-11-19-16-08-56",
+   "v4_run": "3d-unet-kits19-v4/c5/builder-skill-2026-11-19-02-33-19",
+   "files": 268
+  },
+  {
+   "condition": "C5",
+   "trial": 3,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c5/plain-2026-11-19-16-01-37",
+   "v4_run": "3d-unet-kits19-v4/c5/plain-2026-11-19-02-24-19",
+   "files": 128
+  },
+  {
+   "condition": "C5",
+   "trial": 3,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c5/skill-2026-11-19-16-08-03",
+   "v4_run": "3d-unet-kits19-v4/c5/skill-2026-11-19-02-31-30",
+   "files": 73
+  },
+  {
+   "condition": "C6",
+   "trial": 3,
+   "arm": "builder-skill",
+   "v5_run": "3d-unet-kits19-v5/c6/builder-skill-2026-11-19-16-16-53",
+   "v4_run": "3d-unet-kits19-v4/c6/builder-skill-2026-11-19-02-42-09",
+   "files": 43
+  },
+  {
+   "condition": "C6",
+   "trial": 3,
+   "arm": "plain",
+   "v5_run": "3d-unet-kits19-v5/c6/plain-2026-11-19-16-10-00",
+   "v4_run": "3d-unet-kits19-v4/c6/plain-2026-11-19-02-39-21",
+   "files": 42
+  },
+  {
+   "condition": "C6",
+   "trial": 3,
+   "arm": "skill",
+   "v5_run": "3d-unet-kits19-v5/c6/skill-2026-11-19-16-12-17",
+   "v4_run": "3d-unet-kits19-v4/c6/skill-2026-11-19-02-39-58",
+   "files": 394
+  }
+ ]
+}

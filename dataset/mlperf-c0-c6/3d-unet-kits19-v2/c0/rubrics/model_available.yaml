@@ -1,0 +1,20 @@
+rubric_id: model_available
+phase_id: inputs
+claim: The 3D-UNet fp32 PyTorch model file (3dunet_kits19_pytorch.ptc) is present in the input directory.
+target: null
+critical: true
+cache_conditions:
+- warm_raw_inputs_v1
+source_refs:
+- path: vision/medical_imaging/3d-unet-kits19/Makefile
+  sha256: 98f67bb73e2f696afd133172f73c0a805098e463aa72c6ea361a95936bf474c5
+  excerpt: ZENODO_PYTORCH := https://zenodo.org/record/5597155/files/3dunet_kits19_pytorch.ptc?download=1
+prerequisites: []
+evidence_contract:
+  artifacts: []
+checker:
+  kind: builtin.artifact_exists
+  args:
+    path_from: manifest.inputs.model_file
+applicable: true
+pass_threshold: 1.0

@@ -1,0 +1,5 @@
+activity,definition,decision_test,counts
+Reproduction,"Creating, modifying, or running the deliverable reproduce.sh and the reference steps it runs.","Use for a failure while creating or modifying reproduce.sh, in a reference preparation, execution, or evaluation step that it runs, or in a bounded preflight run of that script.",yes
+Inspection,"Reading, probing, searching, or querying the environment or supplied materials.","Use for probes, reads, searches, environment queries, and reading skill files that are separate from reproduce.sh.",no
+Checking,"Running a separate checker, validator, or gate script.","Use when the failed call is in a checker, validator, or gate script the agent wrote, rather than in reproduce.sh or a reference step it runs.",no
+Reporting,"Recording plans, reports, evidence, or profiling bookkeeping.","Use for plans, reports, receipts, evidence, and profiling bookkeeping.",no

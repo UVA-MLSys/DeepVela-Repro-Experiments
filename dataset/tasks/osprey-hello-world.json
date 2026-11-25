@@ -1,0 +1,50 @@
+{
+  "source_id": "osprey-hello-world",
+  "repo": {
+    "path": "../OSS/osprey",
+    "commit": "3e99f0c80f9215edc780096afea262770d5eb000"
+  },
+  "domain": "agentic control systems",
+  "language": "Python",
+  "support_level": "readme_only",
+  "policy": {
+    "compute": "slurm",
+    "platform": "one NVIDIA A100 80GB GPU per run.",
+    "inputs": {
+      "MODEL_CACHE": {
+        "path": ".cache/huggingface",
+        "holds": "Hugging Face model snapshots that can be served locally"
+      }
+    },
+    "forbidden": "Anthropic or any other hosted model API, and the published OSPREY benchmark results (docs/source/_static/benchmark-dashboard.html)",
+    "wall_clock_cap": "2 hours"
+  },
+  "env_groups": [
+    {
+      "id": "osprey-env",
+      "tasks": [
+        "hello-world"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "hello-world",
+      "task_prompt": "Follow steps 1, 3, 4, 5 and 6 of docs/source/getting-started/hello-world-tutorial.rst, with the agent's model served by vLLM from a model in MODEL_CACHE: run `osprey init my-first-agent --preset hello-world` and `osprey build`, then from the built deployment run `osprey query --json` once with the step 5 prompt (read channel SR:BEAM:CURRENT) and once with the step 6 prompt (set SR:MAG:QF:01:CURRENT:SP to 150).",
+      "results": [
+        "read_tool",
+        "read_value",
+        "write_outcome"
+      ],
+      "outputs": {
+        "build.log": "the stdout and stderr of `osprey build`",
+        "serve.log": "the vLLM server's stdout and stderr",
+        "read.json": "the --json output of the read query",
+        "write.json": "the --json output of the write query"
+      },
+      "log_lines": {
+        "exit status: ": "the exit code of each `osprey query`, one line per query"
+      }
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "source_id": "pdebench",
+  "repo": {
+    "path": "../OSS/PDEBench",
+    "commit": "4ff3e3a4aa1561721b5571fa3a048a0a463e0568"
+  },
+  "domain": "PDE surrogate modelling",
+  "language": "Python",
+  "support_level": "readme_only",
+  "policy": {
+    "compute": "slurm",
+    "platform": "one NVIDIA A100 80GB GPU per run.",
+    "inputs": {
+      "DATA_DIR": {
+        "path": ".cache/pdebench",
+        "holds": "1D_diff-sorp_NA_NA.h5, 2D_diff-react_NA_NA.h5, 2D_rdb_NA_NA.h5, downloaded from DaRUS doi:10.18419/darus-2986 and md5-checked against pdebench/data_download/pdebench_data_urls.csv"
+      }
+    },
+    "forbidden": "the PDEBench paper's result tables, the pretrained models of DaRUS doi:10.18419/darus-2987, or other published PDEBench results",
+    "wall_clock_cap": "24 hours"
+  },
+  "env_groups": [
+    {
+      "id": "pdebench-env",
+      "tasks": [
+        "diff-sorp-fno",
+        "diff-sorp-unet",
+        "diff-sorp-pinn",
+        "diff-react-fno",
+        "diff-react-unet",
+        "diff-react-pinn",
+        "swe-fno",
+        "swe-unet",
+        "swe-pinn"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "diff-sorp-fno",
+      "task_prompt": "Train and evaluate with the config pdebench/models/config/args/config_diff-sorp.yaml and the overrides `model_name=FNO` on 1D_diff-sorp_NA_NA.h5; pdebench/models/metrics.py computes the RMSE.",
+      "results": [
+        "RMSE"
+      ],
+      "outputs": {
+        "<model_name>.pt": "the trained model checkpoint train.py saves",
+        "<model_name>.pickle": "the errors train.py pickles after evaluation",
+        "Results.csv": "the CSV pdebench/models/analyse_result_forward.py writes from that pickle"
+      }
+    },
+    {
+      "id": "diff-sorp-unet",
+      "task_prompt": "Train and evaluate with the config pdebench/models/config/args/config_diff-sorp.yaml and the overrides `model_name=Unet ar_mode=True pushforward=True unroll_step=20` on 1D_diff-sorp_NA_NA.h5; pdebench/models/metrics.py computes the RMSE.",
+      "results": [
+        "RMSE"
+      ],
+      "outputs": {
+        "<model_name>.pt": "the trained model checkpoint train.py saves",
+        "<model_name>.pickle": "the errors train.py pickles after evaluation",
+        "Results.csv": "the CSV pdebench/models/analyse_result_forward.py writes from that pickle"
+      }
+    },
+    {
+      "id": "diff-sorp-pinn",
+      "task_prompt": "Train and evaluate with the config pdebench/models/config/args/config_pinn_diff-sorp.yaml and the overrides `model_name=PINN` on 1D_diff-sorp_NA_NA.h5; pdebench/models/metrics.py computes the RMSE.",
+      "results": [
+        "RMSE"
+      ],
+      "outputs": {
+        "<model_name>.pt": "the trained model checkpoint train.py saves",
+        "<model_name>.pickle": "the errors train.py pickles after evaluation",
+        "Results.csv": "the CSV pdebench/models/analyse_result_forward.py writes from that pickle"
+      }
+    },
+    {
+      "id": "diff-react-fno",
+      "task_prompt": "Train and evaluate with the config pdebench/models/config/args/config_diff-react.yaml and the overrides `model_name=FNO` on 2D_diff-react_NA_NA.h5; pdebench/models/metrics.py computes the RMSE.",
+      "results": [
+        "RMSE"
+      ],
+      "outputs": {
+        "<model_name>.pt": "the trained model checkpoint train.py saves",
+        "<model_name>.pickle": "the errors train.py pickles after evaluation",
+        "Results.csv": "the CSV pdebench/models/analyse_result_forward.py writes from that pickle"
+      }
+    },
+    {
+      "id": "diff-react-unet",
+      "task_prompt": "Train and evaluate with the config pdebench/models/config/args/config_diff-react.yaml and the overrides `model_name=Unet ar_mode=True pushforward=True unroll_step=20` on 2D_diff-react_NA_NA.h5; pdebench/models/metrics.py computes the RMSE.",
+      "results": [
+        "RMSE"
+      ],
+      "outputs": {
+        "<model_name>.pt": "the trained model checkpoint train.py saves",
+        "<model_name>.pickle": "the errors train.py pickles after evaluation",
+        "Results.csv": "the CSV pdebench/models/analyse_result_forward.py writes from that pickle"
+      }
+    },
+    {
+      "id": "diff-react-pinn",
+      "task_prompt": "Train and evaluate with the config pdebench/models/config/args/config_pinn_diff-react.yaml and the overrides `model_name=PINN` on 2D_diff-react_NA_NA.h5; pdebench/models/metrics.py computes the RMSE.",
+      "results": [
+        "RMSE"
+      ],
+      "outputs": {
+        "<model_name>.pt": "the trained model checkpoint train.py saves",
+        "<model_name>.pickle": "the errors train.py pickles after evaluation",
+        "Results.csv": "the CSV pdebench/models/analyse_result_forward.py writes from that pickle"
+      }
+    },
+    {
+      "id": "swe-fno",
+      "task_prompt": "Train and evaluate with the config pdebench/models/config/args/config_rdb.yaml and the overrides `model_name=FNO` on 2D_rdb_NA_NA.h5; pdebench/models/metrics.py computes the RMSE.",
+      "results": [
+        "RMSE"
+      ],
+      "outputs": {
+        "<model_name>.pt": "the trained model checkpoint train.py saves",
+        "<model_name>.pickle": "the errors train.py pickles after evaluation",
+        "Results.csv": "the CSV pdebench/models/analyse_result_forward.py writes from that pickle"
+      }
+    },
+    {
+      "id": "swe-unet",
+      "task_prompt": "Train and evaluate with the config pdebench/models/config/args/config_rdb.yaml and the overrides `model_name=Unet ar_mode=True pushforward=True unroll_step=20` on 2D_rdb_NA_NA.h5; pdebench/models/metrics.py computes the RMSE.",
+      "results": [
+        "RMSE"
+      ],
+      "outputs": {
+        "<model_name>.pt": "the trained model checkpoint train.py saves",
+        "<model_name>.pickle": "the errors train.py pickles after evaluation",
+        "Results.csv": "the CSV pdebench/models/analyse_result_forward.py writes from that pickle"
+      }
+    },
+    {
+      "id": "swe-pinn",
+      "task_prompt": "Train and evaluate with the config pdebench/models/config/args/config_pinn_swe2d.yaml and the overrides `model_name=PINN` on 2D_rdb_NA_NA.h5; pdebench/models/metrics.py computes the RMSE.",
+      "results": [
+        "RMSE"
+      ],
+      "outputs": {
+        "<model_name>.pt": "the trained model checkpoint train.py saves",
+        "<model_name>.pickle": "the errors train.py pickles after evaluation",
+        "Results.csv": "the CSV pdebench/models/analyse_result_forward.py writes from that pickle"
+      }
+    }
+  ]
+}

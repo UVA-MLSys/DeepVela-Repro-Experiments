@@ -1,0 +1,1308 @@
+{
+ "study_version": "3d-unet-kits19-v2",
+ "source_version": "3d-unet-kits19-v5",
+ "runs": [
+  {
+   "condition": "C0",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c0/builder-skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c0/builder-skill-2026-11-19-13-31-44",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c0/builder-skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c0/builder-skill-2026-11-19-14-28-27",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c0/builder-skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c0/builder-skill-2026-11-19-15-25-55",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c0/plain-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c0/plain-2026-11-19-13-31-31",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c0/plain-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c0/plain-2026-11-19-14-21-31",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c0/plain-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c0/plain-2026-11-19-15-22-22",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c0/skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c0/skill-2026-11-19-13-31-42",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86167",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c0/skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c0/skill-2026-11-19-14-25-32",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C0",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c0/skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c0/skill-2026-11-19-15-23-48",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c1/builder-skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c1/builder-skill-2026-11-19-13-31-52",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c1/builder-skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c1/builder-skill-2026-11-19-14-36-15",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c1/builder-skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c1/builder-skill-2026-11-19-15-33-57",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c1/plain-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c1/plain-2026-11-19-13-31-47",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c1/plain-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c1/plain-2026-11-19-14-30-07",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c1/plain-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c1/plain-2026-11-19-15-27-21",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c1/skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c1/skill-2026-11-19-13-31-49",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c1/skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c1/skill-2026-11-19-14-35-31",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C1",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c1/skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c1/skill-2026-11-19-15-33-33",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c2/builder-skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c2/builder-skill-2026-11-19-13-46-39",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c2/builder-skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c2/builder-skill-2026-11-19-14-42-17",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c2/builder-skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c2/builder-skill-2026-11-19-15-43-02",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c2/plain-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c2/plain-2026-11-19-13-42-23",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c2/plain-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c2/plain-2026-11-19-14-36-42",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c2/plain-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c2/plain-2026-11-19-15-41-52",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c2/skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c2/skill-2026-11-19-13-45-57",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c2/skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c2/skill-2026-11-19-14-41-54",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C2",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c2/skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c2/skill-2026-11-19-15-42-40",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86167",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c3/builder-skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c3/builder-skill-2026-11-19-13-53-21",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c3/builder-skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c3/builder-skill-2026-11-19-14-50-07",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c3/builder-skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c3/builder-skill-2026-11-19-15-53-44",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c3/plain-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c3/plain-2026-11-19-13-49-23",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c3/plain-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c3/plain-2026-11-19-14-48-01",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86167",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c3/plain-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c3/plain-2026-11-19-15-44-15",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c3/skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c3/skill-2026-11-19-13-53-08",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c3/skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c3/skill-2026-11-19-14-48-48",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C3",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c3/skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c3/skill-2026-11-19-15-50-17",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c4/builder-skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c4/builder-skill-2026-11-19-14-01-36",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c4/builder-skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c4/builder-skill-2026-11-19-15-03-25",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c4/builder-skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c4/builder-skill-2026-11-19-16-00-44",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c4/plain-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c4/plain-2026-11-19-13-55-19",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86167",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c4/plain-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c4/plain-2026-11-19-14-56-25",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c4/plain-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c4/plain-2026-11-19-15-54-34",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86167",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c4/skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c4/skill-2026-11-19-14-01-26",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86167",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c4/skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c4/skill-2026-11-19-14-57-05",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C4",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c4/skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c4/skill-2026-11-19-15-55-12",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c5/builder-skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c5/builder-skill-2026-11-19-14-11-20",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86167",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c5/builder-skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c5/builder-skill-2026-11-19-15-09-38",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c5/builder-skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c5/builder-skill-2026-11-19-16-08-56",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86167",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c5/plain-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c5/plain-2026-11-19-14-08-30",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c5/plain-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c5/plain-2026-11-19-15-03-52",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c5/plain-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c5/plain-2026-11-19-16-01-37",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c5/skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c5/skill-2026-11-19-14-11-13",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c5/skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c5/skill-2026-11-19-15-04-03",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C5",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c5/skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c5/skill-2026-11-19-16-08-03",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86167",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "builder-skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c6/builder-skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c6/builder-skill-2026-11-19-14-17-52",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "builder-skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c6/builder-skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c6/builder-skill-2026-11-19-15-19-09",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "builder-skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c6/builder-skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c6/builder-skill-2026-11-19-16-16-53",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "plain",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c6/plain-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c6/plain-2026-11-19-14-11-50",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "plain",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c6/plain-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c6/plain-2026-11-19-15-10-54",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86173",
+     "kidney": "0.9347",
+     "tumor": "0.7888"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "plain",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c6/plain-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c6/plain-2026-11-19-16-10-00",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "skill",
+   "trial": 1,
+   "path": "run_outputs/3d-unet-kits19-v2/c6/skill-trial-1",
+   "source_run": "runs/3d-unet-kits19-v5/c6/skill-2026-11-19-14-15-28",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "skill",
+   "trial": 2,
+   "path": "run_outputs/3d-unet-kits19-v2/c6/skill-trial-2",
+   "source_run": "runs/3d-unet-kits19-v5/c6/skill-2026-11-19-15-14-15",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  },
+  {
+   "condition": "C6",
+   "arm": "skill",
+   "trial": 3,
+   "path": "run_outputs/3d-unet-kits19-v2/c6/skill-trial-3",
+   "source_run": "runs/3d-unet-kits19-v5/c6/skill-2026-11-19-16-12-17",
+   "report": {
+    "3d-unet": {
+     "mean": "0.86168",
+     "kidney": "0.9347",
+     "tumor": "0.7887"
+    }
+   },
+   "files": [
+    "reproduce.sh",
+    "plan.md",
+    "report.json",
+    "evaluation.json",
+    "checks.json"
+   ]
+  }
+ ]
+}

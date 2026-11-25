@@ -1,0 +1,25 @@
+rubric_id: dependencies_import
+phase_id: environment
+claim: 'The benchmark''s dependencies (torch, transformers, LoadGen, DeepLearningExamples) imported and the SUT started: run.py
+  loaded the model and reached the LoadGen test.'
+target: bert-squad
+critical: true
+cache_conditions: []
+source_refs:
+- path: language/bert/pytorch_SUT.py
+  sha256: da6a3c7db177cbf4dc49bcdcc25895638d712447c88d9ce763a481a140b08da6
+  excerpt: raise Exception("Error importing local modules")
+prerequisites:
+- squad_dataset_available
+- model_available
+evidence_contract:
+  artifacts: []
+checker:
+  kind: builtin.landmark
+  args:
+    files:
+    - '**/bert-squad/**/*.log'
+    - '**/bert-squad/**/*.out'
+    pattern: 'pytorch device: '
+applicable: true
+pass_threshold: 1.0

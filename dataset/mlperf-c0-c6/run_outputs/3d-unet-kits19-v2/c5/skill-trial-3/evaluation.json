@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "run_path": "3d-unet-kits19-v2/c5/skill-2026-11-19-16-08-03",
+  "profile_id": "reproduce",
+  "profile_version": 1,
+  "bundle_digest": "0fdeadf7a4f181c104bc18e50ea3e3f9ffe125d636c89135d6b8adab4c3b1a0a",
+  "evaluation_condition": {
+    "guidance_exposure": "phase_labels_only",
+    "cache_condition_id": "warm_raw_inputs_v1",
+    "suite_role": "development",
+    "model_id": "gpt-5.6-sol",
+    "authored_by": "claude-opus-5-5"
+  },
+  "method_invoked": true,
+  "method_access": {
+    "baseline-reproduce": "invoked"
+  },
+  "isolated": true,
+  "end_to_end_success": true,
+  "quality_result": null,
+  "phases": {
+    "inputs": {
+      "accuracy": 1.0,
+      "success": true,
+      "stable_pass_seconds": null,
+      "stable_pass_tokens": null,
+      "terminal_seconds": null,
+      "terminal_tokens": null
+    }
+  },
+  "targets": {
+    "3d-unet": {
+      "quality_result": {
+        "profile_id": "reproduce",
+        "display_label": "reproduce:mean",
+        "name": "mean",
+        "value": 0.86167,
+        "reference": 0.8617,
+        "passed": true
+      },
+      "phases": {
+        "environment": {
+          "accuracy": 1.0,
+          "success": true,
+          "stable_pass_seconds": null,
+          "stable_pass_tokens": null,
+          "terminal_seconds": null,
+          "terminal_tokens": null
+        },
+        "inputs": {
+          "accuracy": 1.0,
+          "success": true,
+          "stable_pass_seconds": null,
+          "stable_pass_tokens": null,
+          "terminal_seconds": null,
+          "terminal_tokens": null
+        },
+        "execution": {
+          "accuracy": 1.0,
+          "success": true,
+          "stable_pass_seconds": null,
+          "stable_pass_tokens": null,
+          "terminal_seconds": null,
+          "terminal_tokens": null
+        },
+        "result": {
+          "accuracy": 1.0,
+          "success": true,
+          "stable_pass_seconds": null,
+          "stable_pass_tokens": null,
+          "terminal_seconds": null,
+          "terminal_tokens": null
+        }
+      },
+      "success": true
+    }
+  },
+  "route_departures": null,
+  "target_success_rate": 1.0,
+  "not_applicable": [],
+  "disputed": [],
+  "token_count_quality": "measured",
+  "tokens": {
+    "input_tokens": 60916,
+    "cache_read_input_tokens": 2912896,
+    "output_tokens": 14575,
+    "tool_calls": 46,
+    "wall_seconds": 937
+  },
+  "monitor_violations": [],
+  "integrity_pass": true,
+  "historical_audit": false,
+  "human_interventions": 0,
+  "interventions_by_type": {},
+  "executions": 26,
+  "failed_executions": 0,
+  "answer_executions": 0
+}

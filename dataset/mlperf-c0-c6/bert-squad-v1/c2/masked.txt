@@ -1,0 +1,25 @@
+Condition: C2
+Pinned source: 3fbc329939999c13d0a7b5e67fb2092287e06047
+
+Removed or neutralized only for the input-presentation cut:
+- language/bert/create_squad_data.py: feature conversion and its window, span,
+  truncation, padding, segment, ordering, and maximum-context helpers.
+- language/bert/squad_QSL.py: feature construction and persistent feature-cache
+  production; its QSL lifecycle and supplied-record tensor interface remain.
+- language/bert/accuracy-squad.py: feature construction and cache production;
+  raw-log decoding uses supplied feature-record shape and the C0 decoder and
+  evaluator invocation remain.
+- language/bert/{README.md,Makefile,.gitignore}: selected feature constants,
+  cache-name metadata, fixed model path, and published score rows.
+- language/bert/{bert_tf_to_pytorch.py,onnxruntime_SUT.py,ray_SUT.py,tf_SUT.py,
+  tf_estimator_SUT.py,tf_freeze_bert.py}: retained C0 files with only selected
+  input-path and fixed-shape carriers neutralized; shape-dependent conversion,
+  compilation, and freezing raise MissingInputPresentationError.
+- language/bert/MLPerf INT8 BERT Finetuning.pdf: removed selected command metadata.
+- DeepLearningExamples-c2: only the named C2 feature carriers and their SQuAD
+  command/notebook/result spans; dle-mask.patch and dle-files.sha256 enumerate
+  the exact condition export.
+
+Retained evidence: the C0 SquadExample and InputFeatures field interfaces,
+read_squad_examples, QSL lifecycle, raw-log decoder, answer decoder,
+evaluate_v1.1.py, PyTorch SUT and LoadGen, model, vocab, and validation JSON.
