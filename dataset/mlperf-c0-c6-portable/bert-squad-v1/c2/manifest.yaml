@@ -31,9 +31,9 @@ targets:
 input_reuse_contract:
   cache_condition_id: warm_raw_inputs_v1
   allowed_cache_roots:
-  - '{{CACHE_ROOT}}/bert-squad/data'
-  - '{{CACHE_ROOT}}/bert-squad/model'
-  - '{{CACHE_ROOT}}/bert-squad/DeepLearningExamples-c2'
+  - '{{INPUT_ROOT}}/data'
+  - '{{INPUT_ROOT}}/model'
+  - '{{INPUT_ROOT}}/DeepLearningExamples'
   allowed_artifact_classes:
   - raw_dataset_download
   - model_checkpoint_download
@@ -51,8 +51,8 @@ authored_by:
   source_revision: 3fbc329939999c13d0a7b5e67fb2092287e06047
   reviewed_by: pending
 artifact_paths:
-  squad_dev_file: '{{CACHE_ROOT}}/bert-squad/data/dev-v1.1.json'
-  model_file: '{{CACHE_ROOT}}/bert-squad/model/model.pytorch'
+  squad_dev_file: '{{INPUT_ROOT}}/data/dev-v1.1.json'
+  model_file: '{{INPUT_ROOT}}/model/model.pytorch'
 forbidden_access:
 - evaluation-profiles/(?!reproduce/tasks/[^/]+/prompt\.md)
 - inference_results
@@ -60,5 +60,5 @@ forbidden_access:
 - runs\.csv
 - github\.com/mlcommons/inference
 - raw\.githubusercontent\.com/mlcommons/inference
-- '{{CACHE_ROOT}}/bert-squad/DeepLearningExamples(?![-\w])'
 - google-research/bert|huggingface|tensorflow/models|NVIDIA/DeepLearningExamples|site-packages|source cache|doc_stride
+input_set_sha256: 08e3ab43247e06cb24ff0a1afba8ef029c61adb21145c5f72b8d7b2e2bb12188

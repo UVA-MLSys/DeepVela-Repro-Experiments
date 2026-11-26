@@ -48,7 +48,7 @@ entry command, not the environment procedure: recovering that procedure is part 
 | `policy` | Source-level answers, given once for every task. A field left out has not been answered, and rendering stops naming it |
 | `policy.compute` | Default for `evaluation.prepare --compute`: `local`, `slurm`, `hybrid`, or `cpu` |
 | `policy.platform` | The hardware each run gets |
-| `policy.inputs` | Read-only input directories, with paths resolved as `repo.path` is, each with what it `holds`. A rendered prompt writes the cache directory as `{{CACHE_ROOT}}`; `{}` when the agent fetches every input |
+| `policy.inputs` | Read-only input directories, each with what it `holds`. With an input spec (`dataset/inputs/<source_id>.yaml`), a path is relative to the input set and the prompt names it under `{{INPUT_ROOT}}`; otherwise it resolves as `repo.path` does, and the prompt writes the cache directory as `{{CACHE_ROOT}}`; `{}` when the agent fetches every input |
 | `policy.forbidden` | Resources the run may not access, such as the task's published results |
 | `policy.wall_clock_cap` | The session's time limit, confirmed by the user at setup |
 | `task_prompt` | Entry instruction: the documented command, the dataset it runs over, and the evaluator |

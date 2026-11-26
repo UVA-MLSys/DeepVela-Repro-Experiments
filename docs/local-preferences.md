@@ -104,8 +104,9 @@ Choices that hold for every task of one study ([protocol](../skills/agent-evalua
 ## 5. Shared cache directory
 
 Every cache, dataset and package store is shared across runs and arms, never made per run: in the cache directory,
-the uv package cache at `uv/`, raw inputs under `<task_id>/`, and benchmark source clones under `sources/`. Task
-records name these paths as `.cache/...`. Each task prompt names `UV_CACHE_DIR` and the input paths. Only generated
+the uv package cache at `uv/`, and benchmark source clones under `sources/`. For a task with an input spec,
+`evaluation.warmup` keeps downloads in `store/` and builds the input sets in `inputs/`; other tasks keep raw inputs
+under `<task_id>/`, which their records name as `.cache/...`. Each task prompt names `UV_CACHE_DIR` and the input paths. Only generated
 artifacts (environments, preprocessed data, logs, outputs) are per run.
 
 The directory is set by `REPRODUCTION_CACHE_DIR`. It must not contain the repository, and must not overlap the bundle

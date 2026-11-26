@@ -28,9 +28,10 @@ from pathlib import Path
 
 import yaml
 
-from .cache import PLACEHOLDER, local_path, resolve_cache_root
+from .cache import PLACEHOLDERS, fill_text, input_set_dir, local_path, placeholder_values, resolve_cache_root
 from .bundle import bundle_digest, check_id, fill_cache_root, profile_dir as bundle_profile_dir, resolve_bundle_root, task_dir as bundle_task_dir
 from .task_prompt import load as load_record
+from .warmup import verify_set
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RUNS_ROOT_ENV_VAR = "REPRODUCTION_RUNS_DIR"
@@ -141,16 +142,30 @@ def install_skills(ws: Path, skills: list[str]) -> None:
                             ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "tests"))
 
 
-def access_scope(source_id: str | None, ws: Path, runs_root: Path, cache_root: Path, inputs: list[str]) -> dict | None:
+def check_input_set(directory: Path, manifest_sha256: str, source_id: str, task_id: str) -> None:
+    """Refuses a launch unless the task's input set is built and unchanged."""
+    command = f"python -m evaluation.warmup {source_id} --tasks {task_id.rsplit('/', 1)[-1]}"
+    if not directory.is_dir():
+        raise SystemExit(f"input set {directory} is missing: run `{command}` with --from <dir> or --download")
+    if problems := verify_set(directory, manifest_sha256):
+        raise SystemExit(f"input set {directory} does not verify: {'; '.join(problems)}. Move it away and run `{command} --build`")
+
+
+def access_scope(source_id: str | None, ws: Path, runs_root: Path, cache_root: Path, inputs: list[str],
+                 input_root: Path | None = None) -> dict | None:
     """What the scorer flags as outside the task's access rule: inside `guarded` (this repository, which holds the
     harness and other tasks' records; the runs root, which holds every other run; and the cache directory), the
     session may touch only `allowed` and below: its own workspace, the package cache, and the task's `inputs`.
     Everything else in the cache directory, such as other tasks' inputs, unmasked copies and source clones, is
-    flagged."""
+    flagged. A task with an input set may touch that whole set, `input_root`, which holds only its inputs."""
     if source_id is None:
         return None
-    return {"guarded": [str(REPO_ROOT), str(runs_root), str(cache_root)],
-            "allowed": [str(ws), str(cache_root / "uv"), *inputs], "cache_root": str(cache_root)}
+    scope = {"guarded": [str(REPO_ROOT), str(runs_root), str(cache_root)],
+             "allowed": [str(ws), str(cache_root / "uv"), *inputs], "cache_root": str(cache_root)}
+    if input_root is not None:
+        scope["allowed"].append(str(input_root))
+        scope["input_root"] = str(input_root)
+    return scope
 
 
 def task_inputs(manifest: dict) -> list[str]:
@@ -245,6 +260,9 @@ def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None,
     wording = compute_wording()
     manifest = yaml.safe_load((task_dir / "manifest.yaml").read_text()) or {}
     cache_root = resolve_cache_root()
+    input_set = manifest.get("input_set_sha256")
+    values = placeholder_values(str(cache_root), input_set)
+    input_root = input_set_dir(cache_root, input_set) if input_set else None
     manifest = fill_cache_root(manifest, str(cache_root))
     source_id = manifest.get("source_id")
     if compute is None:
@@ -267,19 +285,24 @@ def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None,
     check_disjoint({"cache directory": cache_root, "runs root": runs_root})
     if REPO_ROOT.is_relative_to(cache_root):
         raise SystemExit(f"cache directory {cache_root} contains the repository: choose another")
+    texts = {name: fill_text((task_dir / name).read_text(), values) for name in ("prompt.md", "tasks.json")}
+    if unfilled := [p for p in PLACEHOLDERS if any(p in t for t in texts.values())]:
+        raise SystemExit(f"{task_dir} uses {', '.join(unfilled)} but its manifest pins no input_set_sha256")
+    if input_root is not None:
+        check_input_set(input_root, input_set, source_id, task_id)
     root = runs_root / task_id / f"{arm}-{dt.datetime.now():%Y-%m-%d-%H-%M-%S}"
     ws = root / "ws"
     (ws / "repo").mkdir(parents=True)
     with tarfile.open(source) as archive:
         archive.extractall(ws / "repo", filter="data")
-    (ws / "tasks.json").write_text((task_dir / "tasks.json").read_text().replace(PLACEHOLDER, str(cache_root)))
+    (ws / "tasks.json").write_text(texts["tasks.json"])
     prior_artifacts = _stage_prior_artifacts(manifest, arm, trial, ws)
     (ws / ".claude").mkdir()
     (ws / ".claude" / "settings.json").write_text(json.dumps({"claudeMdExcludes": [str(USER_CLAUDE_MD)]}, indent=2) + "\n")
     skills = SKILL_FOR_ARM[arm]
     install_skills(ws, skills)
     shared = {"local": LOCAL_SHARED_ENVIRONMENT_INSTRUCTION, "cpu": CPU_SHARED_ENVIRONMENT_INSTRUCTION}.get(compute, SHARED_ENVIRONMENT_INSTRUCTION)
-    text = prompt.read_text().replace(PLACEHOLDER, str(cache_root)).rstrip("\n")
+    text = texts["prompt.md"].rstrip("\n")
     text += "\n\n" + wording[compute] + " " + REPRODUCE_REQUIREMENT[compute]
     text += "\n\n" + shared + " " + WORKSPACE_INSTRUCTION + "\n"
     if prior_artifacts:
@@ -314,8 +337,10 @@ def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None,
         "skill": skills[-1] if skills else None,
         "skills": skills, "compute": compute,
         "trial": trial, "prior_artifacts": prior_artifacts,
-        "cache_root": str(cache_root),
-        "access_scope": access_scope(source_id, ws, runs_root, cache_root, task_inputs(manifest)), "autonomy": autonomy, "model": model, "effort": effort,
+        "cache_root": str(cache_root), "input_set_sha256": input_set,
+        "input_root": str(input_root) if input_root else None,
+        "access_scope": access_scope(source_id, ws, runs_root, cache_root, task_inputs(manifest), input_root),
+        "autonomy": autonomy, "model": model, "effort": effort,
         "codex_home": str(codex_home), "codex_command": codex_command(root, ws, autonomy),
         "prepared": dt.datetime.now().astimezone().isoformat(timespec="seconds"),
     }

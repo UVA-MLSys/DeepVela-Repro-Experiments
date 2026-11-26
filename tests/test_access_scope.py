@@ -68,3 +68,13 @@ def test_cache_root_variable_is_expanded_and_its_assignment_passes():
         "/c/bert-squad/data/x", "/c/Papers/y"]
     assert hits({"command": "CACHE_ROOT=/c/Papers"}) == ["/c/Papers"]
     assert hits({"command": "ls /c"}) == ["/c"]
+
+
+def test_a_run_on_an_input_set_may_touch_that_set_only():
+    scope = access_scope("s", Path("/p/runs/t/skill-1/ws"), Path("/p/runs"), Path("/c"),
+                         ["/c/inputs/aaaa/data"], Path("/c/inputs/aaaa"))
+    hits = lambda command: outside_scope(json.dumps({"command": command}), scope)
+    assert hits("INPUT_ROOT=/c/inputs/aaaa; find $INPUT_ROOT/ -type f; ls /c/inputs/aaaa /c/uv ${INPUT_ROOT}/model") == []
+    for other in ("/c", "/c/inputs", "/c/inputs/bbbb/data", "/c/store/files/x", "/c/inputs/aaaa-copy"):
+        assert hits(f"ls {other}") == [other]
+    assert hits("cat $INPUT_ROOT/../bbbb/x") != []

@@ -38,7 +38,7 @@ answer.
 - Run every `evaluation.*` command from the repository root with `EVALUATION_BUNDLE_DIR`,
   `REPRODUCTION_RUNS_DIR` and `EVALUATION_JUDGE` set from those answers (sections 1, 2 and 4). The
   code has no default for any of them. When the cache directory answer (section 5) is not the default,
-  also set `REPRODUCTION_CACHE_DIR` for `evaluation.task_prompt` and `evaluation.prepare`.
+  also set `REPRODUCTION_CACHE_DIR` for `evaluation.task_prompt`, `evaluation.warmup` and `evaluation.prepare`.
 - For scheduler runs, ask the account, partition and GPU items only when the user says runs go through
   Slurm, and fill the Compute wordings from those answers.
 - Never write a deployment answer into this skill, its references, or the code.
@@ -136,7 +136,9 @@ newest `<arm>-*` run under `<runs root>/<task_id>/` and say which one. Do not as
      --out <task folder>/prompt.md
    ```
 
-   - The rendered prompt writes the cache directory as `{{CACHE_ROOT}}`. Write the same placeholder in the
+   - The rendered prompt writes machine paths as placeholders: `{{PACKAGE_CACHE}}`, and `{{INPUT_ROOT}}` for a
+     source with an input spec (`dataset/inputs/<source_id>.yaml`), else `{{CACHE_ROOT}}`. With an input spec,
+     put the task's set hash from the spec in the manifest as `input_set_sha256`. Write the same placeholders in the
      manifest's cache paths and `forbidden_access` patterns, quoted in YAML
      ([cache conditions](references/rubric-authoring.md#cold-and-warm-cache-conditions)).
    - The template, [assets/task_prompt.md](assets/task_prompt.md), is fixed, as CORE-Bench's
@@ -200,6 +202,11 @@ Prepare the study's arms ([local preferences](../../docs/local-preferences.md), 
   (`compute: local` or `hybrid`). Those run one after another.
 - Every arm's prompt tells the session to cancel or modify only work it started.
 - Compare session wall clock only for arms that ran one after the other.
+
+For a task whose manifest has `input_set_sha256`, first check its inputs with
+`python -m evaluation.warmup <source_id> --tasks <the task id's last part>`. It changes nothing. When something is
+missing, tell the user what it will download and ask before adding `--download`; use `--from <dir>` for files they
+already have. `prepare` refuses to launch until the set is built and verifies.
 
 To start an arm, run this yourself from the repository root:
 

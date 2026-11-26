@@ -18,14 +18,14 @@ import warnings
 from pathlib import Path
 from string import Template
 
+import yaml
 from pydantic import BaseModel, ConfigDict
 
-from .cache import PLACEHOLDER, REPO_ROOT, local_path, portable_path
+from .cache import INPUT_ROOT, PACKAGE_CACHE, PLACEHOLDER, REPO_ROOT, local_path, portable_path
 
 DATASET_DIR = REPO_ROOT / "dataset" / "tasks"
 TEMPLATE = REPO_ROOT / "skills" / "agent-evaluation-profile" / "assets" / "task_prompt.md"
-# docs/local-preferences.md, section 5: the shared uv cache in the cache directory.
-UV_CACHE = f"{PLACEHOLDER}/uv"
+INPUT_SPEC_DIR = REPO_ROOT / "dataset" / "inputs"
 # How the prompt names each tasks.json field; only the fields some selected task has are named.
 FIELDS = {"id": "`id`", "task_prompt": "`task_prompt` (what to run)", "results": "`results` (the values to report)",
           "outputs": "`outputs` (files to write to OUTPUT_DIR)",
@@ -36,7 +36,8 @@ FIELDS = {"id": "`id`", "task_prompt": "`task_prompt` (what to run)", "results":
 
 class Input(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    path: str  # `.cache/...` in the cache directory, otherwise relative to this repository's root
+    # With an input spec, relative to the input set; else `.cache/...` in the cache directory or relative to the repository
+    path: str
     holds: str | None = None
 
 
@@ -76,6 +77,15 @@ class Source(BaseModel):
 
 def load(source_id: str) -> Source:
     return Source.model_validate(json.loads((DATASET_DIR / f"{source_id}.json").read_text()))
+
+
+def input_set_paths(source_id: str) -> list[str]:
+    """The files and repositories every input set of the source holds, when it has an input spec."""
+    spec = INPUT_SPEC_DIR / f"{source_id}.yaml"
+    if not spec.is_file():
+        return []
+    content = yaml.safe_load(spec.read_text())
+    return [*content["files"], *content.get("repositories", {})]
 
 
 def _flat(text: str) -> str:
@@ -141,17 +151,23 @@ def render(source: Source, task_ids: list[str] | None = None) -> tuple[str, str]
     unknown = sorted(set(overrides) - set(policy.inputs or {}))
     if unknown:
         raise SystemExit(f"{source.source_id}: task input_path_overrides names unknown policy input(s) {', '.join(unknown)}")
-    paths = {name: portable_path(overrides.get(name, i.path)) for name, i in (policy.inputs or {}).items()}
-    # With several inputs, all in the cache directory, that directory is stated once.
-    root = PLACEHOLDER if len(paths) > 1 and all(p.startswith(PLACEHOLDER) for p in paths.values()) else None
-    uv_cache = UV_CACHE
-    if root:
-        paths = {name: p.replace(root, "$CACHE_ROOT", 1) for name, p in paths.items()}
-        uv_cache = uv_cache.replace(root, "$CACHE_ROOT", 1)
+    raw = {name: overrides.get(name, i.path) for name, i in (policy.inputs or {}).items()}
+    if input_spec := input_set_paths(source.source_id):
+        if outside := sorted(p for p in raw.values() if not any(s == p or s.startswith(p + "/") for s in input_spec)):
+            raise SystemExit(f"{source.source_id}: input path(s) {', '.join(outside)} are not in its input spec")
+        root = ("INPUT_ROOT", INPUT_ROOT)
+        paths = {name: f"$INPUT_ROOT/{p}" for name, p in raw.items()}
+    else:
+        paths = {name: portable_path(p) for name, p in raw.items()}
+        # With several inputs, all in the cache directory, that directory is stated once.
+        root = None
+        if len(paths) > 1 and all(p.startswith(PLACEHOLDER) for p in paths.values()):
+            root = ("CACHE_ROOT", PLACEHOLDER)
+            paths = {name: p.replace(PLACEHOLDER, "$CACHE_ROOT", 1) for name, p in paths.items()}
     python = source.model_extra.get("language") == "Python"  # the uv cache is named only where uv is used
-    uv_cache = f"\nShared package cache: UV_CACHE_DIR={uv_cache} (use no other cache location).\n" if python else ""
+    uv_cache = f"\nShared package cache: UV_CACHE_DIR={PACKAGE_CACHE} (use no other cache location).\n" if python else ""
     if policy.inputs:
-        inputs = "Inputs, read-only, do not modify:\n" + (f"CACHE_ROOT={root}\n" if root else "") + "\n".join(
+        inputs = "Inputs, read-only, do not modify:\n" + (f"{root[0]}={root[1]}\n" if root else "") + "\n".join(
             f"{name}={p}" for name, p in paths.items())
         held = [f"{name} holds {i.holds}." for name, i in policy.inputs.items() if i.holds]
         inputs += ("\n" + " ".join(held)) if held else ""

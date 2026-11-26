@@ -191,6 +191,9 @@ class EvaluationTask(BaseModel):
     # `evaluation.prepare` takes its `policy.compute` as the default Compute wording. Absent in bundles
     # authored before prompts were rendered.
     source_id: str | None = None
+    # The sha256 of the manifest of the input set the task runs on (dataset/inputs/<source_id>.yaml); `evaluation.prepare`
+    # verifies the set before a launch. Absent for a task without an input spec.
+    input_set_sha256: str | None = None
     # Earlier runs whose products `evaluation.prepare` stages read-only into ./prior-artifacts:
     # `trials.<n>.<arm>` names each source workspace. Absent when a task stages none.
     prior_artifacts: dict[str, Any] | None = None

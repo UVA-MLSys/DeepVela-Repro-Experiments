@@ -1,5 +1,6 @@
 """evaluation.prepare builds each arm's workspace from a sealed profile bundle."""
 
+import hashlib
 import io
 import json
 import re
@@ -11,7 +12,10 @@ import pytest
 import yaml
 
 from evaluation import prepare as prepare_module
+from evaluation import warmup as warmup_module
 from evaluation.bundle import EvaluationBundleError, fill_cache_root, seal
+from evaluation.launch import input_set_record
+from evaluation.scorer import IntegrityFailure, check_inputs_unchanged
 from evaluation.prepare import prepare
 from evaluation.task_prompt import load
 
@@ -116,6 +120,67 @@ def test_cache_directory_must_not_hold_the_runs_or_bundles(bundle, monkeypatch, 
     monkeypatch.setenv("REPRODUCTION_CACHE_DIR", str(tmp_path))
     with pytest.raises(SystemExit, match="overlap"):
         prepare("p", "t", "plain", compute="local")
+
+
+DEV = b'{"data": []}\n'
+SET_SHA = hashlib.sha256(warmup_module.manifest_text({"data/dev.json": (hashlib.sha256(DEV).hexdigest(), False)}).encode()).hexdigest()
+
+
+def make_set_task(task, monkeypatch, pinned=SET_SHA):
+    (task / "prompt.md").write_text(f"Reproduce commit {COMMIT}.\nINPUT_ROOT={{{{INPUT_ROOT}}}}\nSQUAD_DIR=$INPUT_ROOT/data\n"
+                                    "Shared package cache: UV_CACHE_DIR={{PACKAGE_CACHE}} (use no other cache location).\n")
+    (task / "manifest.yaml").write_text(
+        (task / "manifest.yaml").read_text() + "input_reuse_contract:\n  allowed_cache_roots: ['{{INPUT_ROOT}}/data']\n"
+        f"artifact_paths:\n  squad: '{{{{INPUT_ROOT}}}}/data/dev.json'\ninput_set_sha256: '{pinned}'\n")
+    monkeypatch.setattr(warmup_module, "load_spec", lambda source: {"sets": {"base": {"tasks": ["t"], "manifest_sha256": SET_SHA}}})
+
+
+def build_input_set(cache):
+    directory = cache / "inputs" / SET_SHA[:16]
+    (directory / "data").mkdir(parents=True)
+    (directory / "data/dev.json").write_bytes(DEV)
+    return directory
+
+
+def test_launch_needs_the_built_unchanged_input_set(bundle, monkeypatch, tmp_path):
+    make_set_task(bundle, monkeypatch)
+    seal("p", "t")
+    cache = tmp_path / "cache"
+    monkeypatch.setenv("REPRODUCTION_CACHE_DIR", str(cache))
+    with pytest.raises(SystemExit, match="is missing: run `python -m evaluation.warmup mlperf-language-bert --tasks t`"):
+        prepare("p", "t", "plain", compute="local")
+    directory = build_input_set(cache)
+    (directory / "data/dev.json").write_bytes(b"changed\n")
+    with pytest.raises(SystemExit, match="does not verify"):
+        prepare("p", "t", "plain", compute="local")
+    assert not (tmp_path / "runs").exists()  # a refused launch creates nothing
+    (directory / "data/dev.json").write_bytes(DEV)
+    (directory / "data/__pycache__").mkdir()
+    (directory / "data/__pycache__/a.cpython-310.pyc").write_bytes(b"bytecode")
+    launch = json.loads((prepare("p", "t", "plain", compute="local") / "launch.json").read_text())
+    text = Path(launch["prompt"]).read_text()
+    assert f"INPUT_ROOT={directory}\n" in text and f"UV_CACHE_DIR={cache}/uv " in text and "{{" not in text
+    assert launch["input_root"] == str(directory) and launch["input_set_sha256"] == SET_SHA
+    assert str(directory) in launch["access_scope"]["allowed"]
+
+
+def test_run_is_scored_only_if_freezing_found_its_input_set_unchanged(tmp_path):
+    directory = build_input_set(tmp_path)
+    launch = {"input_set_sha256": SET_SHA, "input_root": str(directory)}
+    with pytest.raises(IntegrityFailure, match="not checked"):
+        check_inputs_unchanged(launch)
+    check_inputs_unchanged(launch | input_set_record(launch))
+    (directory / "data/extra.txt").write_text("x")
+    with pytest.raises(IntegrityFailure, match="input set"):
+        check_inputs_unchanged(launch | input_set_record(launch))
+    check_inputs_unchanged({})  # a run without an input set
+    assert input_set_record({}) == {}
+
+
+def test_task_that_pins_another_input_set_does_not_seal(bundle, monkeypatch):
+    make_set_task(bundle, monkeypatch, pinned="0" * 64)
+    with pytest.raises(EvaluationBundleError, match="names input_set_sha256"):
+        seal("p", "t")
 
 
 def test_unanswered_compute_wording_refuses_launch(bundle):

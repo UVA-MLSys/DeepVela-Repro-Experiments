@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any
 
 from .transcript import find_sessions
+from .warmup import verify_set
 
 
 def _codex() -> str:
@@ -33,8 +34,9 @@ def _codex() -> str:
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-# Variables that locate the evaluation (bundles with rubrics and masks, other runs, the judge); a session never gets them.
-EVALUATION_VARIABLES = ("EVALUATION_", "REPRODUCTION_RUNS_DIR", "CODEX_BIN", "VIRTUAL_ENV")
+# Variables that locate the evaluation (bundles with rubrics and masks, other runs, the judge, the cache directory,
+# which holds every input set); a session never gets them.
+EVALUATION_VARIABLES = ("EVALUATION_", "REPRODUCTION_RUNS_DIR", "REPRODUCTION_CACHE_DIR", "CODEX_BIN", "VIRTUAL_ENV")
 
 
 def _session_environment(codex: str) -> dict[str, str]:
@@ -45,6 +47,13 @@ def _session_environment(codex: str) -> dict[str, str]:
             if p and not Path(p).resolve().is_relative_to(REPO_ROOT)]
     environment["PATH"] = os.pathsep.join([str(Path(codex).parent), *path])
     return environment
+
+
+def input_set_record(launch: dict[str, Any]) -> dict[str, Any]:
+    """What freezing records about the run's input set: why it no longer matches its manifest, empty when it does."""
+    if not launch.get("input_set_sha256"):
+        return {}
+    return {"input_set_problems": verify_set(Path(launch["input_root"]), launch["input_set_sha256"])}
 
 
 def _records(path: Path) -> list[dict[str, Any]]:
@@ -86,7 +95,10 @@ def _freeze(launch_path: Path, launch: dict[str, Any], codex: str | None, exit_c
         },
         "runtime": subprocess.check_output([codex, "--version"], text=True).strip() if harness == "codex" else "claude-code",
         "launcher_exit_code": exit_code,
+        **input_set_record(launch),
     })
+    if launch.get("input_set_problems"):
+        print(f"input set changed: {'; '.join(launch['input_set_problems'])}")
     with tempfile.NamedTemporaryFile("w", dir=launch_path.parent, delete=False) as handle:
         json.dump(launch, handle, indent=2)
         handle.write("\n")

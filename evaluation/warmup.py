@@ -28,10 +28,9 @@ from pathlib import Path
 
 import yaml
 
-from .cache import REPO_ROOT, resolve_cache_root
+from .cache import REPO_ROOT, SET_ID_LENGTH, input_set_dir as set_dir, resolve_cache_root
 
 SPEC_DIR = REPO_ROOT / "dataset" / "inputs"
-SET_ID_LENGTH = 16
 
 
 class WarmupError(SystemExit):
@@ -59,10 +58,6 @@ def manifest_text(entries: dict[str, tuple[str, bool]]) -> str:
 
 def set_id(manifest_sha256: str) -> str:
     return manifest_sha256[:SET_ID_LENGTH]
-
-
-def set_dir(cache: Path, manifest_sha256: str) -> Path:
-    return cache / "inputs" / set_id(manifest_sha256)
 
 
 def is_bytecode_cache(path: Path) -> bool:

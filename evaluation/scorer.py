@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import posixpath
 import re
 import shlex
 from dataclasses import replace
@@ -102,13 +103,16 @@ def outside_scope(target: str, scope: dict | None) -> list[str]:
     `access_scope`, written by `evaluation.prepare`); empty for a launch record without one."""
     if not scope:
         return []
+    for variable, key in (("INPUT_ROOT", "input_root"), ("CACHE_ROOT", "cache_root")):
+        if path := scope.get(key):  # `$INPUT_ROOT/x` and `$CACHE_ROOT/x` name paths in the cache
+            target = re.sub(rf"\$(?:{variable}\b|\{{{variable}\}})(?=/)", lambda _, path=path: path, target)
     if root := scope.get("cache_root"):  # absent in launch records that predate the cache setting
-        # `$CACHE_ROOT/x` names a path in the cache. Setting the variable to the directory reads nothing.
-        target = re.sub(r"\$(?:CACHE_ROOT\b|\{CACHE_ROOT\})(?=/)", lambda _: root, target)
+        # Setting CACHE_ROOT to the directory reads nothing.
         assigned = r"(CACHE_ROOT(?::[-=]|=)(?:\\?[\"'])?)" + re.escape(root) + r"/?(?![^\s\"'\\;&|})])"
         target = re.sub(assigned, r"\1", target)
     within = lambda path, root: path == root or path.startswith(root.rstrip("/") + "/")
-    return [p for p in (m.rstrip("/.") or "/" for m in _ABS_PATH.findall(target))
+    # `..` is resolved in the text, so a path cannot leave an allowed folder through it.
+    return [p for p in (posixpath.normpath(m).rstrip("/.") or "/" for m in _ABS_PATH.findall(target))
             if any(within(p, g) for g in scope["guarded"]) and not any(within(p, a) for a in scope["allowed"])]
 
 
@@ -160,12 +164,20 @@ def _evaluation_dir(launch: dict[str, Any]) -> Path:
     return Path(launch["workspace"]).parent / "evaluation"
 
 
+def check_inputs_unchanged(launch: dict[str, Any]) -> None:
+    """A run on an input set is scored only if freezing found the set unchanged."""
+    if launch.get("input_set_sha256") and launch.get("input_set_problems") != []:
+        problems = launch.get("input_set_problems") or ["it was not checked when the run was frozen"]
+        raise IntegrityFailure(f"input set {launch.get('input_root')}: {'; '.join(problems)}")
+
+
 def score_run(launch: dict[str, Any]) -> tuple[RunEvaluation, list[CheckResult], list[Intervention], list[Execution]]:
     workspace = Path(launch["workspace"])
     # New launch records carry a null boundary until evaluation.launch freezes the run. Older records
     # predate that contract and remain readable for historical regression checks.
     if "ended" in launch and not launch["ended"]:
         raise IntegrityFailure("run is not frozen: run evaluation.launch --freeze-only <launch.json>")
+    check_inputs_unchanged(launch)
     profile = load_profile(launch["profile_id"])
     task = load_task(profile, launch["task_id"], launch.get("cache_root"))
     digest = bundle_digest(profile_dir(profile.profile_id), launch["task_id"])

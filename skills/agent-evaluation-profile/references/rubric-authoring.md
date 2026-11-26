@@ -204,9 +204,14 @@ records the directory in `launch.json`; the scorer reads it from there and escap
 value in YAML. Sealing fails unless every input the prompt names is under an `allowed_cache_roots` entry, every
 entry is one the prompt gives, and every cache `artifact_paths` entry is under an input.
 
-The access rule allows a run only these entries and the package cache within the cache directory, and flags
-everything else there. The monitor reads paths in the transcript's text. It expands `$CACHE_ROOT/...` and passes an
-assignment to `CACHE_ROOT`, but follows no other variable and no relative path, so review each flagged call and do
+A source with an input spec (`dataset/inputs/<source_id>.yaml`) uses `{{INPUT_ROOT}}` instead: the verified input set
+the manifest pins with `input_set_sha256`. Sealing fails unless that is the set the spec gives the task.
+`evaluation.prepare` verifies the set before a launch, freezing verifies it again, and the scorer refuses a run whose
+set changed (`__pycache__/*.pyc` files do not count).
+
+The access rule allows a run these entries, its whole input set when it has one, and the package cache within the
+cache directory, and flags everything else there. The monitor reads paths in the transcript's text. It expands `$INPUT_ROOT/...` and `$CACHE_ROOT/...`,
+resolves `..` and passes an assignment to `CACHE_ROOT`, but follows no other variable and no relative path, so review each flagged call and do
 not treat a clean result as proof of no access. Storing the directory under another variable name is flagged.
 
 For the cold condition, name per-run cache roots in `allowed_cache_roots` instead of the

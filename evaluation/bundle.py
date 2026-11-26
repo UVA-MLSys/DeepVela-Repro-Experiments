@@ -16,7 +16,7 @@ from typing import Any
 import yaml
 from pydantic import ValidationError
 
-from .cache import PLACEHOLDER
+from .cache import INPUT_ROOT, PLACEHOLDER, PLACEHOLDERS, fill_text, placeholder_values
 from .schema import EvaluationProfile, EvaluationTask, PhaseRubric
 
 BUNDLE_ROOT_ENV_VAR = "EVALUATION_BUNDLE_DIR"
@@ -175,16 +175,18 @@ def rubric_closure(rubrics: list[PhaseRubric], target: str) -> list[PhaseRubric]
 
 
 def fill_cache_root(manifest: dict[str, Any], cache_root: str) -> dict[str, Any]:
-    """The manifest with PLACEHOLDER replaced: literally in paths, escaped in the `forbidden_access` regexes."""
-    def fill(value: Any, replacement: str) -> Any:
+    """The manifest with its placeholders replaced: literally in paths, escaped in the `forbidden_access` regexes."""
+    values = placeholder_values(cache_root, manifest.get("input_set_sha256"))
+    escaped = {placeholder: re.escape(path) for placeholder, path in values.items()}
+    def fill(value: Any, replacements: dict[str, str]) -> Any:
         if isinstance(value, str):
-            return value.replace(PLACEHOLDER, replacement)
+            return fill_text(value, replacements)
         if isinstance(value, list):
-            return [fill(v, replacement) for v in value]
+            return [fill(v, replacements) for v in value]
         if isinstance(value, dict):
-            return {k: fill(v, replacement) for k, v in value.items()}
+            return {k: fill(v, replacements) for k, v in value.items()}
         return value
-    return {k: fill(v, re.escape(cache_root) if k == "forbidden_access" else cache_root) for k, v in manifest.items()}
+    return {k: fill(v, escaped if k == "forbidden_access" else values) for k, v in manifest.items()}
 
 
 def load_task(profile: EvaluationProfile, task_id: str, cache_root: str | None = None) -> EvaluationTask:
@@ -197,8 +199,9 @@ def load_task(profile: EvaluationProfile, task_id: str, cache_root: str | None =
     manifest = load_yaml(manifest_path, what=f"task manifest for {task_id!r}")
     if cache_root is not None:
         manifest = fill_cache_root(manifest, cache_root)
-    elif PLACEHOLDER in yaml.safe_dump(manifest, width=10**9):
-        raise EvaluationBundleError(f"{manifest_path} holds {PLACEHOLDER}: pass the cache directory the run was prepared with")
+    if any(p in yaml.safe_dump(manifest, width=10**9) for p in PLACEHOLDERS):
+        raise EvaluationBundleError(f"{manifest_path} holds an unfilled placeholder: pass the cache directory the run was "
+                                    f"prepared with; {INPUT_ROOT} also needs input_set_sha256")
     if manifest.get("profile_id") != profile.profile_id or manifest.get("profile_version") != profile.profile_version:
         raise EvaluationBundleError(f"{manifest_path} names profile {manifest.get('profile_id')!r} v{manifest.get('profile_version')}, expected {profile.profile_id!r} v{profile.profile_version}")
 
@@ -245,20 +248,33 @@ def check_task_manifest(profile_id: str, task_id: str) -> None:
     prompt = folder / "prompt.md"
     if not prompt.is_file() or commit not in prompt.read_text():
         raise EvaluationBundleError(f"{prompt} does not state commit {commit}: render it again from the record")
-    if PLACEHOLDER in prompt.read_text():
-        check_cache_inputs(manifest, prompt.read_text(), folder)
+    text = prompt.read_text()
+    if PLACEHOLDER in text or INPUT_ROOT in text:
+        check_cache_inputs(manifest, text, folder)
+    if INPUT_ROOT in text:
+        check_input_set(manifest, source_id, task_id, folder)
+
+
+def check_input_set(manifest: dict[str, Any], source_id: str, task_id: str, folder: Path) -> None:
+    """The manifest pins the set the source's input spec gives this task, the last part of its id."""
+    from .warmup import load_spec
+    selector = task_id.rsplit("/", 1)[-1]
+    expected = [s["manifest_sha256"] for s in load_spec(source_id)["sets"].values() if selector in s["tasks"]]
+    if expected != [manifest.get("input_set_sha256")]:
+        raise EvaluationBundleError(f"{folder}/manifest.yaml names input_set_sha256 {manifest.get('input_set_sha256')!r}; "
+                                    f"the spec of {source_id} gives task {selector!r} {expected}")
 
 
 def check_cache_inputs(manifest: dict[str, Any], prompt: str, folder: Path) -> None:
     """In a portable task, the manifest's cache paths agree with the inputs the prompt gives, so the access rule
     and the input rubrics cover the paths the agent is told to use."""
-    found = re.findall(r"^\w+=(?:\$CACHE_ROOT|\{\{CACHE_ROOT\}\})(/\S+)$", prompt, re.M)
-    inputs = [PLACEHOLDER + path for path in found]
+    found = re.findall(r"^\w+=(?:\$(CACHE_ROOT|INPUT_ROOT)|\{\{(CACHE_ROOT|INPUT_ROOT)\}\})(/\S+)$", prompt, re.M)
+    inputs = ["{{" + (variable or placeholder) + "}}" + path for variable, placeholder, path in found]
     within = lambda path, roots: any(path == r or path.startswith(r + "/") for r in roots)
     allowed = (manifest.get("input_reuse_contract") or {}).get("allowed_cache_roots", [])
     undeclared = [p for p in inputs if not within(p, allowed)]
-    unused = [r for r in allowed if r.startswith(PLACEHOLDER) and not any(within(p, [r]) or within(r, [p]) for p in inputs)]
-    stray = [p for p in (manifest.get("artifact_paths") or {}).values() if p.startswith(PLACEHOLDER) and not within(p, inputs)]
+    unused = [r for r in allowed if r.startswith("{{") and not any(within(p, [r]) or within(r, [p]) for p in inputs)]
+    stray = [p for p in (manifest.get("artifact_paths") or {}).values() if p.startswith("{{") and not within(p, inputs)]
     if undeclared or unused or stray:
         raise EvaluationBundleError(f"{folder}: the prompt's inputs and the manifest differ: inputs outside "
                                     f"allowed_cache_roots {undeclared}; allowed_cache_roots the prompt does not give "

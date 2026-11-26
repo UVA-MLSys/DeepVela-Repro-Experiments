@@ -3,13 +3,13 @@ Reproduce the targets in ./tasks.json from ./repo, the source tree of commit 3fb
 Platform: one NVIDIA A100 80GB GPU per run.
 
 Inputs, read-only, do not modify:
-CACHE_ROOT={{CACHE_ROOT}}
-SQUAD_DIR=$CACHE_ROOT/bert-squad/data
-MODEL_DIR=$CACHE_ROOT/bert-squad/model
-DEEPLEARNING_EXAMPLES_DIR=$CACHE_ROOT/bert-squad/DeepLearningExamples
-SQUAD_DIR holds dev-v1.1.json. MODEL_DIR holds model.pytorch and vocab.txt. DEEPLEARNING_EXAMPLES_DIR holds the NVIDIA DeepLearningExamples clone at commit 729963dd47e7c8bd462ad10bfac7a7b0b604e6dd, imported by language/bert/pytorch_SUT.py; it is staged separately because the pinned repository does not track its contents.
+INPUT_ROOT={{INPUT_ROOT}}
+SQUAD_DIR=$INPUT_ROOT/data
+MODEL_DIR=$INPUT_ROOT/model
+DEEPLEARNING_EXAMPLES_DIR=$INPUT_ROOT/DeepLearningExamples
+SQUAD_DIR holds dev-v1.1.json. MODEL_DIR holds model.pytorch and vocab.txt. DEEPLEARNING_EXAMPLES_DIR holds the files of NVIDIA DeepLearningExamples at commit 729963dd47e7c8bd462ad10bfac7a7b0b604e6dd, without Git history, imported by language/bert/pytorch_SUT.py; it is staged separately because the pinned repository does not track its contents.
 
-Shared package cache: UV_CACHE_DIR=$CACHE_ROOT/uv (use no other cache location).
+Shared package cache: UV_CACHE_DIR={{PACKAGE_CACHE}} (use no other cache location).
 
 Work for each target in ./<target id>/ with OUTPUT_DIR=./<target id>/out, and save every log (build, run, evaluator) as a
 *.log file there. Only files are scored.
