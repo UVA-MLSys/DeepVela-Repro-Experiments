@@ -66,6 +66,11 @@ def test_plain_arm_has_no_skill(bundle):
     assert (ws / "prompt.md").read_text().startswith("Reproduce the synthetic task")
 
 
+def test_local_prompt_names_no_scheduler_or_gpu_vendor(bundle):
+    text = (prepare("p", "t", "plain", compute="local", autonomy=True) / "ws/prompt.md").read_text().lower()
+    assert not any(word in text for word in ("slurm", "sbatch", "squeue", "sacct", "nvidia", "/tmp"))
+
+
 def test_unanswered_compute_wording_refuses_launch(bundle):
     with pytest.raises(SystemExit, match=r"\{\{account\}\}"):
         prepare("p", "t", "skill", compute="slurm")

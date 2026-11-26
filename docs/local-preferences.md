@@ -57,10 +57,10 @@ Answer: unanswered
 
 ### Compute wording: local
 
-Appended to a task prompt by `evaluation.prepare --compute local`: every run on this machine's GPU, no scheduler.
+Appended to a task prompt by `evaluation.prepare --compute local`: every run on this machine, no scheduler.
 
 ```
-Compute: run directly on this machine. Do not submit Slurm jobs; every run uses this local GPU. Run GPU work one run at a time; while one runs, start other ready work that uses no GPU (environment builds, downloads, preprocessing) in the background instead of waiting; read launched work's output as it is written, tracking it by its process ID.
+Compute: run directly on this machine. Do not submit jobs to a scheduler; every accelerator run uses this machine's accelerators. Run accelerator work one run at a time; while one runs, start other ready work that uses no accelerator (environment builds, downloads, preprocessing) in the background instead of waiting; read launched work's output as it is written, tracking it by its process ID.
 ```
 
 ### Compute wording: slurm

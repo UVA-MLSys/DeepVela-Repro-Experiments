@@ -59,19 +59,19 @@ SHARED_ENVIRONMENT_INSTRUCTION = (
     "Anything you did not start in this session is not yours: note the job ID each sbatch returns, cancel or modify "
     "only those IDs, check them with `squeue -j` or `sacct -j` instead of listing the account's jobs, and size GPU "
     "memory use to what `nvidia-smi` shows free on the GPU you use.")
-# Compute nodes see the workspace, not the session's own scratch directory.
+# The run is frozen and scored from its workspace, and a scheduler job may not see the session's scratch directory.
 WORKSPACE_INSTRUCTION = (
     "Keep every file you create and later read, such as scripts, copies of the repository, work directories and "
-    "outputs, inside this directory. Do not keep them in a session scratchpad or /tmp: a Slurm job "
-    "cannot see them. Temporary directories are for transient files nothing later reads.")
+    "outputs, inside this directory. Do not keep them in a session scratchpad or a temporary directory. "
+    "Temporary directories are for transient files nothing later reads.")
 CPU_SHARED_ENVIRONMENT_INSTRUCTION = (
     "Other sessions share the Slurm account and the filesystem, and may run at the same time. "
     "Anything you did not start in this session is not yours: note the job ID each sbatch returns, cancel or modify "
     "only those IDs, and check them with `squeue -j` or `sacct -j` instead of listing the account's jobs.")
 LOCAL_SHARED_ENVIRONMENT_INSTRUCTION = (
-    "Other sessions may share this machine's GPU and the filesystem, and may run at the same time. "
+    "Other sessions may share this machine's accelerators and filesystem, and may run at the same time. "
     "Anything you did not start in this session is not yours: cancel or modify only processes you started, "
-    "and size GPU memory use to what `nvidia-smi` shows free.")
+    "and size accelerator memory use to what the device's monitoring tool shows free.")
 # The delivered entrypoint's compute requirement, by mode.
 REPRODUCE_REQUIREMENT = {
     "slurm": "./reproduce.sh --target <target id> must run every step itself inside one Slurm job and submit no job.",

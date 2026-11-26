@@ -10,7 +10,7 @@
   "support_level": "readme_only",
   "policy": {
     "compute": "cpu",
-    "platform": "CPU only, no GPU: one node of Slurm partition standard.",
+    "platform": "CPU only, no GPU: one node.",
     "inputs": {},
     "forbidden": "published LAMMPS benchmark results or logs (including the log.* files under examples/), or an installed LAMMPS module or binary (build lmp from the repository)",
     "wall_clock_cap": "30 minutes"

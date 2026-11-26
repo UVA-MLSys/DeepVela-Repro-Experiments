@@ -158,6 +158,8 @@ To launch a task from this study:
    ```
 
 2. Set up the task's inputs (dataset and model checkpoint), which are not included. Some manifests contain absolute paths from the original machine.
+
+   The bundled prompts record what the past runs received, including the original machine's paths, GPU and scheduling instruction, so do not edit them. The [study records](dataset/tasks/mlperf-c0-c6/) now state only the hardware on the `Platform:` line and leave scheduling to the `Compute:` paragraph that `evaluation.prepare` appends. A prompt rendered from them therefore differs from the bundled one and needs a newly sealed bundle.
 3. Answer [`docs/local-preferences.md`](docs/local-preferences.md), set `REPRODUCTION_RUNS_DIR`, and run `python -m evaluation.prepare reproduce <version>/<condition> --arm <arm>`.
 
 A task whose manifest lists `prior_artifacts` also needs `--trial <n>`. `prepare` copies selected files from the earlier run of the same arm and trial into `ws/prior-artifacts/`, read-only. The `v2` manifests point to run folders on the original machine, which are not included. A full prepare, run and score cycle has not been tested from this repository.

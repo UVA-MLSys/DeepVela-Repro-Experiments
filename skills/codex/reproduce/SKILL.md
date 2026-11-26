@@ -81,8 +81,8 @@ Scope and replies:
 | Inspect source | A target is one terminal evaluator invocation. A different model, backend, precision, dataset, scenario, or mode is a separate target. |
 | Inspect source | The user may name one target, several, or all. If the user names none, list them and ask, offering all. |
 | Inspect source | Reuse a derived artifact across targets only when its producer, inputs, and parameters are identical. |
-| Set up environment and data | Inspect compatible modules before installing packages or compiling extensions. |
-| Set up environment and data | Use a documented container workflow only when the module path is unavailable or fails the stated constraints. |
+| Set up environment and data | Where the machine has an environment module system, inspect compatible modules before installing packages or compiling extensions. |
+| Set up environment and data | Use a documented container workflow only when the documented route without a container, including any modules, is unavailable or fails the stated constraints. |
 | Set up environment and data | Resolve dataset, checkpoint, cache path, split, structure, counts, and checksums before any expensive run. |
 | Preflight check and repair | Get the quickest safe evidence that each target runs end to end, cheapest first: startup, import, model or checkpoint load, one preprocessed input, a few samples through the evaluator, official quick mode. |
 | Preflight check and repair | Size each check to what the machine it runs on can hold. |
@@ -156,7 +156,7 @@ Preferences cover what the prompt does not fix. Use them only when the workspace
 | Field | Values |
 |---|---|
 | Execution target | local or scheduler; account, partition, reservation, GPU string, wall time |
-| Environment strategy | documented route; modules first; container as fallback |
+| Environment strategy | documented route; modules first where the machine has them; container as fallback |
 | Cache and download locations | paths |
 
 - Never guess an account, partition, reservation, or cache path.

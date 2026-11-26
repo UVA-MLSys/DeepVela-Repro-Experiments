@@ -10,7 +10,7 @@
   "support_level": "readme_only",
   "policy": {
     "compute": "local",
-    "platform": "this machine's NVIDIA A100 80GB GPU, which other jobs share: run on it directly, not through Slurm, and check its free memory before each GPU run.",
+    "platform": "one NVIDIA A100 80GB GPU per run.",
     "inputs": {
       "SQUAD_DIR": {"path": ".cache/bert-squad/data", "holds": "dev-v1.1.json"},
       "MODEL_DIR": {"path": ".cache/bert-squad/model", "holds": "model.pytorch and vocab.txt"},

@@ -8,7 +8,7 @@
   "support_level": "readme_only",
   "policy": {
     "compute": "local",
-    "platform": "this machine's GPU; the CUDA toolkit comes from the environment module system.",
+    "platform": "this machine's NVIDIA GPU, with a CUDA toolkit available on this machine.",
     "inputs": {},
     "forbidden": "published HeCBench results or timings, or other implementations' outputs",
     "wall_clock_cap": "5 hours"
