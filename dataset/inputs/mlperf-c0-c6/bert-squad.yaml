@@ -1,0 +1,48 @@
+# Public sources of the raw inputs for the MLPerf language/bert C0-C6 tasks.
+# A reproducing agent must not read this file: it gives download locations that C3 removes.
+# `sha256` pins the file the tasks use. `publisher_md5` is the checksum the publisher lists.
+source_id: mlperf-c0-c6/bert-squad
+checked: 2026-11-26
+
+files:
+  model/model.pytorch:
+    url: https://zenodo.org/record/3733896/files/model.pytorch?download=1  # language/bert/Makefile, download_pytorch_model
+    size: 1340665723
+    sha256: 71af14acc3cb47ebd88e028d9ff8a5f06e15f6ed666e16293b7ad2539171397f
+    publisher_md5: 00fbcbfaebfa20d87ac9885120a6e9b4  # https://zenodo.org/api/records/3733896
+  model/vocab.txt:
+    url: https://zenodo.org/record/3733896/files/vocab.txt?download=1  # language/bert/Makefile, download_pytorch_model
+    size: 231508
+    sha256: 07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3
+    publisher_md5: 64800d5d8528ce344256daf115d4965e
+  data/dev-v1.1.json:
+    # The Makefile's URL follows the `master` branch; this one names the last commit that changed the file.
+    url: https://raw.githubusercontent.com/rajpurkar/SQuAD-explorer/240e165ab706d95bd4323653bb92421f446208cf/dataset/dev-v1.1.json
+    size: 4854279
+    sha256: 95aa6a52d5d6a735563366753ca50492a658031da74f301ac5238b03966972c9
+
+repositories:
+  DeepLearningExamples:
+    url: https://github.com/NVIDIA/DeepLearningExamples.git
+    # The commit the study's prompts name. The benchmark's own submodule pins
+    # b03375bd6c2c5233130e61a3be49e26d1a20ac7c at mlcommons/inference 3fbc329939999c13d0a7b5e67fb2092287e06047.
+    commit: 729963dd47e7c8bd462ad10bfac7a7b0b604e6dd
+    tree: b9dd2ac65088c03281681e1cce779fb37f7652c0
+    # Input sets hold the commit's files without `.git/`.
+
+# The input sets `python -m evaluation.warmup` builds. Every set holds the files and repositories above; `masks`
+# names the bundle folder whose dle-mask.patch and dle-files.sha256 mask a repository. `manifest_sha256` is the
+# sha256 of the set's sorted `<sha256> <x or -> <path>` lines, computed from the sources above and the mask hash
+# lists. The sets leave out SQuAD's evaluate-v1.1.py, which the study's data folder also held.
+sets:
+  base:
+    tasks: [c0, c1, c3, c5, c6]
+    manifest_sha256: 6025b57c08a0e1b2aea2e4f4ef2d93a23bf84268b05708d61b08db1b86946aec
+  c2:
+    tasks: [c2]
+    masks: {DeepLearningExamples: dataset/mlperf-c0-c6-portable/bert-squad-v1/c2}
+    manifest_sha256: 08e3ab43247e06cb24ff0a1afba8ef029c61adb21145c5f72b8d7b2e2bb12188
+  c4:
+    tasks: [c4]
+    masks: {DeepLearningExamples: dataset/mlperf-c0-c6-portable/bert-squad-v1/c4}
+    manifest_sha256: 16d08ecb01af45ef62c2a9f62466f0c2b50bd89130e947b19c51eea2516001cb

@@ -181,6 +181,7 @@ The scripts that build these sheets are not included. [`dataset/failure_taxonomy
 
 | Tool | Purpose |
 | --- | --- |
+| `python -m evaluation.warmup <source_id> [--tasks c0,c2]` | Reports which inputs are ready. With `--from <dir>` or `--download`, gets the rest, checks them against [`dataset/inputs/`](dataset/inputs/) and builds the input sets in the cache directory. BERT C0–C6 only; `evaluation.prepare` does not use the sets yet. |
 | `python -m evaluation.departures <launch.json> [--write]` | A judge model counts departures from the documented route. Run `--write` after `scorer --write`. |
 | `python -m evaluation.table` | Prints agent resource use for the runs under `REPRODUCTION_RUNS_DIR`. |
 | [`benchmark-runner`](skills/benchmark-runner/SKILL.md) | Skill for repeatable runs and profiling after a successful reproduction. |
@@ -210,6 +211,7 @@ skills/
 .claude/skills/, .agents/skills/   links that load the harness skill in this repository
 evaluation/                    cache.py (cache directory), task_prompt.py (render prompts), bundle.py (seal bundles), prepare.py (build arm workspaces), launch.py (start and freeze runs), scorer.py, checkers.py, transcript.py, schema.py (score a frozen run), departures.py, table.py (see Experiments)
 dataset/tasks/                 task records (MLPerf Inference and other benchmarks)
+dataset/inputs/                public sources and checksums of task inputs (BERT C0-C6 so far)
 dataset/mlperf-c0-c6/          C0–C6 task bundles and run outputs
 dataset/mlperf-c0-c6-portable/ BERT v1 C0, C2 and C4 bundles with a configurable cache directory
 dataset/failure_taxonomy/      labels for failed tool calls
