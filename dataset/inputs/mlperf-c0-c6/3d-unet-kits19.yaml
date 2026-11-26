@@ -1,0 +1,359 @@
+# Public sources of the raw inputs for the MLPerf vision/medical_imaging/3d-unet-kits19 C0-C6 tasks.
+# A reproducing agent must not read this file: it gives download locations that C3 removes.
+# `sha256` pins the file the tasks use. `publisher_md5` is the checksum the publisher lists.
+# Images: Hugging Face dataset neheller/KiTS-Challenge-Imaging at revision 65f1f295873a326230153c7e1de0c7dba10f0b29, whose listing gives each file's sha256
+# (the kits19 starter code downloads from its `main` branch). Segmentations: github.com/neheller/kits19 at commit 456b293435b25303bbc7995f094f83a0afdff0eb.
+# The 42 cases are meta/inference_cases.json without case_00400, which the benchmark makes by copying case_00185.
+source_id: mlperf-c0-c6/3d-unet-kits19
+checked: 2026-11-26
+
+files:
+  data/case_00000/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00000.nii.gz
+    size: 225959569
+    sha256: cdae5f3e0fbc7c98ab0430b3de42677abda2c1cf93ae0f86bd29fb8606688cb7
+  data/case_00000/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00000/segmentation.nii.gz
+    size: 775587
+    sha256: d1019d9a690e193e167cadf3518499e9ed54c1c7757ce520152a3ed072159e09
+  data/case_00003/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00003.nii.gz
+    size: 118681596
+    sha256: 63d267967cd02889415de2978903df36703cd7b5181e1226dc91d4832f7d5586
+  data/case_00003/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00003/segmentation.nii.gz
+    size: 379402
+    sha256: fcbb1e23746beab53c7fbd97915a855ce1f15be7c76b42affa0b30ccca63f98c
+  data/case_00005/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00005.nii.gz
+    size: 313477305
+    sha256: 986d4186183ceefba226cf667f6c07b010c60f6b4ea00905a60b805d05300279
+  data/case_00005/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00005/segmentation.nii.gz
+    size: 1041381
+    sha256: bb8ced0aeac5f339f8981892fa0132ad3c806a37fbb33464b4b3af577f14e909
+  data/case_00006/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00006.nii.gz
+    size: 78010682
+    sha256: 884cc817625dd041615a83ac378240675d599a42a1e0dd86e6fe88bd17f1c174
+  data/case_00006/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00006/segmentation.nii.gz
+    size: 249476
+    sha256: 6590efb3e5d3090dda350da2acef0d01e3cdb0b34764e878209daa72f8ba8bd0
+  data/case_00012/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00012.nii.gz
+    size: 43185427
+    sha256: 039c97ac928af4dbb4f959cbaf2c7403e1c9590321ffdb3f2d86a355261cd846
+  data/case_00012/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00012/segmentation.nii.gz
+    size: 140964
+    sha256: cc769adcd9c617d95a81c0208510a1f2534328a8275433d58b20d17d3e5ab60c
+  data/case_00024/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00024.nii.gz
+    size: 43319114
+    sha256: b90540df3dd4ab0ec4cad772504d1be9471229c01a14f6cd7f0e9fb3a4523e71
+  data/case_00024/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00024/segmentation.nii.gz
+    size: 135119
+    sha256: bbf6a7d8713d0b1fa41c4b546a8013b65261c0657379af2d851af4fbd1ed7a48
+  data/case_00034/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00034.nii.gz
+    size: 52752885
+    sha256: 55213482fc646bf30a736fc1e8620a0925b30030cbfbbd6488d47bd059f313ac
+  data/case_00034/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00034/segmentation.nii.gz
+    size: 174017
+    sha256: a4e4e6f2c52b5253cde80b9b32b970bfc2b83fa97d29b1fbc3eb00ae056fc2ec
+  data/case_00041/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00041.nii.gz
+    size: 25224078
+    sha256: bebf5e542eaa5731c71717b7654065fa4313c551c1cdf57f7cea426ceff028c2
+  data/case_00041/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00041/segmentation.nii.gz
+    size: 103314
+    sha256: a513d5fa675323b739520a4a5a38f7f3fbf23c2d2396e7dd7be0e890feba579f
+  data/case_00044/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00044.nii.gz
+    size: 38419186
+    sha256: 4d7f8fd27cb08c8b935663757f864b3bb4113eb4af5b8ecdc9dda41ab48cdf3d
+  data/case_00044/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00044/segmentation.nii.gz
+    size: 152896
+    sha256: dc851aea8d1a8921a8e5c6281784ae6b2b14fc14d3d2cfc01658240d58ff739d
+  data/case_00049/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00049.nii.gz
+    size: 289194549
+    sha256: d0d449e4ca322aab438a34cebe0eb47b0ea68557593ef58f1912dfeac3c5fd32
+  data/case_00049/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00049/segmentation.nii.gz
+    size: 896777
+    sha256: 45c0a7bcc44edf478c6557ecac05319b239847fe68738301a0713ae13e5a9ed0
+  data/case_00052/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00052.nii.gz
+    size: 256991563
+    sha256: e4f32880944933ce2f733cc75bc1a5284b0a846ed77161e995fd3d277aaec88a
+  data/case_00052/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00052/segmentation.nii.gz
+    size: 860917
+    sha256: 062855b421c08ef6f205741fe5ce727e059f9d04b543f530a77edd00f5edee84
+  data/case_00056/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00056.nii.gz
+    size: 45668159
+    sha256: bceeed3355ab099678d5ef009cb8a0258eac51fb6fc2530017fe702434c46140
+  data/case_00056/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00056/segmentation.nii.gz
+    size: 182198
+    sha256: a07de54540c0e8fbf62e0e47d02752a789e4929da53baa9a513c8348edb41693
+  data/case_00061/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00061.nii.gz
+    size: 11577207
+    sha256: 95eb42261e22f552e2b6bda39c2d72e3fbc376983d6bf9485122e968609f2cbf
+  data/case_00061/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00061/segmentation.nii.gz
+    size: 59432
+    sha256: f0ac28b3fae9303378f40121ee4ccc725a69c9e88a899e5d634e1ff0dfd20469
+  data/case_00065/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00065.nii.gz
+    size: 48274302
+    sha256: 6ff1b71bd873306c88e90fa463cbd740bbeb79cb5c3bc8b5089e3fff81622e6e
+  data/case_00065/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00065/segmentation.nii.gz
+    size: 190388
+    sha256: 779e39d3131b043be241fe6beb44abcbcff54e4f4eb4964a4147cb3c406c8fdd
+  data/case_00066/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00066.nii.gz
+    size: 186603335
+    sha256: d8fbf08d1628afa013c3b0050b6f7b60ff5e184c295bea2ee5b0d173459ed82f
+  data/case_00066/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00066/segmentation.nii.gz
+    size: 597100
+    sha256: 377d98684bb0469c231866558a1323073c04c05a4b010413da03c1e6927e8e94
+  data/case_00070/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00070.nii.gz
+    size: 29478344
+    sha256: 18025b039e3a098437eac420ef50d2fa3cb1ac879a78ae339037d90ef5330126
+  data/case_00070/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00070/segmentation.nii.gz
+    size: 126108
+    sha256: 08040019380efe132cdab8b7641650d4f369cd64c9c953edd411316bc0dcd60c
+  data/case_00076/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00076.nii.gz
+    size: 32585283
+    sha256: 24e7268fcd904b5d92aeddc37d6e2714ffb080de7c8e8497482c64116ce2f3e6
+  data/case_00076/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00076/segmentation.nii.gz
+    size: 105766
+    sha256: bcb3e2618a10c1f25a3b18fa3e0d300f505f44cff32f59d65b67d3be5e16c2e4
+  data/case_00078/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00078.nii.gz
+    size: 132219049
+    sha256: 08563035343423b6011eddfe64e16447b2e9b8a62fbfffc0be97103a10664e44
+  data/case_00078/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00078/segmentation.nii.gz
+    size: 538585
+    sha256: 5ad3f34d5a1c7b5ce988748b0e65f6859d87de9aef597412942cd3d1e6d1161a
+  data/case_00080/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00080.nii.gz
+    size: 43158941
+    sha256: 53d2195627a643feeebe65087baba6169af0f1707a26de5f7ee13943d3a4a0fd
+  data/case_00080/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00080/segmentation.nii.gz
+    size: 137429
+    sha256: 62a9feac012eb13c683512f37d7c5a1ed8234f4c07193dd8e9c35b94da119137
+  data/case_00084/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00084.nii.gz
+    size: 112681578
+    sha256: d2c54a087dc9b2e1229a326ed12055dfbee596cf2bc7ad8a247b9fde540738d7
+  data/case_00084/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00084/segmentation.nii.gz
+    size: 394399
+    sha256: fc82b04e2bd9dc505bc48b06de806e917da95dd4c0b5a67d4fbaf905b2e2cab6
+  data/case_00086/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00086.nii.gz
+    size: 81962715
+    sha256: f05018951244e877cc6cb3aa842ed2287a32bab86b4cd5e8564e0ce6210930d1
+  data/case_00086/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00086/segmentation.nii.gz
+    size: 301891
+    sha256: 34a5dbcd684998d0dfb38e7fb08941faf3aa631953a058c63c19f8511c205c88
+  data/case_00087/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00087.nii.gz
+    size: 25303768
+    sha256: f4658463b4480b411d7b5e283294a828145acf95cef70f9e35f88161167a5298
+  data/case_00087/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00087/segmentation.nii.gz
+    size: 97327
+    sha256: 7498fd9314fb7027b954342530e4a30f30648bbc7760233c2640347a048ff186
+  data/case_00092/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00092.nii.gz
+    size: 51076798
+    sha256: 0e5beede1e2deec31a4bf8f6c0cd51c47e053c3a4644341a4178678be59131f4
+  data/case_00092/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00092/segmentation.nii.gz
+    size: 196674
+    sha256: 70acffdfda69fb4fe97a8962f7d8a994b445872cdeec79796046b9dcf0829255
+  data/case_00111/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00111.nii.gz
+    size: 78705328
+    sha256: 4acbc48b42d3a56e0eab6dd7b6537b819f58ffebbad6043b76245a75d4176cda
+  data/case_00111/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00111/segmentation.nii.gz
+    size: 292498
+    sha256: 97e97a802364be4be3c274cc064f584f505fea00a33ed05bb49c66ca82c91347
+  data/case_00112/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00112.nii.gz
+    size: 55840497
+    sha256: 935e66df54397a86338502072f2212fa25d51f648669e16ab7733abbd19d8241
+  data/case_00112/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00112/segmentation.nii.gz
+    size: 227812
+    sha256: 3956f828872775f378c48ec27ab75dd385d4f9dc180ddd37387e2abbda55a72e
+  data/case_00125/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00125.nii.gz
+    size: 64037453
+    sha256: 7025178cb9775c773dceeca725b5cf1354c9547786483bec867044d40ae7d069
+  data/case_00125/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00125/segmentation.nii.gz
+    size: 113159
+    sha256: 4472af57d6af10c1d6d9ed967bc01fb3a13006706e3067a6a3f9c0494b1782eb
+  data/case_00128/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00128.nii.gz
+    size: 87078506
+    sha256: 44aadb43ffdfca340cec735f990c875e407dbcee7a73d2bd184f401b7f6eb05e
+  data/case_00128/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00128/segmentation.nii.gz
+    size: 307906
+    sha256: b7bcf93d310c9ca46a741e15bebaa5b2e241a15a432bd91c4fac49403b68cb25
+  data/case_00138/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00138.nii.gz
+    size: 40601700
+    sha256: 7b7c931a5f23f2db73739064109ebba8c206c7e13681138e8adb74ec7c243b6a
+  data/case_00138/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00138/segmentation.nii.gz
+    size: 155518
+    sha256: aa3f75cd75e42261355ef46fdfcaf759226bf5a9cf1c51b35114aa88395f9ce5
+  data/case_00157/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00157.nii.gz
+    size: 231036073
+    sha256: 777b7014743ac0e78b88f33e7c0af01a89403abf7980c1f4aaae8417e011e995
+  data/case_00157/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00157/segmentation.nii.gz
+    size: 344893
+    sha256: 3ed2c679767dd9ae510db1f86218cebe504aab0ff82316080eecc138ab7af052
+  data/case_00160/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00160.nii.gz
+    size: 196732920
+    sha256: 94b8a15327097349f4f5afce36c7d0f5228dd7e7045b07c6325930a79d5ecd9a
+  data/case_00160/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00160/segmentation.nii.gz
+    size: 723271
+    sha256: 56ba118c0aa8b3b0ef07cb21495a43ce9adcf8eba13568440fc5eb98f5f6dac9
+  data/case_00161/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00161.nii.gz
+    size: 25615080
+    sha256: 763b5306cfd062bc22a169f37c0917cf639b8534e59b748def6094e4e7ef6281
+  data/case_00161/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00161/segmentation.nii.gz
+    size: 97779
+    sha256: 880efb6108a9d7dd0be34ae2fc5b3a52dba8835cb2844483df0ee86fd4fb7304
+  data/case_00162/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00162.nii.gz
+    size: 45384396
+    sha256: 1ff33933b02751241021af304a6e9c0f2e937aa9ed09f26bc62cb0c96a316444
+  data/case_00162/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00162/segmentation.nii.gz
+    size: 147257
+    sha256: 93ef37ed63f4720ba6d406ee90d2ba53ac93329cdf886183d374376ab2752f89
+  data/case_00169/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00169.nii.gz
+    size: 42056633
+    sha256: 9bad338921a2361779642c080c0faf06dff4a0c4003ab77eab1c1c2364145d94
+  data/case_00169/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00169/segmentation.nii.gz
+    size: 155606
+    sha256: 80671b01eb5bbaf3102f0f4991aa602141d5f5c8c7e431d18ed98ff4434f8abc
+  data/case_00171/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00171.nii.gz
+    size: 63813232
+    sha256: de426f4f308eb551d44caeb50bcbbd671b18324dc6b2c81c5200dcff4b4e3c11
+  data/case_00171/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00171/segmentation.nii.gz
+    size: 190618
+    sha256: a859e3e7453d02f785932cd4de5fbc22c4040d6b20b40ecbb6ae7a170c564404
+  data/case_00176/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00176.nii.gz
+    size: 41461140
+    sha256: 8bb524fccfb6cd242cc4330a0a71d854f9ed3c26f8acd857c3ae148f559b160d
+  data/case_00176/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00176/segmentation.nii.gz
+    size: 76102
+    sha256: fbabfc5dfac0598a7cba319fb1067e2a7f151428bba591782b79b12bffc02c95
+  data/case_00185/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00185.nii.gz
+    size: 99730672
+    sha256: 8d69db0601b8030a38f399c3458e05543395f2ef68cd4029696f02821ec503f1
+  data/case_00185/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00185/segmentation.nii.gz
+    size: 355129
+    sha256: 04a5d298bf12149983cac7992cb795db77986ee09f50161774cbede766e48f92
+  data/case_00187/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00187.nii.gz
+    size: 41465147
+    sha256: 56e4971bfbc4afa83efefdab2a4e316bd3af5e6cd0f5a9049982c83cc4833f1e
+  data/case_00187/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00187/segmentation.nii.gz
+    size: 151948
+    sha256: 756013b57501e08b87e027450cb83a58beb2165e02ed4f46e1ef08d5b7f23e83
+  data/case_00189/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00189.nii.gz
+    size: 69794230
+    sha256: 27e70b8e75d4151a880cfdb1d18e9edd79a1e328501af744b8733e1cee6a37c6
+  data/case_00189/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00189/segmentation.nii.gz
+    size: 237456
+    sha256: 1bc2b3a2496011dedfe3c1aaa1fd3d52a4d4947a8d9ca997f8385f4fc4ff7d2e
+  data/case_00198/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00198.nii.gz
+    size: 130795162
+    sha256: ea3140416a4eef35fa25a3051eacec1acde2b97180d3d247113cbcb6db81edf9
+  data/case_00198/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00198/segmentation.nii.gz
+    size: 384016
+    sha256: 14f55d38bd81243edb0bd543897f0d321c73d8aa78ca690e112702447eae0063
+  data/case_00203/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00203.nii.gz
+    size: 295206306
+    sha256: db1ace382d198df990ea7bc6131aa03cf4a446eb5692e1edeea9a59f77a27c80
+  data/case_00203/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00203/segmentation.nii.gz
+    size: 805887
+    sha256: cf57478623972e36e5682ccd8d4abe334a5f94208c166782571c83d0855f5ce7
+  data/case_00206/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00206.nii.gz
+    size: 22988003
+    sha256: 573e65adbcd6a8b709e83bff588fbad8cc4641a6fbab422bad1d927e4772ed53
+  data/case_00206/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00206/segmentation.nii.gz
+    size: 94798
+    sha256: 1520f467f1b617b96f2fe932bde3955b3f4949ef6b32a6ee50c7b972a5de36e8
+  data/case_00207/imaging.nii.gz:
+    url: https://huggingface.co/datasets/neheller/KiTS-Challenge-Imaging/resolve/65f1f295873a326230153c7e1de0c7dba10f0b29/images/case_00207.nii.gz
+    size: 68719670
+    sha256: c665dcf69398aee4644526535425c29fc1f0ed2ba0cfb4e9e1d0c6ce0b8f3a9d
+  data/case_00207/segmentation.nii.gz:
+    url: https://raw.githubusercontent.com/neheller/kits19/456b293435b25303bbc7995f094f83a0afdff0eb/data/case_00207/segmentation.nii.gz
+    size: 207255
+    sha256: 9e94efdf1519e76f70ea4970a7c10d496385ef35d48ed8c31fb31307f7cce80f
+  model/3dunet_kits19_pytorch.ptc:
+    url: https://zenodo.org/record/5597155/files/3dunet_kits19_pytorch.ptc?download=1
+    size: 124917156
+    sha256: a0d14529e0a6dd0d0ec78c936502dc643d2fe601191d82cd89e66c51570ce1d4
+    publisher_md5: 2251109371f408c9f10a4320ffdcaef8
+
+# The input set `python -m evaluation.warmup` builds; every condition uses it. `manifest_sha256` is the sha256 of the
+# set's sorted `<sha256> <x or -> <path>` lines. The set leaves out 3dunet_kits19_pytorch_checkpoint.pth, which the
+# study's model folder also held; the prompt names only the .ptc model.
+sets:
+  base:
+    tasks: [c0, c1, c2, c3, c4, c5, c6]
+    manifest_sha256: 8eb93236691fe0559e12f9709b9b76f87ba5e80610ccca5b2ead39ebd8b80637
