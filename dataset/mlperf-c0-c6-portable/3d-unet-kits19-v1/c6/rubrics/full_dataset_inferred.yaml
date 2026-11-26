@@ -1,0 +1,22 @@
+rubric_id: full_dataset_inferred
+phase_id: execution
+claim: LoadGen started the accuracy run over all 43 documented inference cases.
+target: 3d-unet
+critical: true
+cache_conditions: []
+source_refs:
+- path: loadgen/mlperf.conf
+  sha256: f6fe8510fde70f3d2b897f387c4c1397045bd028bb408a9c9eb808b3a4cbe75c
+  excerpt: 3d-unet.Offline.min_query_count = 43
+prerequisites:
+- accuracy_log_produced
+evidence_contract:
+  artifacts: []
+checker:
+  kind: builtin.landmark
+  args:
+    files:
+    - '**/3d-unet/**/mlperf_log_detail.txt'
+    pattern: '"key": "qsl_reported_total_count", "value": 43\b'
+applicable: true
+pass_threshold: 1.0

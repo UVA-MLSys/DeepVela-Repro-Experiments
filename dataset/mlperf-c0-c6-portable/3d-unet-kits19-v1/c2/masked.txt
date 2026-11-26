@@ -1,0 +1,11 @@
+Condition: C2
+Pinned source: 3fbc329939999c13d0a7b5e67fb2092287e06047
+
+Masked or removed:
+- global_vars.py: the TARGET_SPACING value (set to None) and the two assertions that the checksum files exist
+- preprocess.py: the spacing value in three docstrings
+- meta/checksum_inference.json and meta/checksum_calibration.json: MD5 hashes of the reference preprocessed volumes, which would confirm or reject a candidate spacing
+- README.md supported-framework table: four published mean/kidney/tumor result cells (a known score would let the agent test candidate spacings)
+
+Hidden choice: the common voxel spacing every scan is resampled to before the model sees it.
+The resampling code, normalization and clipping values, padding, ROI, overlap, model, and evaluator are retained.

@@ -1,0 +1,20 @@
+rubric_id: kits19_raw_data_available
+phase_id: inputs
+claim: The raw KiTS19 inference cases (imaging and segmentation) are present in the input directory.
+target: null
+critical: true
+cache_conditions:
+- warm_raw_inputs_v1
+source_refs:
+- path: vision/medical_imaging/3d-unet-kits19/README.md
+  sha256: a6a68e0306833147037dd81eb1893198e34712d6413b333ed1b74c294fd26963
+  excerpt: mlcr get,dataset,kits19,_validation --outdirname=<path_to_download> -j
+prerequisites: []
+evidence_contract:
+  artifacts: []
+checker:
+  kind: builtin.artifact_exists
+  args:
+    path_from: manifest.inputs.kits19_case
+applicable: true
+pass_threshold: 1.0
