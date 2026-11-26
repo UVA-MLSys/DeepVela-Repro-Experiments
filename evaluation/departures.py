@@ -15,7 +15,8 @@ from pathlib import Path
 
 from .checkers import ask_judge
 from .schema import RouteDeparture, RouteDepartures
-from .transcript import _answer_text, _blocks, _human_text, _records, find_sessions
+from .scorer import _sessions
+from .transcript import _answer_text, _blocks, _codex_items, _human_text, _records
 
 _SCHEMA = {
     "type": "object",
@@ -65,15 +66,36 @@ def _conversation(sessions: list[Path]) -> str:
     return "\n".join(lines)
 
 
+def _codex_conversation(sessions: list[Path]) -> str:
+    """The same lines for a Codex session. `FileChange` is its record of an edit."""
+    lines, launched = [], False
+    for _, item in _codex_items(sessions):
+        kind = item.get("type")
+        text = "".join(c.get("text", "") for c in item.get("content") or [] if isinstance(c, dict))
+        if kind == "AgentMessage" and text.strip():
+            lines.append(f"AGENT: {text[:600]}")
+        elif kind == "UserMessage":
+            if launched:
+                lines.append(f"HUMAN: {text[:600]}")
+            launched = True
+        elif kind == "CommandExecution":
+            command = item.get("command")
+            lines.append(f"BASH: {str(command[-1] if isinstance(command, list) and command else command)[:500]}")
+        elif kind == "FileChange":
+            lines += [f"{str(c.get('type')).upper()}: {path}"[:500] for path, c in (item.get("changes") or {}).items()]
+    return "\n".join(lines)
+
+
 def judge_route_departures(launch: dict) -> RouteDepartures | None:
     """None when the run has no prompt or transcript to judge, or the judge returns nothing usable."""
     workspace, prompt = Path(launch["workspace"]), launch.get("prompt")
-    sessions = find_sessions(workspace)
+    harness, sessions, _ = _sessions(launch, workspace)
     if not prompt or not Path(prompt).is_file() or not sessions:
         return None
     script = workspace / "reproduce.sh"
+    conversation = _codex_conversation(sessions) if harness == "codex" else _conversation(sessions)
     text = (f"{_INSTRUCTIONS}\n\nTASK PROMPT:\n{Path(prompt).read_text()}\n\nreproduce.sh:\n"
-            f"{script.read_text()[:12000] if script.is_file() else '(missing)'}\n\nCONVERSATION AND COMMANDS, in order:\n{_conversation(sessions)}")
+            f"{script.read_text()[:12000] if script.is_file() else '(missing)'}\n\nCONVERSATION AND COMMANDS, in order:\n{conversation}")
     try:
         answered, answer = ask_judge(text, _SCHEMA, workspace)
     except RuntimeError:

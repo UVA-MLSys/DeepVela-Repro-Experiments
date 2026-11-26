@@ -181,14 +181,13 @@ The scripts that build these sheets are not included. [`dataset/failure_taxonomy
 | `python -m evaluation.table` | Prints agent resource use for the runs under `REPRODUCTION_RUNS_DIR`. |
 | [`benchmark-runner`](skills/benchmark-runner/SKILL.md) | Skill for repeatable runs and profiling after a successful reproduction. |
 
-`departures` and `table` find only Claude Code sessions, so they do not cover Codex runs.
+Both tools read Claude Code and Codex sessions. For Codex runs, `table` leaves the response, cost and peak context cells empty: the session records no per-response usage, and the cost weights are Anthropic's. For the C0–C6 studies, set `REPRODUCTION_RUNS_DIR` to one version folder, such as `<runs>/bert-squad-v2`.
 
 ### Known gaps
 
 - `dataset/paper_runs.json` and the study README refer to files under `docs/MLSys/`, which is not part of this repository.
 - `dataset/build_dataset.py` still reads sources from `../OSS/`. Do not run it: it writes into `dataset/tasks/` and can overwrite the current records.
 - `evaluation.table --write` needs `docs/reports/README.md`, which is not included.
-- `benchmark-runner` refers to the `baseline-reproduce` skill, which is named `reproduce` here.
 
 ## Repository layout
 

@@ -6,8 +6,9 @@ root, so the table is a function of the runs and is regenerated, never assembled
 One row per task and arm. The run is the latest with `evaluation/evaluation.json` (scored); without
 one, the latest with a session (`not scored`); without a session, `not run`. Verdict columns
 come from `evaluation.json`; token and tool-call columns from the session files through
-`transcript.usage` and `transcript.accesses`, cut at `launch.json` `ended` where set, the same
-functions the scorer uses. Task directories starting with `_` are smoke tasks and left out.
+the Claude Code or Codex readers in `transcript`, cut at `launch.json` `ended` where set; sessions are
+found and read by the same functions the scorer uses. A Codex session records no per-response usage, so
+its responses, cost and peak context cells are empty (the cost weights are also Anthropic's). Task directories starting with `_` are smoke tasks and left out.
 """
 
 from __future__ import annotations
@@ -18,7 +19,8 @@ import os
 from pathlib import Path
 
 from .prepare import REPO_ROOT, RUNS_ROOT_ENV_VAR
-from .transcript import accesses, find_sessions, usage
+from .scorer import _ended, _sessions
+from .transcript import accesses, codex_accesses, codex_usage, usage
 
 README = REPO_ROOT / "docs" / "reports" / "README.md"
 BEGIN, END = "<!-- agent-resource-table:begin -->", "<!-- agent-resource-table:end -->"
@@ -41,17 +43,24 @@ def _pick(task_dir: Path, arm: str) -> tuple[Path | None, str]:
         if (run / "evaluation" / "evaluation.json").is_file():
             return run, "scored"
     for run in runs:
-        if find_sessions((run / "ws").resolve()):
+        if (run / "launch.json").is_file() and _launched(run)[2]:
             return run, "not scored"
     return None, "not run (prepared)" if runs else "not run"
+
+
+def _launched(run: Path) -> tuple[dict, str, list[Path]]:
+    """The run's launch record, harness, and session files."""
+    launch = json.loads((run / "launch.json").read_text())
+    harness, sessions, _ = _sessions(launch, Path(launch["workspace"]))
+    return launch, harness, sessions
 
 
 def _row(task: str, arm: str, run: Path | None, state: str) -> str:
     if run is None:
         return f"| {task} | {arm} | {state} |" + " |" * 11
-    ended = json.loads((run / "launch.json").read_text()).get("ended")
-    sessions = find_sessions((run / "ws").resolve())
-    u = usage(sessions, ended) or {}
+    launch, harness, sessions = _launched(run)
+    codex, ended = harness == "codex", _ended(launch)
+    u = (codex_usage if codex else usage)(sessions, ended) or {}
     if state == "scored":
         e = json.loads((run / "evaluation" / "evaluation.json").read_text())
         success = {True: "yes", False: "no", None: "not recorded"}[e.get("end_to_end_success")]
@@ -63,8 +72,10 @@ def _row(task: str, arm: str, run: Path | None, state: str) -> str:
     total = sum(u.get(k, 0) * w for k, w in WEIGHTS.items())
     wait = sum(u.get(f"wait_{k}", 0) * w for k, w in WEIGHTS.items())
     wall = u.get("wall_seconds")
-    cells = [len(accesses(sessions, ended)), f"{u.get('responses', 0)} ({u.get('responses', 0) - u.get('wait_responses', 0)})",
-             _count(u.get("output_tokens", 0)), _count(total), _count(total - wait), _count(u.get("peak_context", 0)),
+    responses = "" if codex else f"{u.get('responses', 0)} ({u.get('responses', 0) - u.get('wait_responses', 0)})"
+    costs = ["", ""] if codex else [_count(total), _count(total - wait)]
+    cells = [len((codex_accesses if codex else accesses)(sessions, ended)), responses,
+             _count(u.get("output_tokens", 0)), *costs, "" if codex else _count(u.get("peak_context", 0)),
              f"{wall // 3600}h{wall % 3600 // 60:02d}" if wall is not None else ""]
     return "| " + " | ".join(str(c) for c in [task, arm, f"`{run.name}`", *verdicts, *cells]) + " |"
 

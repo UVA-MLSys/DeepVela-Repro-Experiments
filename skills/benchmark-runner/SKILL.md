@@ -14,7 +14,7 @@ backend, precision, inputs, evaluator, or generation semantics.
 Read the benchmark card, `reproduce.sh`, environment instructions, scheduler configuration, input
 counts, expected output, and timing line. Confirm the source revision, workload size, device count,
 launch layout, correctness check, and output directory. If the command has not succeeded
-unprofiled, hand back to `baseline-reproduce` and stop here.
+unprofiled, hand back to `reproduce` and stop here.
 
 Copy `scripts/workload.conf.template` to a workload-local configuration and fill in:
 
@@ -69,5 +69,5 @@ profiling artifacts.
 successful unprofiled reproduction -> benchmark-runner -> separate profiling report
 ```
 
-If profiling reveals a route change, propose it under `baseline-reproduce`'s approval rule. Do not
+If profiling reveals a route change, propose it under `reproduce`'s approval rule. Do not
 edit or relaunch a benchmark route merely to make profiling easier.

@@ -145,6 +145,12 @@ def _sessions(launch: dict[str, Any], workspace: Path) -> tuple[str, list[Path],
     return "claude-code", [], None
 
 
+def _ended(launch: dict[str, Any]) -> str | None:
+    """`launch.json` `ended` in the transcripts' form (UTC with `Z`): records are filtered by string comparison."""
+    ended = launch.get("ended")
+    return _utc(ended).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z" if ended else None
+
+
 def _evaluation_dir(launch: dict[str, Any]) -> Path:
     return Path(launch["workspace"]).parent / "evaluation"
 
@@ -165,9 +171,7 @@ def score_run(launch: dict[str, Any]) -> tuple[RunEvaluation, list[CheckResult],
     harness, sessions, isolated = _sessions(launch, workspace)
     # `ended` (ISO timestamp, set in launch.json when the run's session ended) drops whatever the
     # workspace's sessions recorded afterwards.
-    ended = launch.get("ended")
-    if ended:  # transcripts stamp UTC with `Z` and are filtered by string comparison
-        ended = _utc(ended).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+    ended = _ended(launch)
     if harness == "codex":
         interventions, executions = codex_extract(sessions, ended)
         calls, slashed = codex_accesses(sessions, ended), set()
