@@ -2,17 +2,25 @@
 
 import io
 import json
+import re
 import tarfile
 import time
+from pathlib import Path
 
 import pytest
+import yaml
 
 from evaluation import prepare as prepare_module
-from evaluation.bundle import EvaluationBundleError, seal
+from evaluation.bundle import EvaluationBundleError, fill_cache_root, seal
 from evaluation.prepare import prepare
 from evaluation.task_prompt import load
 
 COMMIT = load("mlperf-language-bert").repo["commit"]
+
+
+def load_task_for_test(cache_root, task):
+    """The manifest as the scorer fills it; the synthetic bundle has no rubrics to build a whole task from."""
+    return fill_cache_root(yaml.safe_load((task / "manifest.yaml").read_text()), cache_root)
 
 
 @pytest.fixture
@@ -69,6 +77,45 @@ def test_plain_arm_has_no_skill(bundle):
 def test_local_prompt_names_no_scheduler_or_gpu_vendor(bundle):
     text = (prepare("p", "t", "plain", compute="local", autonomy=True) / "ws/prompt.md").read_text().lower()
     assert not any(word in text for word in ("slurm", "sbatch", "squeue", "sacct", "nvidia", "/tmp"))
+
+
+def make_portable(task, inputs_dir="data"):
+    held = f"{{{{CACHE_ROOT}}}}/bert-squad/{inputs_dir}"
+    (task / "prompt.md").write_text(f"Reproduce commit {COMMIT}.\nCACHE_ROOT={{{{CACHE_ROOT}}}}\n"
+                                    "SQUAD_DIR=$CACHE_ROOT/bert-squad/data\n")
+    (task / "manifest.yaml").write_text(
+        (task / "manifest.yaml").read_text() + f"input_reuse_contract:\n  allowed_cache_roots: ['{held}']\n"
+        f"artifact_paths:\n  squad: '{held}/dev.json'\nforbidden_access: ['{{{{CACHE_ROOT}}}}/bert-squad/full$']\n")
+
+
+def test_portable_task_keeps_its_digest_and_records_the_cache_directory(bundle, monkeypatch, tmp_path):
+    make_portable(bundle)
+    digest = seal("p", "t")
+    for name in ("cache-a", "cache+b.v2"):
+        monkeypatch.setenv("REPRODUCTION_CACHE_DIR", str(tmp_path / name))
+        cache = str(tmp_path / name)
+        launch = json.loads((prepare("p", "t", "plain", compute="local") / "launch.json").read_text())
+        text = Path(launch["prompt"]).read_text()
+        assert f"CACHE_ROOT={cache}\n" in text and "{{" not in text
+        assert launch["bundle_digest"] == digest and launch["cache_root"] == cache
+        assert f"{cache}/bert-squad/data" in launch["access_scope"]["allowed"] and cache in launch["access_scope"]["guarded"]
+        monkeypatch.setenv("REPRODUCTION_CACHE_DIR", str(tmp_path / "changed-after-launch"))
+        task = load_task_for_test(launch["cache_root"], bundle)
+        assert task["artifact_paths"]["squad"] == f"{cache}/bert-squad/data/dev.json"
+        assert re.search(task["forbidden_access"][0], f"cat {cache}/bert-squad/full")
+        time.sleep(1.1)  # run folders are named by the second
+
+
+def test_portable_task_whose_manifest_names_other_inputs_does_not_seal(bundle):
+    make_portable(bundle, inputs_dir="data-c4")
+    with pytest.raises(EvaluationBundleError, match="inputs and the manifest differ"):
+        seal("p", "t")
+
+
+def test_cache_directory_must_not_hold_the_runs_or_bundles(bundle, monkeypatch, tmp_path):
+    monkeypatch.setenv("REPRODUCTION_CACHE_DIR", str(tmp_path))
+    with pytest.raises(SystemExit, match="overlap"):
+        prepare("p", "t", "plain", compute="local")
 
 
 def test_unanswered_compute_wording_refuses_launch(bundle):

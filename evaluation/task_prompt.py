@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
 import warnings
 from pathlib import Path
@@ -21,11 +20,12 @@ from string import Template
 
 from pydantic import BaseModel, ConfigDict
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+from .cache import PLACEHOLDER, REPO_ROOT, local_path, portable_path
+
 DATASET_DIR = REPO_ROOT / "dataset" / "tasks"
 TEMPLATE = REPO_ROOT / "skills" / "agent-evaluation-profile" / "assets" / "task_prompt.md"
-# docs/local-preferences.md, section 5: the shared uv cache in this repository's root.
-UV_CACHE = REPO_ROOT / ".cache" / "uv"
+# docs/local-preferences.md, section 5: the shared uv cache in the cache directory.
+UV_CACHE = f"{PLACEHOLDER}/uv"
 # How the prompt names each tasks.json field; only the fields some selected task has are named.
 FIELDS = {"id": "`id`", "task_prompt": "`task_prompt` (what to run)", "results": "`results` (the values to report)",
           "outputs": "`outputs` (files to write to OUTPUT_DIR)",
@@ -36,7 +36,7 @@ FIELDS = {"id": "`id`", "task_prompt": "`task_prompt` (what to run)", "results":
 
 class Input(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    path: str  # relative to this repository's root
+    path: str  # `.cache/...` in the cache directory, otherwise relative to this repository's root
     holds: str | None = None
 
 
@@ -78,12 +78,6 @@ def load(source_id: str) -> Source:
     return Source.model_validate(json.loads((DATASET_DIR / f"{source_id}.json").read_text()))
 
 
-def cache_root(policy: Policy) -> Path | None:
-    """The path prefix the inputs and the uv cache share, stated once in the prompt as CACHE_ROOT."""
-    paths = [REPO_ROOT / i.path for i in (policy.inputs or {}).values()]
-    return Path(os.path.commonpath([*paths, UV_CACHE])) if len(paths) > 1 else None
-
-
 def _flat(text: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"\\[ \t]*\n", " ", text)).strip()
 
@@ -92,9 +86,10 @@ def undocumented_commands(source: Source, tasks: list[Task]) -> list[str]:
     """Backticked commands in a `task_prompt` that the task directory's docs do not give whole; only a
     `$VAR`/`${VAR}`/`$(VAR)` may stand for another variable. An abbreviated command drops flags that define the route.
     Advisory: a task may cover a combination the docs omit, and then the agent starts from the documented flags."""
-    directory = (REPO_ROOT / source.repo["path"]).resolve() / source.repo.get("directory", "")
+    clone = local_path(source.repo["path"])
+    directory = clone.resolve() / source.repo.get("directory", "")
     if not directory.is_dir():
-        raise SystemExit(f"{source.source_id}: {directory} is missing; clone {source.repo.get('url')} into {source.repo['path']} "
+        raise SystemExit(f"{source.source_id}: {directory} is missing; clone {source.repo.get('url')} into {clone} "
                          f"and check out {source.repo['commit']}: the task_prompt commands are checked against its docs")
     docs = " ".join(_flat(p.read_text(errors="ignore")) for p in sorted(directory.rglob("*"))
                     if p.is_file() and (p.suffix in (".md", ".yaml", ".yml", ".sh") or p.name == "Makefile")
@@ -146,13 +141,13 @@ def render(source: Source, task_ids: list[str] | None = None) -> tuple[str, str]
     unknown = sorted(set(overrides) - set(policy.inputs or {}))
     if unknown:
         raise SystemExit(f"{source.source_id}: task input_path_overrides names unknown policy input(s) {', '.join(unknown)}")
-    paths = {name: REPO_ROOT / overrides.get(name, i.path) for name, i in (policy.inputs or {}).items()}
-    root = cache_root(policy)
-    if root is not None:  # a path prefix shared by the paths is stated once
-        paths = {name: f"$CACHE_ROOT/{p.relative_to(root)}" for name, p in paths.items()}
-        uv_cache = f"$CACHE_ROOT/{UV_CACHE.relative_to(root)}"
-    else:
-        uv_cache = str(UV_CACHE)
+    paths = {name: portable_path(overrides.get(name, i.path)) for name, i in (policy.inputs or {}).items()}
+    # With several inputs, all in the cache directory, that directory is stated once.
+    root = PLACEHOLDER if len(paths) > 1 and all(p.startswith(PLACEHOLDER) for p in paths.values()) else None
+    uv_cache = UV_CACHE
+    if root:
+        paths = {name: p.replace(root, "$CACHE_ROOT", 1) for name, p in paths.items()}
+        uv_cache = uv_cache.replace(root, "$CACHE_ROOT", 1)
     python = source.model_extra.get("language") == "Python"  # the uv cache is named only where uv is used
     uv_cache = f"\nShared package cache: UV_CACHE_DIR={uv_cache} (use no other cache location).\n" if python else ""
     if policy.inputs:

@@ -5,6 +5,7 @@ import json
 import pytest
 
 from evaluation import task_prompt
+from evaluation.cache import PLACEHOLDER
 from evaluation.task_prompt import DATASET_DIR, REPO_ROOT, load, render
 
 
@@ -25,7 +26,8 @@ def test_every_answered_source_renders_every_task_with_its_record():
         text, tasks = render(source)
         assert "$" not in text.replace("$(", "").replace("$CACHE_ROOT", "")  # every template slot was filled
         if len(source.policy.inputs or {}) > 1:  # a shared path prefix is stated once, as CACHE_ROOT
-            assert text.count(str(REPO_ROOT)) == 1
+            assert f"CACHE_ROOT={PLACEHOLDER}\n" in text
+        assert str(REPO_ROOT / ".cache") not in text  # a rendered prompt names no machine's cache directory
         assert json.loads(tasks) == [t.model_dump(exclude_none=True, exclude={"selector_id", "input_path_overrides", "forbidden_override"})
                                      for t in source.tasks]
         assert not any(t.task_prompt in text for t in source.tasks)  # per-target fields only in tasks.json

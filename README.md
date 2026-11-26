@@ -160,6 +160,8 @@ To launch a task from this study:
 2. Set up the task's inputs (dataset and model checkpoint), which are not included. Some manifests contain absolute paths from the original machine.
 
    The bundled prompts record what the past runs received, including the original machine's paths, GPU and scheduling instruction, so do not edit them. The [study records](dataset/tasks/mlperf-c0-c6/) now state only the hardware on the `Platform:` line and leave scheduling to the `Compute:` paragraph that `evaluation.prepare` appends. A prompt rendered from them therefore differs from the bundled one and needs a newly sealed bundle.
+
+   [`dataset/mlperf-c0-c6-portable/`](dataset/mlperf-c0-c6-portable/README.md) is such a bundle for BERT v1 C0, C2 and C4, with a configurable cache directory.
 3. Answer [`docs/local-preferences.md`](docs/local-preferences.md), set `REPRODUCTION_RUNS_DIR`, and run `python -m evaluation.prepare reproduce <version>/<condition> --arm <arm>`.
 
 A task whose manifest lists `prior_artifacts` also needs `--trial <n>`. `prepare` copies selected files from the earlier run of the same arm and trial into `ws/prior-artifacts/`, read-only. The `v2` manifests point to run folders on the original machine, which are not included. A full prepare, run and score cycle has not been tested from this repository.
@@ -206,9 +208,10 @@ skills/
   agent-evaluation-profile/    harness skill: set up a task and prepare each arm's workspace
   SOURCES.json                 package names, the agent each targets, and file digests
 .claude/skills/, .agents/skills/   links that load the harness skill in this repository
-evaluation/                    task_prompt.py (render prompts), bundle.py (seal bundles), prepare.py (build arm workspaces), launch.py (start and freeze runs), scorer.py, checkers.py, transcript.py, schema.py (score a frozen run), departures.py, table.py (see Experiments)
+evaluation/                    cache.py (cache directory), task_prompt.py (render prompts), bundle.py (seal bundles), prepare.py (build arm workspaces), launch.py (start and freeze runs), scorer.py, checkers.py, transcript.py, schema.py (score a frozen run), departures.py, table.py (see Experiments)
 dataset/tasks/                 task records (MLPerf Inference and other benchmarks)
 dataset/mlperf-c0-c6/          C0–C6 task bundles and run outputs
+dataset/mlperf-c0-c6-portable/ BERT v1 C0, C2 and C4 bundles with a configurable cache directory
 dataset/failure_taxonomy/      labels for failed tool calls
 docs/reports/                  C0–C6 result sheets
 docs/local-preferences.md      deployment answers, filled by the agent on first use

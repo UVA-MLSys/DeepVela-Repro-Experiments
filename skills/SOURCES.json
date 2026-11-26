@@ -106,7 +106,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "feb1acef8471eb9b7f7954ceba954813fd3725c1df2ba299e4067a346ece8593"
+          "sha256": "4fdd84a2d6feabd8c4572f780fbdbb4adbaac7466361c8952e048704e58942cf"
         },
         {
           "path": "assets/bundle.yaml",
@@ -122,7 +122,7 @@
         },
         {
           "path": "references/rubric-authoring.md",
-          "sha256": "bb4681282ee413c68c38955547c04992d4eba38902a2812a5e2602218041255b"
+          "sha256": "74d7a4df71e77f8e8468d0116992ad208d6f6121c23b97068689c7dac4553a0c"
         }
       ]
     }

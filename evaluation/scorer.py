@@ -102,6 +102,11 @@ def outside_scope(target: str, scope: dict | None) -> list[str]:
     `access_scope`, written by `evaluation.prepare`); empty for a launch record without one."""
     if not scope:
         return []
+    if root := scope.get("cache_root"):  # absent in launch records that predate the cache setting
+        # `$CACHE_ROOT/x` names a path in the cache. Setting the variable to the directory reads nothing.
+        target = re.sub(r"\$(?:CACHE_ROOT\b|\{CACHE_ROOT\})(?=/)", lambda _: root, target)
+        assigned = r"(CACHE_ROOT(?::[-=]|=)(?:\\?[\"'])?)" + re.escape(root) + r"/?(?![^\s\"'\\;&|})])"
+        target = re.sub(assigned, r"\1", target)
     within = lambda path, root: path == root or path.startswith(root.rstrip("/") + "/")
     return [p for p in (m.rstrip("/.") or "/" for m in _ABS_PATH.findall(target))
             if any(within(p, g) for g in scope["guarded"]) and not any(within(p, a) for a in scope["allowed"])]
@@ -162,7 +167,7 @@ def score_run(launch: dict[str, Any]) -> tuple[RunEvaluation, list[CheckResult],
     if "ended" in launch and not launch["ended"]:
         raise IntegrityFailure("run is not frozen: run evaluation.launch --freeze-only <launch.json>")
     profile = load_profile(launch["profile_id"])
-    task = load_task(profile, launch["task_id"])
+    task = load_task(profile, launch["task_id"], launch.get("cache_root"))
     digest = bundle_digest(profile_dir(profile.profile_id), launch["task_id"])
     if launch["bundle_digest"] != digest:
         raise IntegrityFailure(f"run launched against bundle digest {launch['bundle_digest']}, bundle is now {digest}")

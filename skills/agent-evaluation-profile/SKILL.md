@@ -37,7 +37,8 @@ answer.
 - Install the Python dependencies once: `python -m pip install -r requirements.txt`.
 - Run every `evaluation.*` command from the repository root with `EVALUATION_BUNDLE_DIR`,
   `REPRODUCTION_RUNS_DIR` and `EVALUATION_JUDGE` set from those answers (sections 1, 2 and 4). The
-  code has no default for any of them.
+  code has no default for any of them. When the cache directory answer (section 5) is not the default,
+  also set `REPRODUCTION_CACHE_DIR` for `evaluation.task_prompt` and `evaluation.prepare`.
 - For scheduler runs, ask the account, partition and GPU items only when the user says runs go through
   Slurm, and fill the Compute wordings from those answers.
 - Never write a deployment answer into this skill, its references, or the code.
@@ -72,7 +73,7 @@ newest `<arm>-*` run under `<runs root>/<task_id>/` and say which one. Do not as
 ## Author mode
 
 1. Find or write the dataset record `dataset/tasks/<source_id>.json` ([schema](../../docs/dataset-schema.md)).
-   Clone `repo.url` into `repo.path` if the clone is missing, then check out `repo.commit` in it, every time:
+   Clone `repo.url` into `repo.path` (a `.cache/...` path is in the cache directory) if the clone is missing, then check out `repo.commit` in it, every time:
    records share clones (every MLPerf record uses `.cache/sources/inference`), so the clone may be at another
    record's commit. Ask the user to approve the commit when the record is new.
    Read the task repository's own documentation, evaluator, and configuration first. Every rubric
@@ -135,6 +136,9 @@ newest `<arm>-*` run under `<runs root>/<task_id>/` and say which one. Do not as
      --out <task folder>/prompt.md
    ```
 
+   - The rendered prompt writes the cache directory as `{{CACHE_ROOT}}`. Write the same placeholder in the
+     manifest's cache paths and `forbidden_access` patterns, quoted in YAML
+     ([cache conditions](references/rubric-authoring.md#cold-and-warm-cache-conditions)).
    - The template, [assets/task_prompt.md](assets/task_prompt.md), is fixed, as CORE-Bench's
      `benchmark_prompts.json` is; only the record varies.
    - `--out` also writes `tasks.json` beside the prompt: the selected tasks' records, which the

@@ -8,7 +8,7 @@ can be. Nothing task-specific belongs here: task answers go into the task's data
 An item reads `Answer: unanswered` until it is answered. A `{{...}}` value in a Compute wording is unanswered;
 `evaluation.prepare` refuses to launch with one left in the wording it uses.
 
-Contents: 1 Bundle root; 2 Runs root; 3 Compute and environment; 4 Study; 5 Shared caches.
+Contents: 1 Bundle root; 2 Runs root; 3 Compute and environment; 4 Study; 5 Shared cache directory.
 
 ## 1. Bundle root
 
@@ -101,9 +101,17 @@ Choices that hold for every task of one study ([protocol](../skills/agent-evalua
 - Help level: autonomous (`--autonomy`, no human replies) or interactive (the user answers the agent).
   Recommendation: autonomous for comparisons between arms. Answer: unanswered
 
-## 5. Shared caches
+## 5. Shared cache directory
 
-Every cache, dataset and package store is shared across runs and arms, never made per run: the uv package cache
-at `.cache/uv`, raw inputs under `.cache/<task_id>/`, and benchmark source clones under `.cache/sources/`, all in
-this repository's root. Each task prompt names `UV_CACHE_DIR` and the input paths. Only generated artifacts
-(environments, preprocessed data, logs, outputs) are per run.
+Every cache, dataset and package store is shared across runs and arms, never made per run: in the cache directory,
+the uv package cache at `uv/`, raw inputs under `<task_id>/`, and benchmark source clones under `sources/`. Task
+records name these paths as `.cache/...`. Each task prompt names `UV_CACHE_DIR` and the input paths. Only generated
+artifacts (environments, preprocessed data, logs, outputs) are per run.
+
+The directory is set by `REPRODUCTION_CACHE_DIR`. It must not contain the repository, and must not overlap the bundle
+root or the runs root. It holds inputs, packages and source clones only: keep reports, backups and other work
+elsewhere, because a run can list the names in it.
+
+Recommendation: `.cache` in this repository's root, the default when the variable is unset.
+
+Answer: unanswered

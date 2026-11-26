@@ -16,6 +16,7 @@ from typing import Any
 import yaml
 from pydantic import ValidationError
 
+from .cache import PLACEHOLDER
 from .schema import EvaluationProfile, EvaluationTask, PhaseRubric
 
 BUNDLE_ROOT_ENV_VAR = "EVALUATION_BUNDLE_DIR"
@@ -173,13 +174,31 @@ def rubric_closure(rubrics: list[PhaseRubric], target: str) -> list[PhaseRubric]
     return [r for r in rubrics if r.rubric_id in wanted]
 
 
-def load_task(profile: EvaluationProfile, task_id: str) -> EvaluationTask:
+def fill_cache_root(manifest: dict[str, Any], cache_root: str) -> dict[str, Any]:
+    """The manifest with PLACEHOLDER replaced: literally in paths, escaped in the `forbidden_access` regexes."""
+    def fill(value: Any, replacement: str) -> Any:
+        if isinstance(value, str):
+            return value.replace(PLACEHOLDER, replacement)
+        if isinstance(value, list):
+            return [fill(v, replacement) for v in value]
+        if isinstance(value, dict):
+            return {k: fill(v, replacement) for k, v in value.items()}
+        return value
+    return {k: fill(v, re.escape(cache_root) if k == "forbidden_access" else cache_root) for k, v in manifest.items()}
+
+
+def load_task(profile: EvaluationProfile, task_id: str, cache_root: str | None = None) -> EvaluationTask:
     """Assemble an `EvaluationTask` from the task's `manifest.yaml` plus each phase's rubric
-    files. A template promoted to the profile-wide `rubrics/` wins over the task's own copy."""
+    files. A template promoted to the profile-wide `rubrics/` wins over the task's own copy.
+    `cache_root` fills a portable manifest; a run's is the one its `launch.json` records."""
     folder = profile_dir(profile.profile_id)
     task_folder = task_dir(folder, task_id)
     manifest_path = task_folder / "manifest.yaml"
     manifest = load_yaml(manifest_path, what=f"task manifest for {task_id!r}")
+    if cache_root is not None:
+        manifest = fill_cache_root(manifest, cache_root)
+    elif PLACEHOLDER in yaml.safe_dump(manifest, width=10**9):
+        raise EvaluationBundleError(f"{manifest_path} holds {PLACEHOLDER}: pass the cache directory the run was prepared with")
     if manifest.get("profile_id") != profile.profile_id or manifest.get("profile_version") != profile.profile_version:
         raise EvaluationBundleError(f"{manifest_path} names profile {manifest.get('profile_id')!r} v{manifest.get('profile_version')}, expected {profile.profile_id!r} v{profile.profile_version}")
 
@@ -226,6 +245,24 @@ def check_task_manifest(profile_id: str, task_id: str) -> None:
     prompt = folder / "prompt.md"
     if not prompt.is_file() or commit not in prompt.read_text():
         raise EvaluationBundleError(f"{prompt} does not state commit {commit}: render it again from the record")
+    if PLACEHOLDER in prompt.read_text():
+        check_cache_inputs(manifest, prompt.read_text(), folder)
+
+
+def check_cache_inputs(manifest: dict[str, Any], prompt: str, folder: Path) -> None:
+    """In a portable task, the manifest's cache paths agree with the inputs the prompt gives, so the access rule
+    and the input rubrics cover the paths the agent is told to use."""
+    found = re.findall(r"^\w+=(?:\$CACHE_ROOT|\{\{CACHE_ROOT\}\})(/\S+)$", prompt, re.M)
+    inputs = [PLACEHOLDER + path for path in found]
+    within = lambda path, roots: any(path == r or path.startswith(r + "/") for r in roots)
+    allowed = (manifest.get("input_reuse_contract") or {}).get("allowed_cache_roots", [])
+    undeclared = [p for p in inputs if not within(p, allowed)]
+    unused = [r for r in allowed if r.startswith(PLACEHOLDER) and not any(within(p, [r]) or within(r, [p]) for p in inputs)]
+    stray = [p for p in (manifest.get("artifact_paths") or {}).values() if p.startswith(PLACEHOLDER) and not within(p, inputs)]
+    if undeclared or unused or stray:
+        raise EvaluationBundleError(f"{folder}: the prompt's inputs and the manifest differ: inputs outside "
+                                    f"allowed_cache_roots {undeclared}; allowed_cache_roots the prompt does not give "
+                                    f"{unused}; artifact_paths outside the inputs {stray}")
 
 
 def seal(profile_id: str, task_id: str) -> str:

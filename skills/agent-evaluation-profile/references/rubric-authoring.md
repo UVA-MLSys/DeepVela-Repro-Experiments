@@ -191,12 +191,23 @@ never inheritable in any condition. State that in the task manifest's input-reus
 ```yaml
 input_reuse_contract:
   cache_condition_id: warm_raw_inputs_v1
-  allowed_cache_roots: [.cache/3d-unet-kits19/kits19_raw_data, .cache/3d-unet-kits19/model]
+  allowed_cache_roots: ["{{CACHE_ROOT}}/3d-unet-kits19/kits19_raw_data", "{{CACHE_ROOT}}/3d-unet-kits19/model"]
   allowed_artifact_classes: [raw_dataset_download, model_checkpoint_download]
   package_cache_class: pip_wheel_cache     # declared separately; it changes environment build time
   forbidden_artifact_classes: [environment, preprocessed_data, converted_model, log, output, metric]
   required_identity_and_hashes: [...]
 ```
+
+`{{CACHE_ROOT}}` stands for the deployment's cache directory in `allowed_cache_roots`, `artifact_paths` and
+`forbidden_access`, so the bundle and its digest are the same on every machine. `evaluation.prepare` fills it in and
+records the directory in `launch.json`; the scorer reads it from there and escapes it in the patterns. Quote each
+value in YAML. Sealing fails unless every input the prompt names is under an `allowed_cache_roots` entry, every
+entry is one the prompt gives, and every cache `artifact_paths` entry is under an input.
+
+The access rule allows a run only these entries and the package cache within the cache directory, and flags
+everything else there. The monitor reads paths in the transcript's text. It expands `$CACHE_ROOT/...` and passes an
+assignment to `CACHE_ROOT`, but follows no other variable and no relative path, so review each flagged call and do
+not treat a clean result as proof of no access. Storing the directory under another variable name is flagged.
 
 For the cold condition, name per-run cache roots in `allowed_cache_roots` instead of the
 deployment's shared cache locations. Otherwise the shared `HF_HOME`, `HF_HUB_CACHE`, and

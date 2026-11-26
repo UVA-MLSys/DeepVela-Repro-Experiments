@@ -28,7 +28,8 @@ from pathlib import Path
 
 import yaml
 
-from .bundle import bundle_digest, check_id, profile_dir as bundle_profile_dir, resolve_bundle_root, task_dir as bundle_task_dir
+from .cache import PLACEHOLDER, local_path, resolve_cache_root
+from .bundle import bundle_digest, check_id, fill_cache_root, profile_dir as bundle_profile_dir, resolve_bundle_root, task_dir as bundle_task_dir
 from .task_prompt import load as load_record
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -140,14 +141,22 @@ def install_skills(ws: Path, skills: list[str]) -> None:
                             ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "tests"))
 
 
-def access_scope(source_id: str | None, ws: Path, runs_root: Path) -> dict | None:
+def access_scope(source_id: str | None, ws: Path, runs_root: Path, cache_root: Path, inputs: list[str]) -> dict | None:
     """What the scorer flags as outside the task's access rule: inside `guarded` (this repository, which holds the
-    harness and other tasks' records, and the runs root, which holds every other run), the session may touch only
-    `allowed` and below: its own workspace and the repository's `.cache`, which holds input caches, tools and cloned
-    sources, none of them a result. Answers are guarded by the task's `forbidden_access` patterns, not by location."""
+    harness and other tasks' records; the runs root, which holds every other run; and the cache directory), the
+    session may touch only `allowed` and below: its own workspace, the package cache, and the task's `inputs`.
+    Everything else in the cache directory, such as other tasks' inputs, unmasked copies and source clones, is
+    flagged."""
     if source_id is None:
         return None
-    return {"guarded": [str(REPO_ROOT), str(runs_root)], "allowed": [str(ws), str(REPO_ROOT / ".cache")]}
+    return {"guarded": [str(REPO_ROOT), str(runs_root), str(cache_root)],
+            "allowed": [str(ws), str(cache_root / "uv"), *inputs], "cache_root": str(cache_root)}
+
+
+def task_inputs(manifest: dict) -> list[str]:
+    """The cache paths the task declares, `input_reuse_contract.allowed_cache_roots`, on this machine."""
+    declared = (manifest.get("input_reuse_contract") or {}).get("allowed_cache_roots", [])
+    return [str(path if (path := Path(p)).is_absolute() else local_path(p)) for p in declared]
 
 
 def _copy_prior_workspace(source: Path, destination: Path, arm: str, trial: int, targets: set[str]) -> dict:
@@ -235,6 +244,8 @@ def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None,
     digest = bundle_digest(profile_dir, task_id)
     wording = compute_wording()
     manifest = yaml.safe_load((task_dir / "manifest.yaml").read_text()) or {}
+    cache_root = resolve_cache_root()
+    manifest = fill_cache_root(manifest, str(cache_root))
     source_id = manifest.get("source_id")
     if compute is None:
         compute = load_record(source_id).policy.compute if source_id else None
@@ -252,19 +263,23 @@ def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None,
         raise SystemExit(f"{RUNS_ROOT_ENV_VAR} is not set: take it from docs/local-preferences.md, section 2")
     runs_root = Path(runs_root).expanduser().resolve()
     check_disjoint({"repository": REPO_ROOT, "bundle root": resolve_bundle_root(), "runs root": runs_root})
+    check_disjoint({"cache directory": cache_root, "bundle root": resolve_bundle_root()})
+    check_disjoint({"cache directory": cache_root, "runs root": runs_root})
+    if REPO_ROOT.is_relative_to(cache_root):
+        raise SystemExit(f"cache directory {cache_root} contains the repository: choose another")
     root = runs_root / task_id / f"{arm}-{dt.datetime.now():%Y-%m-%d-%H-%M-%S}"
     ws = root / "ws"
     (ws / "repo").mkdir(parents=True)
     with tarfile.open(source) as archive:
         archive.extractall(ws / "repo", filter="data")
-    shutil.copyfile(task_dir / "tasks.json", ws / "tasks.json")
+    (ws / "tasks.json").write_text((task_dir / "tasks.json").read_text().replace(PLACEHOLDER, str(cache_root)))
     prior_artifacts = _stage_prior_artifacts(manifest, arm, trial, ws)
     (ws / ".claude").mkdir()
     (ws / ".claude" / "settings.json").write_text(json.dumps({"claudeMdExcludes": [str(USER_CLAUDE_MD)]}, indent=2) + "\n")
     skills = SKILL_FOR_ARM[arm]
     install_skills(ws, skills)
     shared = {"local": LOCAL_SHARED_ENVIRONMENT_INSTRUCTION, "cpu": CPU_SHARED_ENVIRONMENT_INSTRUCTION}.get(compute, SHARED_ENVIRONMENT_INSTRUCTION)
-    text = prompt.read_text().rstrip("\n")
+    text = prompt.read_text().replace(PLACEHOLDER, str(cache_root)).rstrip("\n")
     text += "\n\n" + wording[compute] + " " + REPRODUCE_REQUIREMENT[compute]
     text += "\n\n" + shared + " " + WORKSPACE_INSTRUCTION + "\n"
     if prior_artifacts:
@@ -299,7 +314,8 @@ def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None,
         "skill": skills[-1] if skills else None,
         "skills": skills, "compute": compute,
         "trial": trial, "prior_artifacts": prior_artifacts,
-        "access_scope": access_scope(source_id, ws, runs_root), "autonomy": autonomy, "model": model, "effort": effort,
+        "cache_root": str(cache_root),
+        "access_scope": access_scope(source_id, ws, runs_root, cache_root, task_inputs(manifest)), "autonomy": autonomy, "model": model, "effort": effort,
         "codex_home": str(codex_home), "codex_command": codex_command(root, ws, autonomy),
         "prepared": dt.datetime.now().astimezone().isoformat(timespec="seconds"),
     }
