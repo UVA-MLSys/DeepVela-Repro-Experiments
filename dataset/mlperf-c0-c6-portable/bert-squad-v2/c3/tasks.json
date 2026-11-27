@@ -1,0 +1,3 @@
+[
+{"id": "bert-squad", "task_prompt": "Run `python3 run.py --backend=pytorch --accuracy` (scenario Offline, the default) on the BERT-Large fp32 model in MODEL_DIR over the supplied SQuAD v1.1 validation set, then accuracy-squad.py (which calls evaluate_v1.1.py) on its LoadGen accuracy log.", "results": ["exact_match", "f1"], "outputs": {"mlperf_log_accuracy.json": "LoadGen's accuracy log", "mlperf_log_detail.txt": "LoadGen's detail log", "accuracy.txt": "the evaluator's stdout"}, "log_lines": {"pytorch device: ": "the device the model's parameters are on"}, "hints": ["Set UV_EXCLUDE_NEWER=2026-11-10 for every uv package-resolution command."]}
+]

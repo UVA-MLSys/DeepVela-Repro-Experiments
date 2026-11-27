@@ -1,0 +1,8 @@
+Condition: C3
+Pinned source: 3fbc329939999c13d0a7b5e67fb2092287e06047
+
+Masked or removed:
+- README.md: KiTS19 external links, dataset acquisition commands, and setup/download instructions
+- Makefile: download_kits19_and_duplicate and download_kits19_raw_data acquisition targets; duplicate rule retained
+
+Published README results (mean = 0.86170, kidney = 0.9347, tumor = 0.7887) are visible in this view.

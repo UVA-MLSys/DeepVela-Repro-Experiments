@@ -2,6 +2,7 @@
 
 import hashlib
 import io
+import shutil
 import json
 import re
 import tarfile
@@ -267,3 +268,58 @@ def test_prior_artifacts_are_staged_read_only_per_trial_and_arm(bundle, tmp_path
         assert (root / "ws/prior-artifacts" / label / "provenance.json").is_file()
     assert "./prior-artifacts/v4, ./prior-artifacts/v5" in (root / "ws/prompt.md").read_text()
     assert set(json.loads((root / "launch.json").read_text())["prior_artifacts"]["sources"]) == {"v4", "v5"}
+
+
+def make_v2(bundle):
+    """A second task in the bundle that stages the same arm and trial of task t."""
+    v2 = bundle.parent / "v2"
+    shutil.copytree(bundle, v2)
+    (v2 / "manifest.yaml").write_text((v2 / "manifest.yaml").read_text().replace("task_id: t\n", "task_id: v2\n")
+                                      + "prior_artifacts:\n  source_task: t\n")
+    seal("p", "v2")
+
+
+def finish_v1(trial, frozen=True):
+    root = prepare("p", "t", "plain", compute="local", trial=trial)
+    (root / "ws/reproduce.sh").write_text("echo v1\n")
+    launch = json.loads((root / "launch.json").read_text())
+    launch["ended"] = "2026-11-26T00:00:00Z" if frozen else None
+    (root / "launch.json").write_text(json.dumps(launch))
+    time.sleep(1.1)  # run folders are named by the second
+    return root
+
+
+def test_v2_stages_the_finished_v1_run_of_the_same_arm_and_trial(bundle):
+    make_v2(bundle)
+    with pytest.raises(SystemExit, match="found 0"):
+        prepare("p", "v2", "plain", compute="local", trial=1)
+    assert not (bundle.parents[3] / "runs/v2").exists()  # a refused launch creates nothing
+    finish_v1(1, frozen=False)
+    finish_v1(2)
+    with pytest.raises(SystemExit, match="not frozen.*trial 2"):
+        prepare("p", "v2", "plain", compute="local", trial=1)
+    v1 = finish_v1(1)
+    root = prepare("p", "v2", "plain", compute="local", trial=1)
+    staged = root / "ws/prior-artifacts"
+    assert (staged / "reproduce.sh").read_text() == "echo v1\n"
+    assert json.loads((staged / "provenance.json").read_text())["source_workspace"] == str((v1 / "ws").resolve())
+    with pytest.raises(SystemExit, match="found 0"):  # another arm's run is never staged
+        prepare("p", "v2", "skill", compute="local", trial=1)
+
+
+def test_several_matching_runs_need_prior_run(bundle):
+    make_v2(bundle)
+    first, second = finish_v1(1), finish_v1(1)
+    with pytest.raises(SystemExit, match="found 2.*--prior-run"):
+        prepare("p", "v2", "plain", compute="local", trial=1)
+    root = prepare("p", "v2", "plain", compute="local", trial=1, prior_run=first)
+    assert json.loads((root / "ws/prior-artifacts/provenance.json").read_text())["source_workspace"] == str((first / "ws").resolve())
+
+
+def test_v1_run_of_another_bundle_version_is_not_staged(bundle):
+    make_v2(bundle)
+    finish_v1(1)
+    (bundle / "masked.txt").write_text("Changed after the v1 run.\n")
+    seal("p", "t")
+    with pytest.raises(SystemExit, match="another bundle version"):
+        prepare("p", "v2", "plain", compute="local", trial=1)

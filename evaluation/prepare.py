@@ -1,7 +1,7 @@
 """Builds one arm's workspace for a reproduction run, so every run of a task starts the same way
 (protocol.md, "Launch"). Run by `agent-evaluation-profile` launch mode, from a chat in this repository:
 
-    python -m evaluation.prepare <profile_id> <task_id> --arm {plain,skill,builder-skill} [--trial N] [--compute {slurm,local,hybrid,cpu}] [--autonomy] [--model ID] [--effort LEVEL]
+    python -m evaluation.prepare <profile_id> <task_id> --arm {plain,skill,builder-skill} [--trial N [--prior-run DIR]] [--compute {slurm,local,hybrid,cpu}] [--autonomy] [--model ID] [--effort LEVEL]
 
 Without --compute, the Compute wording is the dataset `policy.compute` of the manifest's `source_id`.
 
@@ -222,33 +222,76 @@ def _copy_prior_workspace(source: Path, destination: Path, arm: str, trial: int,
     return provenance
 
 
-def _stage_prior_artifacts(manifest: dict, arm: str, trial: int | None, ws: Path) -> dict | None:
-    """Copy the configured same-arm, same-trial run products into this run's access scope.
+def find_prior_run(runs_root: Path, profile_id: str, source_task: str, arm: str, trial: int,
+                   prior_run: Path | None = None) -> Path:
+    """The workspace of the finished run of `source_task` with this arm and trial, under the runs root.
 
-    A source is one workspace path, staged at ./prior-artifacts, or a mapping label -> path (one entry per
-    earlier campaign), staged at ./prior-artifacts/<label>.
-    """
+    The run must be frozen and launched against the source task's current bundle, so a v2 task stages only results
+    of this bundle's v1 task. `prior_run` names the run directory when several match."""
+    digest = bundle_digest(bundle_profile_dir(profile_id), source_task)
+    if prior_run is not None:
+        candidates = [prior_run.expanduser().resolve() / "launch.json"]
+    else:
+        candidates = sorted((runs_root / source_task).glob(f"{arm}-*/launch.json"))
+    matching, rejected = [], []
+    for path in candidates:
+        launch = json.loads(path.read_text()) if path.is_file() else {}
+        reasons = [why for why, failed in (
+            ("not this task", launch.get("task_id") != source_task), (f"arm {launch.get('arm')!r}", launch.get("arm") != arm),
+            (f"trial {launch.get('trial')!r}", launch.get("trial") != trial), ("not frozen", not launch.get("ended")),
+            ("another bundle version", launch.get("bundle_digest") != digest)) if failed]
+        (rejected.append(f"{path.parent.name}: {', '.join(reasons)}") if reasons else matching.append(path.parent))
+    if len(matching) != 1:
+        found = "; ".join(rejected) or "none"
+        raise SystemExit(f"need exactly one finished {source_task} run with arm {arm!r} and trial {trial} under "
+                         f"{runs_root / source_task}, found {len(matching)} ({found}). Launch that run with --trial {trial}, "
+                         "or name one with --prior-run <run dir>")
+    return matching[0] / "ws"
+
+
+def prior_sources(manifest: dict, arm: str, trial: int | None, runs_root: Path, profile_id: str,
+                  prior_run: Path | None = None) -> Path | dict[str, Path] | None:
+    """The earlier workspace(s) a task stages, checked before a run directory exists."""
     config = manifest.get("prior_artifacts")
     if config is None:
         return None
     if trial is None:
         raise SystemExit("this task configures prior artifacts, so --trial is required")
-    trials = config.get("trials", {})
+    if "trials" not in config:
+        return find_prior_run(runs_root, profile_id, config["source_task"], arm, trial, prior_run)
+    trials = config["trials"]
     trial_sources = trials.get(trial, trials.get(str(trial), {}))
     source_value = trial_sources.get(arm) if isinstance(trial_sources, dict) else None
     if not source_value:
         raise SystemExit(f"manifest prior_artifacts has no source for trial {trial}, arm {arm!r}")
-    root = ws / "prior-artifacts"
+    paths = source_value if isinstance(source_value, dict) else {None: source_value}
+    resolved = {label: Path(path).expanduser().resolve() for label, path in paths.items()}
+    if missing := [str(path) for path in resolved.values() if not path.is_dir()]:
+        raise SystemExit(f"configured prior-artifact workspace does not exist: {', '.join(missing)}")
+    return resolved if isinstance(source_value, dict) else resolved[None]
+
+
+def _stage_prior_artifacts(manifest: dict, arm: str, trial: int | None, ws: Path,
+                           sources: Path | dict[str, Path] | None) -> dict | None:
+    """Copy the configured same-arm, same-trial run products into this run's access scope.
+
+    `source_task` alone names the earlier task, whose run is found under the runs root (find_prior_run).
+    Otherwise `trials` gives each source: one workspace, staged at ./prior-artifacts, or a mapping label -> workspace
+    (one entry per earlier campaign), staged at ./prior-artifacts/<label>.
+    """
+    if sources is None:
+        return None
     targets = set(manifest.get("targets", {}))
-    if isinstance(source_value, dict):
-        return {"sources": {label: _copy_prior_workspace(Path(path).expanduser().resolve(), root / label, arm, trial, targets)
-                            for label, path in source_value.items()}}
-    return _copy_prior_workspace(Path(source_value).expanduser().resolve(), root, arm, trial, targets)
+    root = ws / "prior-artifacts"
+    if isinstance(sources, dict):
+        return {"sources": {label: _copy_prior_workspace(path, root / label, arm, trial, targets)
+                            for label, path in sources.items()}}
+    return _copy_prior_workspace(sources, root, arm, trial, targets)
 
 
 def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None, autonomy: bool = False,
             model: str | None = None, effort: str | None = None,
-            trial: int | None = None) -> Path:
+            trial: int | None = None, prior_run: Path | None = None) -> Path:
     check_id("task_id", task_id)
     profile_dir = bundle_profile_dir(profile_id)
     task_dir = bundle_task_dir(profile_dir, task_id)
@@ -290,13 +333,14 @@ def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None,
         raise SystemExit(f"{task_dir} uses {', '.join(unfilled)} but its manifest pins no input_set_sha256")
     if input_root is not None:
         check_input_set(input_root, input_set, source_id, task_id)
+    sources = prior_sources(manifest, arm, trial, runs_root, profile_id, prior_run)
     root = runs_root / task_id / f"{arm}-{dt.datetime.now():%Y-%m-%d-%H-%M-%S}"
     ws = root / "ws"
     (ws / "repo").mkdir(parents=True)
     with tarfile.open(source) as archive:
         archive.extractall(ws / "repo", filter="data")
     (ws / "tasks.json").write_text(texts["tasks.json"])
-    prior_artifacts = _stage_prior_artifacts(manifest, arm, trial, ws)
+    prior_artifacts = _stage_prior_artifacts(manifest, arm, trial, ws, sources)
     (ws / ".claude").mkdir()
     (ws / ".claude" / "settings.json").write_text(json.dumps({"claudeMdExcludes": [str(USER_CLAUDE_MD)]}, indent=2) + "\n")
     skills = SKILL_FOR_ARM[arm]
@@ -359,8 +403,10 @@ def main() -> None:
     parser.add_argument("--model", help="the study's Codex model ID (docs/local-preferences.md, section 4); written to the run's CODEX_HOME and recorded")
     parser.add_argument("--effort", help="the study's Codex reasoning effort; written to the run's CODEX_HOME and recorded")
     parser.add_argument("--trial", type=int, help="trial number, required when the task stages prior artifacts")
+    parser.add_argument("--prior-run", type=Path, help="the earlier run directory to stage, when several match")
     args = parser.parse_args()
-    root = prepare(args.profile_id, args.task_id, args.arm, args.compute, args.autonomy, args.model, args.effort, args.trial)
+    root = prepare(args.profile_id, args.task_id, args.arm, args.compute, args.autonomy, args.model, args.effort, args.trial,
+                   args.prior_run)
     launch = json.loads((root / "launch.json").read_text())
     print(f"workspace: {root / 'ws'}")
     print(f"prompt:    {launch['prompt']}")

@@ -1,8 +1,8 @@
-# MLPerf C0–C6 portable bundle: BERT v1 and 3D U-Net v1
+# MLPerf C0–C6 portable bundle: BERT and 3D U-Net, v1 and v2
 
 **This folder contains reference answers.** Do not make it readable by a benchmark agent.
 
-A new version of the seven BERT v1 and seven 3D U-Net v1 tasks of the [C0–C6 study](../mlperf-c0-c6/README.md). Prompts and manifests name no machine's paths. The v2 studies, which stage earlier runs' artifacts, are not included. No benchmark has been run with this bundle, so do not pool its results with the study's without showing they are comparable.
+A new version of the 28 tasks of the [C0–C6 study](../mlperf-c0-c6/README.md): BERT and 3D U-Net, each v1 and v2, seven conditions each. Prompts and manifests name no machine's paths. No benchmark has been run with this bundle, so do not pool its results with the study's without showing they are comparable.
 
 ## Differences from the study bundle
 
@@ -13,6 +13,7 @@ A new version of the seven BERT v1 and seven 3D U-Net v1 tasks of the [C0–C6 s
 - `{{PACKAGE_CACHE}}` replaces the package cache path.
 - The `Platform:` line states only the hardware. `evaluation.prepare` appends the scheduling and sharing instructions.
 - C2 and C4 forbid "unmodified copies of the DeepLearningExamples input" and drop the manifest pattern that named the unmasked clone's path. The access rule flags other input sets and the downloads.
+- A v2 task names its v1 task (`prior_artifacts.source_task`) instead of the study's run folders. It stages your own finished v1 run of the same condition, arm and trial, not the study's runs.
 - Task digests differ from the study's.
 
 `masked.txt`, the source archives, the rubrics and the DeepLearningExamples patch files are copies, and `tasks.json` holds the same records.
@@ -25,6 +26,8 @@ Set `REPRODUCTION_CACHE_DIR` if the cache is not `.cache` in the repository root
 2. Copy this folder outside the repository, the runs root and the cache directory.
 3. Set `EVALUATION_BUNDLE_DIR` to the copy and `REPRODUCTION_RUNS_DIR` to the runs root.
 4. Run `python -m evaluation.prepare reproduce <bert-squad-v1 or 3d-unet-kits19-v1>/<condition> --arm <arm> --compute local`.
+
+For v2, launch each v1 run with `--trial <n>` and let it finish and be frozen first. Then `prepare … <benchmark>-v2/<condition> --arm <arm> --trial <n>` copies that run's retained files read-only into `ws/prior-artifacts/`. It accepts only a frozen run launched against this bundle's v1 task; when several match, name one with `--prior-run <run dir>`.
 
 `prepare` verifies the set before a launch. Freezing the run verifies it again, and the scorer refuses a run whose set changed. Python's `__pycache__/*.pyc` files are not counted as changes. Runs share sets, so a change found after one run may come from another that used the set at the same time.
 

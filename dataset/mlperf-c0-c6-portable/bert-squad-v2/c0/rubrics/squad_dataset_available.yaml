@@ -1,0 +1,20 @@
+rubric_id: squad_dataset_available
+phase_id: inputs
+claim: The SQuAD v1.1 validation set (dev-v1.1.json) is present in the input directory.
+target: null
+critical: true
+cache_conditions:
+- warm_raw_inputs_v1
+source_refs:
+- path: language/bert/accuracy-squad.py
+  sha256: 2586444d2f5473ea65febefc231601454c55ee394356faa702c6c23dfb060f1d
+  excerpt: default="build/data/dev-v1.1.json"
+prerequisites: []
+evidence_contract:
+  artifacts: []
+checker:
+  kind: builtin.artifact_exists
+  args:
+    path_from: manifest.inputs.squad_dev_file
+applicable: true
+pass_threshold: 1.0

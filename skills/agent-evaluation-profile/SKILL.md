@@ -220,6 +220,9 @@ EVALUATION_BUNDLE_DIR=<section 1> REPRODUCTION_RUNS_DIR=<section 2> \
   `local` when the preferences say runs execute on this machine, and compare this machine's GPU
   (`nvidia-smi`) with the record's `platform` first: the platform is a task fact, so a mismatch means
   editing the record, rendering again, and sealing again.
+- For a task whose manifest has `prior_artifacts`, add `--trial <n>`. A `source_task` entry stages the user's
+  finished run of that task with the same arm and trial, so launch those earlier runs with `--trial` too, and
+  freeze them first. When several match, `prepare` stops; ask the user which run, and pass `--prior-run <run dir>`.
 - Add `--autonomy` when the study's help level is autonomous. Without it, the session stops to ask.
 - Add `--model <ID>` and `--effort <level>` with the study's Codex model and reasoning effort (section 4).
   `prepare` writes them into the run's `CODEX_HOME` and `launch.json` records them; for Claude Code, the

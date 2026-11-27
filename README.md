@@ -161,10 +161,10 @@ To launch a task from this study:
 
    The bundled prompts record what the past runs received, including the original machine's paths, GPU and scheduling instruction, so do not edit them. The [study records](dataset/tasks/mlperf-c0-c6/) now state only the hardware on the `Platform:` line and leave scheduling to the `Compute:` paragraph that `evaluation.prepare` appends. A prompt rendered from them therefore differs from the bundled one and needs a newly sealed bundle.
 
-   [`dataset/mlperf-c0-c6-portable/`](dataset/mlperf-c0-c6-portable/README.md) is such a bundle for all seven BERT v1 and 3D U-Net v1 conditions, with a configurable cache directory and input sets built by `evaluation.warmup`.
+   [`dataset/mlperf-c0-c6-portable/`](dataset/mlperf-c0-c6-portable/README.md) is such a bundle for all 28 tasks (BERT and 3D U-Net, v1 and v2), with a configurable cache directory and input sets built by `evaluation.warmup`.
 3. Answer [`docs/local-preferences.md`](docs/local-preferences.md), set `REPRODUCTION_RUNS_DIR`, and run `python -m evaluation.prepare reproduce <version>/<condition> --arm <arm>`.
 
-A task whose manifest lists `prior_artifacts` also needs `--trial <n>`. `prepare` copies selected files from the earlier run of the same arm and trial into `ws/prior-artifacts/`, read-only. The `v2` manifests point to run folders on the original machine, which are not included. A full prepare, run and score cycle has not been tested from this repository.
+A task whose manifest lists `prior_artifacts` also needs `--trial <n>`. `prepare` copies selected files from the earlier run of the same arm and trial into `ws/prior-artifacts/`, read-only. The study's `v2` manifests point to run folders on the original machine, which are not included; the [portable bundle](dataset/mlperf-c0-c6-portable/README.md)'s v2 tasks stage your own v1 runs instead. A full prepare, run and score cycle has not been tested from this repository.
 
 ### Result sheets
 
@@ -213,7 +213,7 @@ evaluation/                    cache.py (cache directory), task_prompt.py (rende
 dataset/tasks/                 task records (MLPerf Inference and other benchmarks)
 dataset/inputs/                public sources and checksums of task inputs (BERT and 3D U-Net C0-C6 so far)
 dataset/mlperf-c0-c6/          C0–C6 task bundles and run outputs
-dataset/mlperf-c0-c6-portable/ BERT and 3D U-Net v1 C0-C6 bundles with a configurable cache directory
+dataset/mlperf-c0-c6-portable/ BERT and 3D U-Net v1 and v2 C0-C6 bundles with a configurable cache directory
 dataset/failure_taxonomy/      labels for failed tool calls
 docs/reports/                  C0–C6 result sheets
 docs/local-preferences.md      deployment answers, filled by the agent on first use
