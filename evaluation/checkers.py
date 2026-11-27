@@ -28,6 +28,7 @@ from typing import Any, Iterator
 
 import joblib
 
+from .settings import setting
 from .schema import CheckResult, EvaluationTask, Execution, PhaseRubric
 
 CHECKER_VERSION = "4"
@@ -414,9 +415,9 @@ CODEX_JUDGE = "codex"
 
 
 def judge_backend() -> str:
-    backend = os.environ.get("EVALUATION_JUDGE")
+    backend = setting("EVALUATION_JUDGE", 4, "Judge")
     if not backend:
-        raise ValueError("EVALUATION_JUDGE is not set; it is the study's judge model (docs/local-preferences.md, section 4)")
+        raise ValueError("EVALUATION_JUDGE is not set and the local preferences' judge (section 4) is unanswered")
     if backend != CODEX_JUDGE and not backend.startswith("claude:"):
         raise ValueError(f"EVALUATION_JUDGE={backend!r}: expected 'claude:<model ID>' or 'codex'")
     if backend == CODEX_JUDGE and shutil.which("codex") is None:

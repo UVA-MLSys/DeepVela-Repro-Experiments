@@ -28,6 +28,7 @@ from pathlib import Path
 
 import yaml
 
+from .settings import path_setting, preferences_file
 from .cache import PLACEHOLDERS, fill_text, input_set_dir, local_path, placeholder_values, resolve_cache_root
 from .bundle import bundle_digest, check_id, fill_cache_root, profile_dir as bundle_profile_dir, resolve_bundle_root, task_dir as bundle_task_dir
 from .task_prompt import load as load_record
@@ -97,12 +98,11 @@ AUTONOMY_INSTRUCTION = (
     "No human will reply to this session. Do not stop to ask or wait for approval: apply a change the task "
     "needs after stating it, its reason and its evidence in your message before the edit; when the task cannot "
     "be completed, write report.json with what was measured, state the failure with its evidence, and stop.")
-LOCAL_PREFERENCES = REPO_ROOT / "docs" / "local-preferences.md"
 
 
 def compute_wording() -> dict[str, str]:
-    """The Compute paragraphs saved in docs/local-preferences.md, section 3, by mode."""
-    found = re.findall(r"### Compute wording: (\w+)\n.*?```\n(.*?)\n```", LOCAL_PREFERENCES.read_text(), re.S)
+    """The Compute paragraphs saved in the local preferences, section 3, by mode."""
+    found = re.findall(r"### Compute wording: (\w+)\n.*?```\n(.*?)\n```", preferences_file().read_text(), re.S)
     return {mode: text for mode, text in found}
 
 
@@ -319,10 +319,10 @@ def prepare(profile_id: str, task_id: str, arm: str, compute: str | None = None,
     if unanswered:
         raise SystemExit(f"docs/local-preferences.md, 'Compute wording: {compute}', still holds {', '.join(unanswered)}: "
                          "answer them (section 3) before launching")
-    runs_root = os.environ.get(RUNS_ROOT_ENV_VAR)
-    if not runs_root:
-        raise SystemExit(f"{RUNS_ROOT_ENV_VAR} is not set: take it from docs/local-preferences.md, section 2")
-    runs_root = Path(runs_root).expanduser().resolve()
+    runs_root = path_setting(RUNS_ROOT_ENV_VAR, 2)
+    if runs_root is None:
+        raise SystemExit(f"{RUNS_ROOT_ENV_VAR} is not set and local preferences section 2 is unanswered: "
+                         "run python -m evaluation.setup")
     check_disjoint({"repository": REPO_ROOT, "bundle root": resolve_bundle_root(), "runs root": runs_root})
     check_disjoint({"cache directory": cache_root, "bundle root": resolve_bundle_root()})
     check_disjoint({"cache directory": cache_root, "runs root": runs_root})

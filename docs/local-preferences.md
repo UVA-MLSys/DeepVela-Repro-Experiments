@@ -1,9 +1,12 @@
 # Local preferences
 
-This deployment's answers, read by `skills/agent-evaluation-profile`. The file ships unanswered. The agent asks
-each item once, the first time a mode needs it, with its recommendation, writes the answer here, and reuses it
-in later sessions until the user says it changed. A path is recorded relative to this repository's root when it
-can be. Nothing task-specific belongs here: task answers go into the task's dataset record and bundle.
+The deployment's questions, read by `skills/agent-evaluation-profile`. This tracked file ships unanswered and is the
+template: `python -m evaluation.setup --init` copies it to `docs/local-preferences.local.md`, which git ignores, and
+the answers go there. The agent asks the items in setup mode, or each the first time a mode needs it, with its
+recommendation, and reuses the answers in later sessions until the user says one changed. A path is recorded
+relative to this repository's root when it can be. The `evaluation.*` commands read the bundle root, runs root,
+judge and cache directory from the local file when the matching environment variable is unset. Nothing
+task-specific belongs here: task answers go into the task's dataset record and bundle.
 
 An item reads `Answer: unanswered` until it is answered. A `{{...}}` value in a Compute wording is unanswered;
 `evaluation.prepare` refuses to launch with one left in the wording it uses.

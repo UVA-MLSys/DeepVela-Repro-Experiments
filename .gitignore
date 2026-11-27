@@ -219,6 +219,9 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# This machine's deployment answers (python -m evaluation.setup --init)
+docs/local-preferences.local.md
+
 # Agent harness directories: track only the project-skill links
 .claude/*
 !.claude/skills/

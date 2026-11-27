@@ -21,6 +21,7 @@ user's part is only what needs a person:
 ## Contents
 
 - [Deployment answers](#deployment-answers)
+- [Setup mode](#setup-mode)
 - [Pick the mode](#pick-the-mode)
 - [Inputs to ask for](#inputs-to-ask-for)
 - [Author mode](#author-mode)
@@ -29,22 +30,41 @@ user's part is only what needs a person:
 
 ## Deployment answers
 
-Read [local preferences](../../docs/local-preferences.md) the first time a mode needs a deployment
-answer.
+The answers live in `docs/local-preferences.local.md`, which git ignores; its template is
+[local preferences](../../docs/local-preferences.md). Never write an answer into the template. If the local file
+is missing, run setup mode first.
 
 - For an item not yet answered, ask the user once, with its recommendation, and record the answer
-  there, relative to this repository's root when it can be.
+  in the local file, relative to this repository's root when it can be.
 - Install the Python dependencies once: `python -m pip install -r requirements.txt`.
-- Run every `evaluation.*` command from the repository root with `EVALUATION_BUNDLE_DIR`,
-  `REPRODUCTION_RUNS_DIR` and `EVALUATION_JUDGE` set from those answers (sections 1, 2 and 4). The
-  code has no default for any of them. When the cache directory answer (section 5) is not the default,
-  also set `REPRODUCTION_CACHE_DIR` for `evaluation.task_prompt`, `evaluation.warmup` and `evaluation.prepare`.
+- Run every `evaluation.*` command from the repository root. The commands read the bundle root, runs root,
+  judge and cache directory (sections 1, 2, 4 and 5) from the local file; `EVALUATION_BUNDLE_DIR`,
+  `REPRODUCTION_RUNS_DIR`, `EVALUATION_JUDGE` and `REPRODUCTION_CACHE_DIR` override them. The first three
+  have no default; the cache directory defaults to `.cache` in the repository root.
 - For scheduler runs, ask the account, partition and GPU items only when the user says runs go through
   Slurm, and fill the Compute wordings from those answers.
 - Never write a deployment answer into this skill, its references, or the code.
 
+## Setup mode
+
+1. Run `python -m evaluation.setup --init`. It creates the local file if it is absent, never overwrites it, and
+   reports the GPUs, scheduler, tools, coding agents, free space at the cache directory, input sets and the
+   unanswered items.
+2. Show the user what it detected. Then ask the unanswered items in one message, each with its recommendation and
+   with the detected facts filled in, for example "runs on this machine: it has no GPU". Ask the scheduler items
+   only if runs go through Slurm, and never guess an account, partition or reservation.
+3. Write the answers into the local file, and fill the Compute wordings that use scheduler answers.
+4. Run `python -m evaluation.setup` again and confirm nothing the user answered is still listed.
+5. Ask which task to prepare first. For one with an input spec in `dataset/inputs/`, run
+   `python -m evaluation.warmup <source_id>`, which changes nothing, tell the user what it would download and how
+   large it is, and add `--download` only after they agree.
+
+Setup changes no tracked file.
+
 ## Pick the mode
 
+- **setup**: the first time this repository is used on a machine, when `docs/local-preferences.local.md` is
+  missing, or when the user asks to set up or change the deployment.
 - **author**: a task repository or benchmark link is given, and no run exists yet.
 - **launch**: a set-up task is named to start a run, or a finished run's `launch.json` is given to
   freeze or score it.

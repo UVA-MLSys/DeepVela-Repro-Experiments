@@ -13,7 +13,8 @@ import os
 import re
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+from .settings import REPO_ROOT, path_setting
+
 CACHE_ROOT_ENV_VAR = "REPRODUCTION_CACHE_DIR"
 PLACEHOLDER = "{{CACHE_ROOT}}"
 INPUT_ROOT = "{{INPUT_ROOT}}"
@@ -24,10 +25,9 @@ RECORD_PREFIX = ".cache"
 
 
 def resolve_cache_root() -> Path:
-    """`REPRODUCTION_CACHE_DIR`, or this repository's `.cache`. The path is limited to characters the access
+    """`REPRODUCTION_CACHE_DIR`, the local preferences' section 5, or this repository's `.cache`. The path is limited to characters the access
     monitor can read back from a transcript."""
-    value = os.environ.get(CACHE_ROOT_ENV_VAR)
-    root = (Path(value).expanduser() if value else REPO_ROOT / RECORD_PREFIX).resolve()
+    root = path_setting(CACHE_ROOT_ENV_VAR, 5) or (REPO_ROOT / RECORD_PREFIX).resolve()
     if not re.fullmatch(r"[A-Za-z0-9_./+@~-]+", str(root)):
         raise SystemExit(f"cache directory {root} may hold only letters, digits and _ . / + @ ~ -")
     return root

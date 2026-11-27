@@ -52,7 +52,7 @@ The Claude and Codex packages contain the same procedure. They differ only in ho
    Reproduce mlperf-language-bert with the three arms.
    ```
 
-   The task is a record in [`dataset/tasks/`](dataset/tasks/) or a link to a new benchmark repository. Answer the agent's questions. The first time, it asks for your deployment answers (where bundles and runs live, whether runs use this machine or Slurm, the model, and whether a human will answer during runs) and saves them in [`docs/local-preferences.md`](docs/local-preferences.md). For a new task, it asks you to choose targets, the reference and tolerance for each result, and a time limit, and writes the rubrics from those answers.
+   The task is a record in [`dataset/tasks/`](dataset/tasks/) or a link to a new benchmark repository. Answer the agent's questions. The first time, it runs setup: `python -m evaluation.setup --init` reports this machine's GPUs, scheduler, tools and free space, and the agent asks for the missing deployment answers (where bundles, runs and the cache live, whether runs use this machine or Slurm, the model, and whether a human will answer during runs). It saves them in `docs/local-preferences.local.md`, which git ignores; [`docs/local-preferences.md`](docs/local-preferences.md) is the template. For a task with an input spec, it then offers `evaluation.warmup` to download the inputs once. For a new task, it asks you to choose targets, the reference and tolerance for each result, and a time limit, and writes the rubrics from those answers.
 
 3. The agent sets up the task and prepares one workspace per arm (`plain`, `skill`, `builder-skill`). It starts the arms it can start itself. For any other arm, it gives you a path ending in `ws/`. Open exactly that `ws/` directory as the workspace of a new editor window, start a new chat there, and paste the text of `ws/prompt.md` unchanged. Do not open the run directory above `ws/` or any other parent: that session would see `launch.json` and other runs, and the evaluation counts it as a wrong launch.
 
@@ -162,7 +162,7 @@ To launch a task from this study:
    The bundled prompts record what the past runs received, including the original machine's paths, GPU and scheduling instruction, so do not edit them. The [study records](dataset/tasks/mlperf-c0-c6/) now state only the hardware on the `Platform:` line and leave scheduling to the `Compute:` paragraph that `evaluation.prepare` appends. A prompt rendered from them therefore differs from the bundled one and needs a newly sealed bundle.
 
    [`dataset/mlperf-c0-c6-portable/`](dataset/mlperf-c0-c6-portable/README.md) is such a bundle for all 28 tasks (BERT and 3D U-Net, v1 and v2), with a configurable cache directory and input sets built by `evaluation.warmup`.
-3. Answer [`docs/local-preferences.md`](docs/local-preferences.md), set `REPRODUCTION_RUNS_DIR`, and run `python -m evaluation.prepare reproduce <version>/<condition> --arm <arm>`.
+3. Answer the local preferences (`python -m evaluation.setup --init`), and run `python -m evaluation.prepare reproduce <version>/<condition> --arm <arm>`.
 
 A task whose manifest lists `prior_artifacts` also needs `--trial <n>`. `prepare` copies selected files from the earlier run of the same arm and trial into `ws/prior-artifacts/`, read-only. The study's `v2` manifests point to run folders on the original machine, which are not included; the [portable bundle](dataset/mlperf-c0-c6-portable/README.md)'s v2 tasks stage your own v1 runs instead. A full prepare, run and score cycle has not been tested from this repository.
 
@@ -181,6 +181,7 @@ The scripts that build these sheets are not included. [`dataset/failure_taxonomy
 
 | Tool | Purpose |
 | --- | --- |
+| `python -m evaluation.setup [--init]` | Reports this machine's GPUs, scheduler, tools, free space, input sets and unanswered deployment answers. `--init` creates the ignored local preferences file. |
 | `python -m evaluation.warmup <source_id> [--tasks c0,c2]` | Reports which inputs are ready. With `--from <dir>` or `--download`, gets the rest, checks them against [`dataset/inputs/`](dataset/inputs/) and builds the input sets in the cache directory. BERT and 3D U-Net C0–C6 only. `evaluation.prepare` refuses to launch such a task until its set is built and verifies. |
 | `python -m evaluation.departures <launch.json> [--write]` | A judge model counts departures from the documented route. Run `--write` after `scorer --write`. |
 | `python -m evaluation.table` | Prints agent resource use for the runs under `REPRODUCTION_RUNS_DIR`. |
@@ -209,14 +210,14 @@ skills/
   agent-evaluation-profile/    harness skill: set up a task and prepare each arm's workspace
   SOURCES.json                 package names, the agent each targets, and file digests
 .claude/skills/, .agents/skills/   links that load the harness skill in this repository
-evaluation/                    cache.py (cache directory), task_prompt.py (render prompts), bundle.py (seal bundles), prepare.py (build arm workspaces), launch.py (start and freeze runs), scorer.py, checkers.py, transcript.py, schema.py (score a frozen run), departures.py, table.py (see Experiments)
+evaluation/                    setup.py and settings.py (deployment answers), cache.py (cache directory), warmup.py (input sets), task_prompt.py (render prompts), bundle.py (seal bundles), prepare.py (build arm workspaces), launch.py (start and freeze runs), scorer.py, checkers.py, transcript.py, schema.py (score a frozen run), departures.py, table.py (see Experiments)
 dataset/tasks/                 task records (MLPerf Inference and other benchmarks)
 dataset/inputs/                public sources and checksums of task inputs (BERT and 3D U-Net C0-C6 so far)
 dataset/mlperf-c0-c6/          C0–C6 task bundles and run outputs
 dataset/mlperf-c0-c6-portable/ BERT and 3D U-Net v1 and v2 C0-C6 bundles with a configurable cache directory
 dataset/failure_taxonomy/      labels for failed tool calls
 docs/reports/                  C0–C6 result sheets
-docs/local-preferences.md      deployment answers, filled by the agent on first use
+docs/local-preferences.md      template of the deployment answers; setup copies it to the ignored local-preferences.local.md
 docs/dataset-schema.md         task record format
 docs/images/                   figures used in this README
 tests/                         harness tests (python -m pytest tests)

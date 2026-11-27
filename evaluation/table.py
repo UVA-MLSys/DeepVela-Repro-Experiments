@@ -19,6 +19,7 @@ import os
 from pathlib import Path
 
 from .prepare import REPO_ROOT, RUNS_ROOT_ENV_VAR
+from .settings import path_setting
 from .scorer import _ended, _sessions
 from .transcript import accesses, codex_accesses, codex_usage, usage
 
@@ -95,10 +96,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--write", action="store_true", help=f"replace the table between the markers in {README.name}")
     args = parser.parse_args()
-    runs_root = os.environ.get(RUNS_ROOT_ENV_VAR)
-    if not runs_root:
-        raise SystemExit(f"{RUNS_ROOT_ENV_VAR} is not set: take it from docs/local-preferences.md, section 2")
-    text = table(Path(runs_root).expanduser().resolve())
+    runs_root = path_setting(RUNS_ROOT_ENV_VAR, 2)
+    if runs_root is None:
+        raise SystemExit(f"{RUNS_ROOT_ENV_VAR} is not set and local preferences section 2 is unanswered: "
+                         "run python -m evaluation.setup")
+    text = table(runs_root)
     if not args.write:
         print(text)
         return

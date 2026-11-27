@@ -17,6 +17,7 @@ import yaml
 from pydantic import ValidationError
 
 from .cache import INPUT_ROOT, PLACEHOLDER, PLACEHOLDERS, fill_text, placeholder_values
+from .settings import path_setting
 from .schema import EvaluationProfile, EvaluationTask, PhaseRubric
 
 BUNDLE_ROOT_ENV_VAR = "EVALUATION_BUNDLE_DIR"
@@ -29,14 +30,13 @@ class EvaluationBundleError(ValueError):
 
 
 def resolve_bundle_root() -> Path:
-    """The deployment's bundle root, from `EVALUATION_BUNDLE_DIR`. A relative value resolves from the
-    working directory, the repository root when the skill runs the command. There is no default: the
-    answer is the deployment's, recorded in `docs/local-preferences.md`."""
-    value = os.environ.get(BUNDLE_ROOT_ENV_VAR)
-    if not value:
-        raise EvaluationBundleError(f"{BUNDLE_ROOT_ENV_VAR} is not set: take it from "
-                                    "docs/local-preferences.md, section 1")
-    return Path(value).expanduser().resolve()
+    """The deployment's bundle root, from `EVALUATION_BUNDLE_DIR` (relative to the working directory) or the local
+    preferences, section 1. There is no default."""
+    root = path_setting(BUNDLE_ROOT_ENV_VAR, 1)
+    if root is None:
+        raise EvaluationBundleError(f"{BUNDLE_ROOT_ENV_VAR} is not set and local preferences section 1 is unanswered: "
+                                    "run python -m evaluation.setup")
+    return root
 
 
 def check_id(kind: str, value: str) -> None:
