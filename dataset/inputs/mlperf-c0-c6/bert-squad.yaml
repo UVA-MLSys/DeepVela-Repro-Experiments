@@ -40,9 +40,9 @@ sets:
     manifest_sha256: 6025b57c08a0e1b2aea2e4f4ef2d93a23bf84268b05708d61b08db1b86946aec
   c2:
     tasks: [c2]
-    masks: {DeepLearningExamples: dataset/mlperf-c0-c6-portable/bert-squad-v1/c2}
+    masks: {DeepLearningExamples: dataset/mlperf-c0-c6/bert-squad-v1/c2}
     manifest_sha256: 08e3ab43247e06cb24ff0a1afba8ef029c61adb21145c5f72b8d7b2e2bb12188
   c4:
     tasks: [c4]
-    masks: {DeepLearningExamples: dataset/mlperf-c0-c6-portable/bert-squad-v1/c4}
+    masks: {DeepLearningExamples: dataset/mlperf-c0-c6/bert-squad-v1/c4}
     manifest_sha256: 16d08ecb01af45ef62c2a9f62466f0c2b50bd89130e947b19c51eea2516001cb

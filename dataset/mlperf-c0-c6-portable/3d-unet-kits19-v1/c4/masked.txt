@@ -1,9 +1,0 @@
-Condition: C4
-Pinned source: 3fbc329939999c13d0a7b5e67fb2092287e06047
-
-Masked or removed:
-- accuracy_kits.py save_evaluation_summary: the line that combines per-scan scores into the reported mean (average over scans, a failed scan counted as 0) and its comment
-- README.md supported-framework table: four published mean/kidney/tumor result cells (a known score identifies the averaging rule)
-
-Hidden choice: how per-scan Dice scores become the reported number (mean over scans versus Dice pooled over all voxels).
-All other evaluator code, including per-scan Dice and the kidney/tumor targets, is retained.

@@ -31,8 +31,8 @@ targets:
 input_reuse_contract:
   cache_condition_id: warm_raw_inputs_v1
   allowed_cache_roots:
-  - /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/3d-unet-kits19/kits19_raw_data/kits19/data
-  - /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/3d-unet-kits19/model
+  - '{{INPUT_ROOT}}/data'
+  - '{{INPUT_ROOT}}/model'
   allowed_artifact_classes:
   - raw_dataset_download
   - model_checkpoint_download
@@ -50,8 +50,8 @@ authored_by:
   source_revision: 3fbc329939999c13d0a7b5e67fb2092287e06047
   reviewed_by: pending
 artifact_paths:
-  kits19_case: /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/3d-unet-kits19/kits19_raw_data/kits19/data/case_00000/imaging.nii.gz
-  model_file: /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/3d-unet-kits19/model/3dunet_kits19_pytorch.ptc
+  kits19_case: '{{INPUT_ROOT}}/data/case_00000/imaging.nii.gz'
+  model_file: '{{INPUT_ROOT}}/model/3dunet_kits19_pytorch.ptc'
 forbidden_access:
 - (evaluation-profiles|mlperf-c0-c6)/(?!(reproduce/tasks/)?[^/]+(/[^/]+)?/prompt\.md|runs/)
 - inference_results
@@ -60,19 +60,6 @@ forbidden_access:
 - github\.com/mlcommons/inference
 - raw\.githubusercontent\.com/mlcommons/inference
 source_id: mlperf-c0-c6/3d-unet-kits19
+input_set_sha256: 8eb93236691fe0559e12f9709b9b76f87ba5e80610ccca5b2ead39ebd8b80637
 prior_artifacts:
   source_task: 3d-unet-kits19-v1/c6
-  source_runs_root: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/3d-unet-kits19-v4/c6
-  trials:
-    1:
-      plain: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/3d-unet-kits19-v4/c6/plain-2026-11-18-23-59-28/ws
-      skill: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/3d-unet-kits19-v4/c6/skill-2026-11-19-00-04-39/ws
-      builder-skill: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/3d-unet-kits19-v4/c6/builder-skill-2026-11-19-00-06-20/ws
-    2:
-      plain: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/3d-unet-kits19-v4/c6/plain-2026-11-19-01-17-28/ws
-      skill: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/3d-unet-kits19-v4/c6/skill-2026-11-19-01-23-35/ws
-      builder-skill: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/3d-unet-kits19-v4/c6/builder-skill-2026-11-19-01-32-49/ws
-    3:
-      plain: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/3d-unet-kits19-v4/c6/plain-2026-11-19-02-39-21/ws
-      skill: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/3d-unet-kits19-v4/c6/skill-2026-11-19-02-39-58/ws
-      builder-skill: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/3d-unet-kits19-v4/c6/builder-skill-2026-11-19-02-42-09/ws

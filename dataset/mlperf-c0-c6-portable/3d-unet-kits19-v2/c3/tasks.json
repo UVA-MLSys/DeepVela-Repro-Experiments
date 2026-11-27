@@ -1,3 +1,0 @@
-[
-{"id": "3d-unet", "task_prompt": "Run `python3 run.py --backend=pytorch --scenario=Offline --accuracy` on the fp32 model in MODEL_DIR over the KiTS19 cases in meta/inference_cases.json, then accuracy_kits.py on its LoadGen accuracy log.", "results": ["mean", "kidney", "tumor"], "outputs": {"mlperf_log_accuracy.json": "LoadGen's accuracy log", "mlperf_log_detail.txt": "LoadGen's detail log", "accuracy.txt": "the evaluator's stdout"}, "log_lines": {"pytorch device: ": "the device the model's parameters are on"}, "hints": ["Set UV_EXCLUDE_NEWER=2026-11-10 for every uv package-resolution command."]}
-]

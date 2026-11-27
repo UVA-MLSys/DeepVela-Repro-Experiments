@@ -1,14 +1,14 @@
 Reproduce the targets in ./tasks.json from ./repo, the source tree of commit 3fbc329939999c13d0a7b5e67fb2092287e06047 without Git metadata. Each entry has `id`, `task_prompt` (what to run), `results` (the values to report), `outputs` (files to write to OUTPUT_DIR), `log_lines` (a line prefix its logs must contain), `hints`.
 
-Platform: this machine's NVIDIA A100 80GB GPU, which other jobs share: run on it directly, not through Slurm, and check its free memory before each GPU run.
+Platform: one NVIDIA A100 80GB GPU per run.
 
 Inputs, read-only, do not modify:
-CACHE_ROOT=/sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache
-KITS19_RAW_DIR=$CACHE_ROOT/3d-unet-kits19/kits19_raw_data/kits19/data
-MODEL_DIR=$CACHE_ROOT/3d-unet-kits19/model
+INPUT_ROOT={{INPUT_ROOT}}
+KITS19_RAW_DIR=$INPUT_ROOT/data
+MODEL_DIR=$INPUT_ROOT/model
 KITS19_RAW_DIR holds the raw imaging and segmentation of the cases in meta/inference_cases.json, except case_00400, the documented duplicate of case_00185. MODEL_DIR holds 3dunet_kits19_pytorch.ptc.
 
-Shared package cache: UV_CACHE_DIR=$CACHE_ROOT/uv (use no other cache location).
+Shared package cache: UV_CACHE_DIR={{PACKAGE_CACHE}} (use no other cache location).
 
 Work for each target in ./<target id>/ with OUTPUT_DIR=./<target id>/out, and save every log (build, run, evaluator) as a
 *.log file there. Only files are scored.

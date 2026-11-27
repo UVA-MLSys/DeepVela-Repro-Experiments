@@ -1,7 +1,0 @@
-Condition: C6
-Pinned source: 3fbc329939999c13d0a7b5e67fb2092287e06047
-
-Masked or removed:
-- language/bert/README.md: opening overview, reference-implementation disclaimer, automated-workflow promotion, and general background prose removed.
-
-Published README F1 rows are visible in this view.

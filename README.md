@@ -146,25 +146,16 @@ The conditions test one hypothesis: an agent can recover information that belong
 
 ### MLPerf C0–C6 masking study
 
-[`dataset/mlperf-c0-c6/`](dataset/mlperf-c0-c6/README.md) holds the task bundles and a subset of the run outputs for 3D U-Net (KiTS19) and BERT (SQuAD), each without and with prior artifacts. Its README describes the studies, the layout, scoring, and the differences from the source files. U-Net `v1` and `v2` in that folder are named `v4` and `v5` in the run records.
+[`dataset/mlperf-c0-c6/`](dataset/mlperf-c0-c6/README.md) holds the task bundles of 3D U-Net (KiTS19) and BERT (SQuAD), each without (v1) and with (v2) prior artifacts, and a subset of the outputs of the earlier runs. U-Net `v1` and `v2` in that folder are named `v4` and `v5` in the run records. The bundles name no machine's paths; the bundles the earlier runs used are in git at commit `c7b91b9` and earlier.
 
 To launch a task from this study:
 
-1. Copy the bundle outside the repository and the runs root. `evaluation.prepare` rejects a bundle root that overlaps either one.
+1. Answer the deployment questions with `python -m evaluation.setup --init`.
+2. Build its input sets with `python -m evaluation.warmup mlperf-c0-c6/<bert-squad or 3d-unet-kits19> --download`, or `--from <dir>` for files you already have.
+3. Copy the folder outside the repository, the runs root and the cache directory, and give the copy as the bundle root. `evaluation.prepare` rejects a bundle root that overlaps any of them.
+4. Run `python -m evaluation.prepare reproduce <version>/<condition> --arm <arm>`.
 
-   ```bash
-   cp -r dataset/mlperf-c0-c6 ../mlperf-c0-c6-bundle
-   export EVALUATION_BUNDLE_DIR="$(realpath ../mlperf-c0-c6-bundle)"
-   ```
-
-2. Set up the task's inputs (dataset and model checkpoint), which are not included. Some manifests contain absolute paths from the original machine.
-
-   The bundled prompts record what the past runs received, including the original machine's paths, GPU and scheduling instruction, so do not edit them. The [study records](dataset/tasks/mlperf-c0-c6/) now state only the hardware on the `Platform:` line and leave scheduling to the `Compute:` paragraph that `evaluation.prepare` appends. A prompt rendered from them therefore differs from the bundled one and needs a newly sealed bundle.
-
-   [`dataset/mlperf-c0-c6-portable/`](dataset/mlperf-c0-c6-portable/README.md) is such a bundle for all 28 tasks (BERT and 3D U-Net, v1 and v2), with a configurable cache directory and input sets built by `evaluation.warmup`.
-3. Answer the local preferences (`python -m evaluation.setup --init`), and run `python -m evaluation.prepare reproduce <version>/<condition> --arm <arm>`.
-
-A task whose manifest lists `prior_artifacts` also needs `--trial <n>`. `prepare` copies selected files from the earlier run of the same arm and trial into `ws/prior-artifacts/`, read-only. The study's `v2` manifests point to run folders on the original machine, which are not included; the [portable bundle](dataset/mlperf-c0-c6-portable/README.md)'s v2 tasks stage your own v1 runs instead. A full prepare, run and score cycle has not been tested from this repository.
+A v2 task also needs `--trial <n>`: `prepare` copies selected files from your finished v1 run of the same condition, arm and trial into `ws/prior-artifacts/`, read-only. The [study README](dataset/mlperf-c0-c6/README.md) gives the details and how these bundles differ from the earlier runs'. A full prepare, run and score cycle has not been tested from this repository.
 
 ### Result sheets
 
@@ -213,8 +204,7 @@ skills/
 evaluation/                    setup.py and settings.py (deployment answers), cache.py (cache directory), warmup.py (input sets), task_prompt.py (render prompts), bundle.py (seal bundles), prepare.py (build arm workspaces), launch.py (start and freeze runs), scorer.py, checkers.py, transcript.py, schema.py (score a frozen run), departures.py, table.py (see Experiments)
 dataset/tasks/                 task records (MLPerf Inference and other benchmarks)
 dataset/inputs/                public sources and checksums of task inputs (BERT and 3D U-Net C0-C6 so far)
-dataset/mlperf-c0-c6/          C0–C6 task bundles and run outputs
-dataset/mlperf-c0-c6-portable/ BERT and 3D U-Net v1 and v2 C0-C6 bundles with a configurable cache directory
+dataset/mlperf-c0-c6/          C0–C6 task bundles and earlier run outputs
 dataset/failure_taxonomy/      labels for failed tool calls
 docs/reports/                  C0–C6 result sheets
 docs/local-preferences.md      template of the deployment answers; setup copies it to the ignored local-preferences.local.md

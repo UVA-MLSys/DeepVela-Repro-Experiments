@@ -1,15 +1,15 @@
 Reproduce the targets in ./tasks.json from ./repo, the source tree of commit 3fbc329939999c13d0a7b5e67fb2092287e06047 without Git metadata. Each entry has `id`, `task_prompt` (what to run), `results` (the values to report), `outputs` (files to write to OUTPUT_DIR), `log_lines` (a line prefix its logs must contain), `hints`.
 
-Platform: this machine's NVIDIA A100 80GB GPU, which other jobs share: run on it directly, not through Slurm, and check its free memory before each GPU run.
+Platform: one NVIDIA A100 80GB GPU per run.
 
 Inputs, read-only, do not modify:
-CACHE_ROOT=/sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache
-SQUAD_DIR=$CACHE_ROOT/bert-squad/data
-MODEL_DIR=$CACHE_ROOT/bert-squad/model
-DEEPLEARNING_EXAMPLES_DIR=$CACHE_ROOT/bert-squad/DeepLearningExamples-c2
-SQUAD_DIR holds dev-v1.1.json. MODEL_DIR holds model.pytorch and vocab.txt. DEEPLEARNING_EXAMPLES_DIR holds the NVIDIA DeepLearningExamples clone at commit 729963dd47e7c8bd462ad10bfac7a7b0b604e6dd, imported by language/bert/pytorch_SUT.py; it is staged separately because the pinned repository does not track its contents.
+INPUT_ROOT={{INPUT_ROOT}}
+SQUAD_DIR=$INPUT_ROOT/data
+MODEL_DIR=$INPUT_ROOT/model
+DEEPLEARNING_EXAMPLES_DIR=$INPUT_ROOT/DeepLearningExamples
+SQUAD_DIR holds dev-v1.1.json. MODEL_DIR holds model.pytorch and vocab.txt. DEEPLEARNING_EXAMPLES_DIR holds the files of NVIDIA DeepLearningExamples at commit 729963dd47e7c8bd462ad10bfac7a7b0b604e6dd, without Git history, imported by language/bert/pytorch_SUT.py; it is staged separately because the pinned repository does not track its contents.
 
-Shared package cache: UV_CACHE_DIR=$CACHE_ROOT/uv (use no other cache location).
+Shared package cache: UV_CACHE_DIR={{PACKAGE_CACHE}} (use no other cache location).
 
 Work for each target in ./<target id>/ with OUTPUT_DIR=./<target id>/out, and save every log (build, run, evaluator) as a
 *.log file there. Only files are scored.
@@ -20,6 +20,6 @@ directory, and write the target's `outputs` to OUTPUT_DIR.
 
 Then write ./report.json as {target id: {result name: value exactly as printed}}, for example {"bert-squad": {"exact_match": "<value>", "f1": "<value>"}}.
 
-Do not access the public mlcommons/inference repository and byte-equivalent mirrors of its pinned language/bert directory, the unmodified .cache/bert-squad/DeepLearningExamples clone, Google BERT, Hugging Face, TensorFlow Model Garden, NVIDIA DeepLearningExamples, installed-package examples, source caches, documentation, or mirrors that supply the removed SQuAD input-windowing or featurization contract; also the MLPerf Inference results repositories, published MLPerf submissions, and MLCommons results tables. Outside this directory, use only the inputs and the package cache above, system software and temporary
+Do not access the public mlcommons/inference repository and byte-equivalent mirrors of its pinned language/bert directory, unmodified copies of the DeepLearningExamples input, Google BERT, Hugging Face, TensorFlow Model Garden, NVIDIA DeepLearningExamples, installed-package examples, source caches, documentation, or mirrors that supply the removed SQuAD input-windowing or featurization contract; also the MLPerf Inference results repositories, published MLPerf submissions, and MLCommons results tables. Outside this directory, use only the inputs and the package cache above, system software and temporary
 directories.
 Time limit: 2 hours of wall clock.

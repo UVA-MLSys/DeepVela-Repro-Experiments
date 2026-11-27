@@ -31,9 +31,9 @@ targets:
 input_reuse_contract:
   cache_condition_id: warm_raw_inputs_v1
   allowed_cache_roots:
-  - /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/bert-squad/data
-  - /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/bert-squad/model
-  - /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/bert-squad/DeepLearningExamples-c2
+  - '{{INPUT_ROOT}}/data'
+  - '{{INPUT_ROOT}}/model'
+  - '{{INPUT_ROOT}}/DeepLearningExamples'
   allowed_artifact_classes:
   - raw_dataset_download
   - model_checkpoint_download
@@ -51,8 +51,8 @@ authored_by:
   source_revision: 3fbc329939999c13d0a7b5e67fb2092287e06047
   reviewed_by: pending
 artifact_paths:
-  squad_dev_file: /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/bert-squad/data/dev-v1.1.json
-  model_file: /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/.cache/bert-squad/model/model.pytorch
+  squad_dev_file: '{{INPUT_ROOT}}/data/dev-v1.1.json'
+  model_file: '{{INPUT_ROOT}}/model/model.pytorch'
 forbidden_access:
 - evaluation-profiles/(?!reproduce/tasks/[^/]+/prompt\.md)
 - inference_results
@@ -60,21 +60,7 @@ forbidden_access:
 - runs\.csv
 - github\.com/mlcommons/inference
 - raw\.githubusercontent\.com/mlcommons/inference
-- /sfs/gpfs/tardis/project/MLSys/Agentic-Reproduce/\.cache/bert-squad/DeepLearningExamples$
 - google-research/bert|huggingface|tensorflow/models|NVIDIA/DeepLearningExamples|site-packages|source cache|doc_stride
+input_set_sha256: 08e3ab43247e06cb24ff0a1afba8ef029c61adb21145c5f72b8d7b2e2bb12188
 prior_artifacts:
   source_task: bert-squad-v1/c2
-  source_runs_root: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/bert-squad-v1/c2
-  trials:
-    1:
-      plain: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/bert-squad-v1/c2/plain-2026-11-22-15-43-02/ws
-      skill: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/bert-squad-v1/c2/skill-2026-11-22-15-43-04/ws
-      builder-skill: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/bert-squad-v1/c2/builder-skill-2026-11-22-15-43-05/ws
-    2:
-      plain: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/bert-squad-v1/c2/plain-2026-11-22-18-01-33/ws
-      skill: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/bert-squad-v1/c2/skill-2026-11-22-18-03-42/ws
-      builder-skill: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/bert-squad-v1/c2/builder-skill-2026-11-22-18-10-08/ws
-    3:
-      plain: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/bert-squad-v1/c2/plain-2026-11-22-19-49-55/ws
-      skill: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/bert-squad-v1/c2/skill-2026-11-22-19-52-42/ws
-      builder-skill: /sfs/gpfs/tardis/project/MLSys/mlperf-c0-c6/runs/bert-squad-v1/c2/builder-skill-2026-11-22-23-35-02/ws
