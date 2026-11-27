@@ -1,0 +1,958 @@
+diff --git a/language/bert/.gitignore b/language/bert/.gitignore
+index 6798d9bb229a098fa02f175979895085a9992c8f..cd120879f514cbe2f0be8069eef901d338fc479a 100644
+--- a/language/bert/.gitignore
++++ b/language/bert/.gitignore
+@@ -1,3 +1,2 @@
+ build/
+-eval_features.pickle
+ onnxruntime_profile__*.json
+diff --git a/language/bert/MLPerf INT8 BERT Finetuning.pdf b/language/bert/MLPerf INT8 BERT Finetuning.pdf
+deleted file mode 100644
+index 1b5afc30707010476c62cacd94e61c2a8b11b9ae..0000000000000000000000000000000000000000
+Binary files a/language/bert/MLPerf INT8 BERT Finetuning.pdf and /dev/null differ
+diff --git a/language/bert/Makefile b/language/bert/Makefile
+index edb2937dff01c7c191bd04c001afd56848c63a30..371b6ba5e714b414d263731d5557daa18140abb0 100644
+--- a/language/bert/Makefile
++++ b/language/bert/Makefile
+@@ -25,10 +25,9 @@ CONTAINER_VOL ?= /workspace
+ 
+ BUILD_DIR := build
+ DATA_DIR := $(BUILD_DIR)/data
+-BERT_DIR := $(DATA_DIR)/bert_tf_v1_1_large_fp32_384_v2
++BERT_DIR := $(DATA_DIR)/bert_model
+ RESULT_DIR := $(BUILD_DIR)/result
+ MLPERF_CONF := $(BUILD_DIR)/mlperf.conf
+-FEATURE_CACHE := eval_features.pickle
+ 
+ # Handle different nvidia-docker version
+ ifneq ($(wildcard /usr/bin/nvidia-docker),)
+@@ -171,5 +170,4 @@ evaluate:
+ .PHONY: clean
+ clean:
+ 	@rm -rf ${BUILD_DIR}
+-	@rm -f  ${FEATURE_CACHE}
+ 	@rm -f  onnxruntime_profile__*.json
+diff --git a/language/bert/README.md b/language/bert/README.md
+index 80fc8189eaf7c1b84fedd7bebe1981dbfcee7a1d..f5522f53e90019f9808921fae8a6701f399e2084 100644
+--- a/language/bert/README.md
++++ b/language/bert/README.md
+@@ -15,11 +15,11 @@ Please see the [new docs site](https://docs.mlcommons.org/inference/benchmarks/l
+ 
+ | model | framework | accuracy | dataset | model link | model source | precision | notes |
+ | ----- | --------- | -------- | ------- | ---------- | ------------ | --------- | ----- |
+-| BERT-Large | TensorFlow | f1_score=90.874% | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3733868) [from zenodo](https://zenodo.org/record/3939747) | [BERT-Large](https://github.com/google-research/bert), trained with [NVIDIA DeepLearningExamples](https://github.com/NVIDIA/DeepLearningExamples/tree/master/TensorFlow/LanguageModeling/BERT) | fp32 | |
+-| BERT-Large | PyTorch | f1_score=90.874% | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3733896) | [BERT-Large](https://github.com/google-research/bert), trained with [NVIDIA DeepLearningExamples](https://github.com/NVIDIA/DeepLearningExamples/tree/master/TensorFlow/LanguageModeling/BERT), converted with [bert_tf_to_pytorch.py](bert_tf_to_pytorch.py) | fp32 | |
+-| BERT-Large | ONNX | f1_score=90.874% | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3733910) | [BERT-Large](https://github.com/google-research/bert), trained with [NVIDIA DeepLearningExamples](https://github.com/NVIDIA/DeepLearningExamples/tree/master/TensorFlow/LanguageModeling/BERT), converted with [bert_tf_to_pytorch.py](bert_tf_to_pytorch.py) | fp32 | |
+-| BERT-Large | ONNX | f1_score=90.067% | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3750364) | Fine-tuned based on the PyTorch model and converted with [bert_tf_to_pytorch.py](bert_tf_to_pytorch.py) | int8, symetrically per-tensor quantized without bias | See [MLPerf INT8 BERT Finetuning.pdf](MLPerf INT8 BERT Finetuning.pdf) for details about the fine-tuning process |
+-| BERT-Large | PyTorch | f1_score=90.633% | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/4792496) | Fine-tuned based on [Huggingface bert-large-uncased pretrained model](https://huggingface.co/bert-large-uncased) | int8, symetrically per-tensor quantized without bias | See README.md at Zenodo link for details about the fine-tuning process |
++| BERT-Large | TensorFlow | withheld | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3733868) [from zenodo](https://zenodo.org/record/3939747) | BERT-Large | fp32 | |
++| BERT-Large | PyTorch | withheld | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3733896) | BERT-Large | fp32 | |
++| BERT-Large | ONNX | withheld | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3733910) | BERT-Large | fp32 | |
++| BERT-Large | ONNX | withheld | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3750364) | Fine-tuned model | int8 | |
++| BERT-Large | PyTorch | withheld | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/4792496) | Fine-tuned model | int8 | |
+ 
+ ## Disclaimer
+ This benchmark app is a reference implementation that is not meant to be the fastest implementation possible.
+@@ -79,9 +79,6 @@ Please run the following commands:
+ - The script [accuracy-squad.py](accuracy-squad.py) parses LoadGen accuracy log, post-processes it, and computes the accuracy.
+ - Tokenization and detokenization (post-processing) are not included in the timed path.
+ - The inputs to the SUT are `input_ids`, `input_make`, and `segment_ids`. The output from SUT is `start_logits` and `end_logits` concatenated together.
+-- `max_seq_length` is 384.
+-- The script [tf_freeze_bert.py] freezes the TensorFlow model into pb file.
+-- The script [bert_tf_to_pytorch.py] converts the TensorFlow model into the PyTorch `BertForQuestionAnswering` module in [HuggingFace Transformers](https://github.com/huggingface/transformers) and also exports the model to [ONNX](https://github.com/onnx/onnx) format.
+ 
+ ### Evaluate the accuracy through MLCFlow Automation
+ ```bash
+diff --git a/language/bert/accuracy-squad.py b/language/bert/accuracy-squad.py
+index 514258de38a6629dd9ff9d80dc27c9d57ad609a3..aefa391ecbc5269c3299781486187209add68dbf 100644
+--- a/language/bert/accuracy-squad.py
++++ b/language/bert/accuracy-squad.py
+@@ -20,16 +20,15 @@ import collections
+ import json
+ import math
+ import os
++import pickle
+ import subprocess
+ import sys
+ 
+ import numpy as np
+ import pkg_resources
+ import six
+-from transformers import BertTokenizer
+ 
+ # To support feature cache.
+-import pickle
+ 
+ sys.path.insert(0, os.path.dirname(__file__))
+ 
+@@ -62,15 +61,11 @@ elif "torch" in installed:
+     )
+ try:
+     import tokenization
+-    from create_squad_data import convert_examples_to_features, read_squad_examples
++    from create_squad_data import read_squad_examples
+ except ImportError:
+     raise Exception("Error importing local modules")
+ 
+ 
+-max_seq_length = 384
+-max_query_length = 64
+-doc_stride = 128
+-
+ RawResult = collections.namedtuple(
+     "RawResult", ["unique_id", "start_logits", "end_logits"]
+ )
+@@ -396,10 +391,11 @@ def load_loadgen_log(
+             logits = np.frombuffer(bytes.fromhex(prediction["data"]), dtype).reshape(
+                 -1, 2
+             )
+-        # Pad logits to max_seq_length
++        # Align the supplied record's logits without selecting an input length.
+         seq_length = logits.shape[0]
+-        start_logits = np.ones(max_seq_length) * -10000.0
+-        end_logits = np.ones(max_seq_length) * -10000.0
++        record_length = len(eval_features[qsl_idx].input_ids)
++        start_logits = np.ones(record_length) * -10000.0
++        end_logits = np.ones(record_length) * -10000.0
+         start_logits[:seq_length] = logits[:, 0]
+         end_logits[:seq_length] = logits[:, 1]
+         results.append(
+@@ -415,11 +411,6 @@ def load_loadgen_log(
+ 
+ def main():
+     parser = argparse.ArgumentParser()
+-    parser.add_argument(
+-        "--vocab_file",
+-        default="build/data/bert_tf_v1_1_large_fp32_384_v2/vocab.txt",
+-        help="Path to vocab.txt",
+-    )
+     parser.add_argument(
+         "--val_data", default="build/data/dev-v1.1.json", help="Path to validation data"
+     )
+@@ -434,9 +425,8 @@ def main():
+         help="Path to output predictions file",
+     )
+     parser.add_argument(
+-        "--features_cache_file",
+-        default="eval_features.pickle",
+-        help="Path to features' cache file",
++        "--feature_records",
++        help="Path to externally supplied feature records",
+     )
+     parser.add_argument(
+         "--output_transposed", action="store_true", help="Transpose the output"
+@@ -454,6 +444,12 @@ def main():
+     )
+     args = parser.parse_args()
+ 
++    if not args.feature_records:
++        raise RuntimeError(
++            "The packaged evidence does not specify the reference input presentation; "
++            "supply --feature_records."
++        )
++
+     output_dtype = dtype_map[args.output_dtype]
+ 
+     print("Reading examples...")
+@@ -461,40 +457,9 @@ def main():
+         input_file=args.val_data, is_training=False, version_2_with_negative=False
+     )
+ 
+-    eval_features = []
+-    # Load features if cached, convert from examples otherwise.
+-    cache_path = args.features_cache_file
+-    if os.path.exists(cache_path):
+-        print("Loading cached features from '%s'..." % cache_path)
+-        with open(cache_path, "rb") as cache_file:
+-            eval_features = pickle.load(cache_file)
+-    else:
+-        print(
+-            "No cached features at '%s'... converting from examples..." %
+-            cache_path)
+-
+-        print("Creating tokenizer...")
+-        tokenizer = BertTokenizer(args.vocab_file)
+-
+-        print("Converting examples to features...")
+-
+-        def append_feature(feature):
+-            eval_features.append(feature)
+-
+-        convert_examples_to_features(
+-            examples=eval_examples,
+-            tokenizer=tokenizer,
+-            max_seq_length=max_seq_length,
+-            doc_stride=doc_stride,
+-            max_query_length=max_query_length,
+-            is_training=False,
+-            output_fn=append_feature,
+-            verbose_logging=False,
+-        )
+-
+-        print("Caching features at '%s'..." % cache_path)
+-        with open(cache_path, "wb") as cache_file:
+-            pickle.dump(eval_features, cache_file)
++    print("Loading supplied feature records...")
++    with open(args.feature_records, "rb") as feature_file:
++        eval_features = pickle.load(feature_file)
+ 
+     print("Loading LoadGen logs...")
+     results = load_loadgen_log(
+diff --git a/language/bert/bert_tf_to_pytorch.py b/language/bert/bert_tf_to_pytorch.py
+index cb70f7d38815a6c23b2362bb6c7f028e0b4771fd..83e19a10b4ef6a5c9ac3f14af776849a00fc671c 100644
+--- a/language/bert/bert_tf_to_pytorch.py
++++ b/language/bert/bert_tf_to_pytorch.py
+@@ -106,17 +106,20 @@ def load_from_tf(config, tf_path):
+     return model
+ 
+ 
+-def save_to_onnx(model):
+-    tokenizer = BertTokenizer.from_pretrained(
++def save_to_onnx(model):
++    raise RuntimeError(
++        "MissingInputPresentationError: ONNX export requires an unspecified input shape."
++    )
++    tokenizer = BertTokenizer.from_pretrained(
+         "bert-large-uncased-whole-word-masking-finetuned-squad"
+     )
+     model.eval()
+ 
+-    dummy_input = torch.ones((1, 384), dtype=torch.int64)
++    dummy_input = torch.ones((1, 1), dtype=torch.int64)
+     torch.onnx.export(
+         model,
+         (dummy_input, dummy_input, dummy_input),
+-        "build/data/bert_tf_v1_1_large_fp32_384_v2/model.onnx",
++        "build/data/bert_model/model.onnx",
+         verbose=True,
+         input_names=["input_ids", "input_mask", "segment_ids"],
+         output_names=["output_start_logits", "output_end_logits"],
+@@ -134,7 +137,7 @@ def save_to_onnx(model):
+ 
+ 
+ def main():
+-    with open("build/data/bert_tf_v1_1_large_fp32_384_v2/bert_config.json") as f:
++    with open("build/data/bert_model/bert_config.json") as f:
+         config_json = json.load(f)
+ 
+     config = BertConfig(
+@@ -152,10 +155,10 @@ def main():
+     )
+ 
+     model = load_from_tf(
+-        config, "build/data/bert_tf_v1_1_large_fp32_384_v2/model.ckpt-5474"
++        config, "build/data/bert_model/model.ckpt-5474"
+     )
+     torch.save(
+-        model.state_dict(), "build/data/bert_tf_v1_1_large_fp32_384_v2/model.pytorch"
++        model.state_dict(), "build/data/bert_model/model.pytorch"
+     )
+     save_to_onnx(model)
+ 
+diff --git a/language/bert/create_squad_data.py b/language/bert/create_squad_data.py
+index 793920fb67d2f1af5993435c0b21c007fac26f24..4eb45c4b1fed93188e3fb05a8bc115e952a5bdc9 100644
+--- a/language/bert/create_squad_data.py
++++ b/language/bert/create_squad_data.py
+@@ -1,42 +1,18 @@
+ # Copyright 2021 Arm Limited and affiliates.
+ # Copyright (c) 2019 NVIDIA CORPORATION. All rights reserved.
+ # Licensed under the Apache License, Version 2.0 (the "License");
+-# you may not use this file except in compliance with the License.
+-# You may obtain a copy of the License at
+-#
+-#     http://www.apache.org/licenses/LICENSE-2.0
+-#
+-# Unless required by applicable law or agreed to in writing, software
+-# distributed under the License is distributed on an "AS IS" BASIS,
+-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-# See the License for the specific language governing permissions and
+-# limitations under the License.
+ 
+-# This file is identical to DeepLearningExamples/TensorFlow/LanguageModeling/BERT/utils/create_squad_data.py
+-# except that the dependency on horovod is removed.
++"""SQuAD records and an intentionally unspecified feature interface."""
+ 
+-import collections
+ import json
+ import tokenization
+-import six
+ 
+ 
+ class SquadExample(object):
+-    """A single training/test example for simple sequence classification.
++    """A single training/test example for simple sequence classification."""
+ 
+-    For examples without an answer, the start and end position are -1.
+-    """
+-
+-    def __init__(
+-        self,
+-        qas_id,
+-        question_text,
+-        doc_tokens,
+-        orig_answer_text=None,
+-        start_position=None,
+-        end_position=None,
+-        is_impossible=False,
+-    ):
++    def __init__(self, qas_id, question_text, doc_tokens, orig_answer_text=None,
++                 start_position=None, end_position=None, is_impossible=False):
+         self.qas_id = qas_id
+         self.question_text = question_text
+         self.doc_tokens = doc_tokens
+@@ -51,8 +27,7 @@ class SquadExample(object):
+     def __repr__(self):
+         s = ""
+         s += "qas_id: %s" % (tokenization.printable_text(self.qas_id))
+-        s += ", question_text: %s" % (
+-            tokenization.printable_text(self.question_text))
++        s += ", question_text: %s" % (tokenization.printable_text(self.question_text))
+         s += ", doc_tokens: [%s]" % (" ".join(self.doc_tokens))
+         if self.start_position:
+             s += ", start_position: %d" % (self.start_position)
+@@ -64,23 +39,12 @@ class SquadExample(object):
+ 
+ 
+ class InputFeatures(object):
+-    """A single set of features of data."""
++    """A single set of supplied feature tensors."""
+ 
+-    def __init__(
+-        self,
+-        unique_id,
+-        example_index,
+-        doc_span_index,
+-        tokens,
+-        token_to_orig_map,
+-        token_is_max_context,
+-        input_ids,
+-        input_mask,
+-        segment_ids,
+-        start_position=None,
+-        end_position=None,
+-        is_impossible=None,
+-    ):
++    def __init__(self, unique_id, example_index, doc_span_index, tokens,
++                 token_to_orig_map, token_is_max_context, input_ids, input_mask,
++                 segment_ids, start_position=None, end_position=None,
++                 is_impossible=None):
+         self.unique_id = unique_id
+         self.example_index = example_index
+         self.doc_span_index = doc_span_index
+@@ -123,7 +87,6 @@ def read_squad_examples(input_file, is_training,
+                         doc_tokens[-1] += c
+                     prev_is_whitespace = False
+                 char_to_word_offset.append(len(doc_tokens) - 1)
+-
+             for qa in paragraph["qas"]:
+                 qas_id = qa["id"]
+                 question_text = qa["question"]
+@@ -132,331 +95,49 @@ def read_squad_examples(input_file, is_training,
+                 orig_answer_text = None
+                 is_impossible = False
+                 if is_training:
+-
+                     if version_2_with_negative:
+                         is_impossible = qa["is_impossible"]
+                     if (len(qa["answers"]) != 1) and (not is_impossible):
+-                        raise ValueError(
+-                            "For training, each question should have exactly 1 answer."
+-                        )
++                        raise ValueError("For training, each question should have exactly 1 answer.")
+                     if not is_impossible:
+                         answer = qa["answers"][0]
+                         orig_answer_text = answer["text"]
+                         answer_offset = answer["answer_start"]
+                         answer_length = len(orig_answer_text)
+                         start_position = char_to_word_offset[answer_offset]
+-                        end_position = char_to_word_offset[
+-                            answer_offset + answer_length - 1
+-                        ]
+-                        # Only add answers where the text can be exactly recovered from the
+-                        # document. If this CAN'T happen it's likely due to weird Unicode
+-                        # stuff so we will just skip the example.
+-                        #
+-                        # Note that this means for training mode, every example is NOT
+-                        # guaranteed to be preserved.
+-                        actual_text = " ".join(
+-                            doc_tokens[start_position: (end_position + 1)]
+-                        )
+-                        cleaned_answer_text = " ".join(
+-                            tokenization.whitespace_tokenize(orig_answer_text)
+-                        )
++                        end_position = char_to_word_offset[answer_offset + answer_length - 1]
++                        actual_text = " ".join(doc_tokens[start_position: (end_position + 1)])
++                        cleaned_answer_text = " ".join(tokenization.whitespace_tokenize(orig_answer_text))
+                         if actual_text.find(cleaned_answer_text) == -1:
+-                            print(
+-                                "Could not find answer: '%s' vs. '%s'",
+-                                actual_text,
+-                                cleaned_answer_text,
+-                            )
++                            print("Could not find answer: '%s' vs. '%s'", actual_text,
++                                  cleaned_answer_text)
+                             continue
+                     else:
+                         start_position = -1
+                         end_position = -1
+                         orig_answer_text = ""
+-
+                 example = SquadExample(
+-                    qas_id=qas_id,
+-                    question_text=question_text,
+-                    doc_tokens=doc_tokens,
+-                    orig_answer_text=orig_answer_text,
+-                    start_position=start_position,
+-                    end_position=end_position,
+-                    is_impossible=is_impossible,
+-                )
++                    qas_id=qas_id, question_text=question_text,
++                    doc_tokens=doc_tokens, orig_answer_text=orig_answer_text,
++                    start_position=start_position, end_position=end_position,
++                    is_impossible=is_impossible)
+                 examples.append(example)
+-
+     return examples
+ 
+ 
+-def _check_is_max_context(doc_spans, cur_span_index, position):
+-    """Check if this is the 'max context' doc span for the token."""
+-
+-    # Because of the sliding window approach taken to scoring documents, a single
+-    # token can appear in multiple documents. E.g.
+-    #  Doc: the man went to the store and bought a gallon of milk
+-    #  Span A: the man went to the
+-    #  Span B: to the store and bought
+-    #  Span C: and bought a gallon of
+-    #  ...
+-    #
+-    # Now the word 'bought' will have two scores from spans B and C. We only
+-    # want to consider the score with "maximum context", which we define as
+-    # the *minimum* of its left and right context (the *sum* of left and
+-    # right context will always be the same, of course).
+-    #
+-    # In the example the maximum context for 'bought' would be span C since
+-    # it has 1 left context and 3 right context, while span B has 4 left context
+-    # and 0 right context.
+-    best_score = None
+-    best_span_index = None
+-    for span_index, doc_span in enumerate(doc_spans):
+-        end = doc_span.start + doc_span.length - 1
+-        if position < doc_span.start:
+-            continue
+-        if position > end:
+-            continue
+-        num_left_context = position - doc_span.start
+-        num_right_context = end - position
+-        score = min(num_left_context, num_right_context) + \
+-            0.01 * doc_span.length
+-        if best_score is None or score > best_score:
+-            best_score = score
+-            best_span_index = span_index
+-
+-    return cur_span_index == best_span_index
+-
+-
+-def _improve_answer_span(
+-    doc_tokens, input_start, input_end, tokenizer, orig_answer_text
+-):
+-    """Returns tokenized answer spans that better match the annotated answer."""
+-
+-    # The SQuAD annotations are character based. We first project them to
+-    # whitespace-tokenized words. But then after WordPiece tokenization, we can
+-    # often find a "better match". For example:
+-    #
+-    #   Question: What year was John Smith born?
+-    #   Context: The leader was John Smith (1895-1943).
+-    #   Answer: 1895
+-    #
+-    # The original whitespace-tokenized answer will be "(1895-1943).". However
+-    # after tokenization, our tokens will be "( 1895 - 1943 ) .". So we can match
+-    # the exact answer, 1895.
+-    #
+-    # However, this is not always possible. Consider the following:
+-    #
+-    #   Question: What country is the top exporter of electornics?
+-    #   Context: The Japanese electronics industry is the lagest in the world.
+-    #   Answer: Japan
+-    #
+-    # In this case, the annotator chose "Japan" as a character sub-span of
+-    # the word "Japanese". Since our WordPiece tokenizer does not split
+-    # "Japanese", we just use "Japanese" as the annotation. This is fairly rare
+-    # in SQuAD, but does happen.
+-    tok_answer_text = " ".join(tokenizer.tokenize(orig_answer_text))
+-
+-    for new_start in range(input_start, input_end + 1):
+-        for new_end in range(input_end, new_start - 1, -1):
+-            text_span = " ".join(doc_tokens[new_start: (new_end + 1)])
+-            if text_span == tok_answer_text:
+-                return (new_start, new_end)
+-
+-    return (input_start, input_end)
+-
+-
+-def convert_examples_to_features(
+-    examples,
+-    tokenizer,
+-    max_seq_length,
+-    doc_stride,
+-    max_query_length,
+-    is_training,
+-    output_fn,
+-    verbose_logging=False,
+-):
+-    """Loads a data file into a list of `InputBatch`s."""
+-
+-    unique_id = 1000000000
++def _missing_input_presentation(*args, **kwargs):
++    raise RuntimeError(
++        "The packaged evidence does not specify the reference input presentation."
++    )
+ 
+-    for example_index, example in enumerate(examples):
+-        query_tokens = tokenizer.tokenize(example.question_text)
+-
+-        if len(query_tokens) > max_query_length:
+-            query_tokens = query_tokens[0:max_query_length]
+-
+-        tok_to_orig_index = []
+-        orig_to_tok_index = []
+-        all_doc_tokens = []
+-        for i, token in enumerate(example.doc_tokens):
+-            orig_to_tok_index.append(len(all_doc_tokens))
+-            sub_tokens = tokenizer.tokenize(token)
+-            for sub_token in sub_tokens:
+-                tok_to_orig_index.append(i)
+-                all_doc_tokens.append(sub_token)
+-
+-        tok_start_position = None
+-        tok_end_position = None
+-        if is_training and example.is_impossible:
+-            tok_start_position = -1
+-            tok_end_position = -1
+-        if is_training and not example.is_impossible:
+-            tok_start_position = orig_to_tok_index[example.start_position]
+-            if example.end_position < len(example.doc_tokens) - 1:
+-                tok_end_position = orig_to_tok_index[example.end_position + 1] - 1
+-            else:
+-                tok_end_position = len(all_doc_tokens) - 1
+-            (tok_start_position, tok_end_position) = _improve_answer_span(
+-                all_doc_tokens,
+-                tok_start_position,
+-                tok_end_position,
+-                tokenizer,
+-                example.orig_answer_text,
+-            )
+-
+-        # The -3 accounts for [CLS], [SEP] and [SEP]
+-        max_tokens_for_doc = max_seq_length - len(query_tokens) - 3
+-
+-        # We can have documents that are longer than the maximum sequence length.
+-        # To deal with this we do a sliding window approach, where we take chunks
+-        # of the up to our max length with a stride of `doc_stride`.
+-        _DocSpan = collections.namedtuple(  # pylint: disable=invalid-name
+-            "DocSpan", ["start", "length"]
+-        )
+-        doc_spans = []
+-        start_offset = 0
+-        while start_offset < len(all_doc_tokens):
+-            length = len(all_doc_tokens) - start_offset
+-            if length > max_tokens_for_doc:
+-                length = max_tokens_for_doc
+-            doc_spans.append(_DocSpan(start=start_offset, length=length))
+-            if start_offset + length == len(all_doc_tokens):
+-                break
+-            start_offset += min(length, doc_stride)
+-
+-        for doc_span_index, doc_span in enumerate(doc_spans):
+-            tokens = []
+-            token_to_orig_map = {}
+-            token_is_max_context = {}
+-            segment_ids = []
+-            tokens.append("[CLS]")
+-            segment_ids.append(0)
+-            for token in query_tokens:
+-                tokens.append(token)
+-                segment_ids.append(0)
+-            tokens.append("[SEP]")
+-            segment_ids.append(0)
+-
+-            for i in range(doc_span.length):
+-                split_token_index = doc_span.start + i
+-                token_to_orig_map[len(
+-                    tokens)] = tok_to_orig_index[split_token_index]
+-
+-                is_max_context = _check_is_max_context(
+-                    doc_spans, doc_span_index, split_token_index
+-                )
+-                token_is_max_context[len(tokens)] = is_max_context
+-                tokens.append(all_doc_tokens[split_token_index])
+-                segment_ids.append(1)
+-            tokens.append("[SEP]")
+-            segment_ids.append(1)
+-
+-            input_ids = tokenizer.convert_tokens_to_ids(tokens)
+-
+-            # The mask has 1 for real tokens and 0 for padding tokens. Only real
+-            # tokens are attended to.
+-            input_mask = [1] * len(input_ids)
+-
+-            # Zero-pad up to the sequence length.
+-            while len(input_ids) < max_seq_length:
+-                input_ids.append(0)
+-                input_mask.append(0)
+-                segment_ids.append(0)
+-
+-            assert len(input_ids) == max_seq_length
+-            assert len(input_mask) == max_seq_length
+-            assert len(segment_ids) == max_seq_length
+-
+-            start_position = None
+-            end_position = None
+-            if is_training and not example.is_impossible:
+-                # For training, if our document chunk does not contain an annotation
+-                # we throw it out, since there is nothing to predict.
+-                doc_start = doc_span.start
+-                doc_end = doc_span.start + doc_span.length - 1
+-                out_of_span = False
+-                if not (
+-                    tok_start_position >= doc_start and tok_end_position <= doc_end
+-                ):
+-                    out_of_span = True
+-                if out_of_span:
+-                    start_position = 0
+-                    end_position = 0
+-                else:
+-                    doc_offset = len(query_tokens) + 2
+-                    start_position = tok_start_position - doc_start + doc_offset
+-                    end_position = tok_end_position - doc_start + doc_offset
+ 
+-            if is_training and example.is_impossible:
+-                start_position = 0
+-                end_position = 0
++def _check_is_max_context(*args, **kwargs):
++    return _missing_input_presentation(*args, **kwargs)
+ 
+-            if verbose_logging and example_index < 20:
+-                print("*** Example ***")
+-                print("unique_id: %s" % (unique_id))
+-                print("example_index: %s" % (example_index))
+-                print("doc_span_index: %s" % (doc_span_index))
+-                print(
+-                    "tokens: %s"
+-                    % " ".join([tokenization.printable_text(x) for x in tokens])
+-                )
+-                print(
+-                    "token_to_orig_map: %s"
+-                    % " ".join(
+-                        [
+-                            "%d:%d" % (x, y)
+-                            for (x, y) in six.iteritems(token_to_orig_map)
+-                        ]
+-                    )
+-                )
+-                print(
+-                    "token_is_max_context: %s"
+-                    % " ".join(
+-                        [
+-                            "%d:%s" % (x, y)
+-                            for (x, y) in six.iteritems(token_is_max_context)
+-                        ]
+-                    )
+-                )
+-                print("input_ids: %s" % " ".join([str(x) for x in input_ids]))
+-                print("input_mask: %s" %
+-                      " ".join([str(x) for x in input_mask]))
+-                print("segment_ids: %s" %
+-                      " ".join([str(x) for x in segment_ids]))
+-                if is_training and example.is_impossible:
+-                    print("impossible example")
+-                if is_training and not example.is_impossible:
+-                    answer_text = " ".join(
+-                        tokens[start_position: (end_position + 1)])
+-                    print("start_position: %d" % (start_position))
+-                    print("end_position: %d" % (end_position))
+-                    print(
+-                        "answer: %s" %
+-                        (tokenization.printable_text(answer_text)))
+ 
+-            feature = InputFeatures(
+-                unique_id=unique_id,
+-                example_index=example_index,
+-                doc_span_index=doc_span_index,
+-                tokens=tokens,
+-                token_to_orig_map=token_to_orig_map,
+-                token_is_max_context=token_is_max_context,
+-                input_ids=input_ids,
+-                input_mask=input_mask,
+-                segment_ids=segment_ids,
+-                start_position=start_position,
+-                end_position=end_position,
+-                is_impossible=example.is_impossible,
+-            )
++def _improve_answer_span(*args, **kwargs):
++    return _missing_input_presentation(*args, **kwargs)
+ 
+-            # Run callback
+-            output_fn(feature)
+ 
+-            unique_id += 1
++def convert_examples_to_features(*args, **kwargs):
++    return _missing_input_presentation(*args, **kwargs)
+diff --git a/language/bert/onnxruntime_SUT.py b/language/bert/onnxruntime_SUT.py
+index ee4882654ac54a78af11ed00ce669dc8f2229280..973e33f9e5151c54842e863af59dd991bb7679d9 100644
+--- a/language/bert/onnxruntime_SUT.py
++++ b/language/bert/onnxruntime_SUT.py
+@@ -42,9 +42,9 @@ class BERT_ONNXRuntime_SUT:
+         model_path = os.environ.get("ML_MODEL_FILE_WITH_PATH")
+         if not model_path:
+             if self.quantized:
+-                model_path = "build/data/bert_tf_v1_1_large_fp32_384_v2/bert_large_v1_1_fake_quant.onnx"
++                model_path = "build/data/bert_model/bert_large_v1_1_fake_quant.onnx"
+             else:
+-                model_path = "build/data/bert_tf_v1_1_large_fp32_384_v2/model.onnx"
++                model_path = "build/data/bert_model/model.onnx"
+         if len(onnxruntime.get_all_providers()) > 1 and os.environ.get(
+             "USE_GPU", "yes"
+         ).lower() not in ["0", "false", "off", "no"]:
+diff --git a/language/bert/pytorch_SUT.py b/language/bert/pytorch_SUT.py
+index 89660c9d96309b1cbf1236ebea06f68e137ff52b..6e7026dc0c5bf25b73f4387c7f7e5ae8f9218851 100644
+--- a/language/bert/pytorch_SUT.py
++++ b/language/bert/pytorch_SUT.py
+@@ -72,7 +72,7 @@ class BERT_PyTorch_SUT:
+         self.model.eval()
+         model_file = os.environ.get(
+             "ML_MODEL_FILE_WITH_PATH",
+-            "build/data/bert_tf_v1_1_large_fp32_384_v2/model.pytorch",
++            "build/data/bert_model/model.pytorch",
+         )
+         self.model.load_state_dict(torch.load(model_file), strict=False)
+ 
+diff --git a/language/bert/ray_SUT.py b/language/bert/ray_SUT.py
+index d947d15ed195da08b4e2eb17a5bcc3e5382f511d..56e4dec81001c66fdead79d49585f106faba472b 100644
+--- a/language/bert/ray_SUT.py
++++ b/language/bert/ray_SUT.py
+@@ -73,10 +73,13 @@ class TorchPredictor:
+         self.model.to(self.dev)
+         self.model.eval()
+         self.model.load_state_dict(torch.load(model_file), strict=False)
++        raise RuntimeError(
++            "MissingInputPresentationError: TensorRT compilation requires an unspecified input shape."
++        )
+         # tensor rt
+         batch_input_ids = torch.LongTensor(
+             np.zeros(
+-                (batch_size, 384))).to(
++                (batch_size, 1))).to(
+             self.dev)
+         traced_mlm_model = torch.jit.trace(
+             self.model,
+@@ -89,17 +92,17 @@ class TorchPredictor:
+                 torch_tensorrt.Input(
+                     shape=[
+                         batch_size,
+-                        384],
++                        1],
+                     dtype=torch.int32),
+                 torch_tensorrt.Input(
+                     shape=[
+                         batch_size,
+-                        384],
++                        1],
+                     dtype=torch.int32),
+                 torch_tensorrt.Input(
+                     shape=[
+                         batch_size,
+-                        384],
++                        1],
+                     dtype=torch.int32),
+             ],
+             enabled_precisions={torch.float32, torch.float16},
+@@ -142,7 +145,7 @@ class BERT_Ray_SUT:
+             config_json = json.load(f)
+         model_file = os.environ.get(
+             "ML_MODEL_FILE_WITH_PATH",
+-            "build/data/bert_tf_v1_1_large_fp32_384_v2/model.pytorch",
++            "build/data/bert_model/model.pytorch",
+         )
+ 
+         print("Constructing SUT...")
+diff --git a/language/bert/squad_QSL.py b/language/bert/squad_QSL.py
+index a97961fe0331def64fed44b6497cdf56512628ff..b6817b88317bbdf76cdd73163dd6ca264c4d0c2b 100644
+--- a/language/bert/squad_QSL.py
++++ b/language/bert/squad_QSL.py
+@@ -15,21 +15,7 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
+-import pickle
+ import mlperf_loadgen as lg
+-from create_squad_data import read_squad_examples, convert_examples_to_features
+-from transformers import BertTokenizer
+-import os
+-import sys
+-
+-sys.path.insert(0, os.getcwd())
+-
+-
+-# To support feature cache.
+-
+-max_seq_length = 384
+-max_query_length = 64
+-doc_stride = 128
+ 
+ 
+ class SQuAD_v1_QSL:
+@@ -37,55 +23,15 @@ class SQuAD_v1_QSL:
+         self,
+         total_count_override=None,
+         perf_count_override=None,
+-        cache_path="eval_features.pickle",
++        feature_records=None,
+     ):
+         print("Constructing QSL...")
+-        eval_features = []
+-        # Load features if cached, convert from examples otherwise.
+-        if os.path.exists(cache_path):
+-            print("Loading cached features from '%s'..." % cache_path)
+-            with open(cache_path, "rb") as cache_file:
+-                eval_features = pickle.load(cache_file)
+-        else:
+-            print(
+-                "No cached features at '%s'... converting from examples..." % cache_path
+-            )
+-
+-            print("Creating tokenizer...")
+-            vocab_file = os.environ.get("VOCAB_FILE")
+-            if not vocab_file:
+-                vocab_file = "build/data/bert_tf_v1_1_large_fp32_384_v2/vocab.txt"
+-            tokenizer = BertTokenizer(vocab_file)
+-
+-            print("Reading examples...")
+-            dataset_file = os.environ.get("DATASET_FILE")
+-            if not dataset_file:
+-                dataset_file = "build/data/dev-v1.1.json"
+-            eval_examples = read_squad_examples(
+-                input_file=dataset_file,
+-                is_training=False,
+-                version_2_with_negative=False,
+-            )
+-
+-            print("Converting examples to features...")
+-
+-            def append_feature(feature):
+-                eval_features.append(feature)
+-
+-            convert_examples_to_features(
+-                examples=eval_examples,
+-                tokenizer=tokenizer,
+-                max_seq_length=max_seq_length,
+-                doc_stride=doc_stride,
+-                max_query_length=max_query_length,
+-                is_training=False,
+-                output_fn=append_feature,
+-                verbose_logging=False,
++        if feature_records is None:
++            raise RuntimeError(
++                "The packaged evidence does not specify the reference input presentation; "
++                "supply feature records."
+             )
+-
+-            print("Caching features at '%s'..." % cache_path)
+-            with open(cache_path, "wb") as cache_file:
+-                pickle.dump(eval_features, cache_file)
++        eval_features = list(feature_records)
+ 
+         self.eval_features = eval_features
+         self.count = total_count_override or len(self.eval_features)
+@@ -111,5 +57,7 @@ class SQuAD_v1_QSL:
+         print("Finished destroying QSL.")
+ 
+ 
+-def get_squad_QSL(total_count_override=None, perf_count_override=None):
+-    return SQuAD_v1_QSL(total_count_override, perf_count_override)
++def get_squad_QSL(total_count_override=None, perf_count_override=None,
++                  feature_records=None):
++    return SQuAD_v1_QSL(total_count_override, perf_count_override,
++                        feature_records)
+diff --git a/language/bert/tf_SUT.py b/language/bert/tf_SUT.py
+index b59b8a2aee531269f8e19dd28aebf8f02c8f7876..70042aafa3ace9e0e17a91bbb91795fdbef37d0f 100644
+--- a/language/bert/tf_SUT.py
++++ b/language/bert/tf_SUT.py
+@@ -55,7 +55,7 @@ class BERT_TF_SUT:
+         self.sess = tf.compat.v1.Session(config=infer_config)
+         model_file = os.environ.get(
+             "ML_MODEL_FILE_WITH_PATH",
+-            "build/data/bert_tf_v1_1_large_fp32_384_v2/model.pb",
++            "build/data/bert_model/model.pb",
+         )
+         with gfile.FastGFile(model_file, "rb") as f:
+             graph_def = tf.compat.v1.GraphDef()
+diff --git a/language/bert/tf_estimator_SUT.py b/language/bert/tf_estimator_SUT.py
+index 103fb7ca18e3ed22dd660e085dd28a3c2864db0d..c8c52959f1f4d16ca482ea4abe8b167eea2269c4 100644
+--- a/language/bert/tf_estimator_SUT.py
++++ b/language/bert/tf_estimator_SUT.py
+@@ -53,7 +53,7 @@ class BERT_TF_ESTIMATOR_SUT:
+             bert_config=bert_config,
+             init_checkpoint=os.environ.get(
+                 "ML_MODEL_FILE_WITH_PATH",
+-                "build/data/bert_tf_v1_1_large_fp32_384_v2/model.ckpt-5474",
++                "build/data/bert_model/model.ckpt-5474",
+             ),
+         )
+ 
+@@ -67,12 +67,16 @@ class BERT_TF_ESTIMATOR_SUT:
+         self.qsl = get_squad_QSL()
+ 
+     def issue_queries(self, query_samples):
+-        input_ids = np.zeros((len(query_samples), 1, 384), dtype=np.int32)
+-        input_mask = np.zeros((len(query_samples), 1, 384), dtype=np.int32)
+-        segment_ids = np.zeros((len(query_samples), 1, 384), dtype=np.int32)
++        feature_records = [self.qsl.get_features(sample.index)
++                           for sample in query_samples]
++        input_ids = np.asarray([feature.input_ids for feature in feature_records],
++                               dtype=np.int32)[:, np.newaxis, :]
++        input_mask = np.asarray([feature.input_mask for feature in feature_records],
++                                dtype=np.int32)[:, np.newaxis, :]
++        segment_ids = np.asarray([feature.segment_ids for feature in feature_records],
++                                 dtype=np.int32)[:, np.newaxis, :]
+         for sample_idx in range(len(query_samples)):
+-            eval_features = self.qsl.get_features(
+-                query_samples[sample_idx].index)
++            eval_features = feature_records[sample_idx]
+             input_ids[sample_idx, ...] = np.array(eval_features.input_ids)
+             input_mask[sample_idx, ...] = np.array(eval_features.input_mask)
+             segment_ids[sample_idx, ...] = np.array(eval_features.segment_ids)
+diff --git a/language/bert/tf_freeze_bert.py b/language/bert/tf_freeze_bert.py
+index f00d72dbe6432c326522716f47954cd8e7354e02..a49b9d931bb6685480f4b31c4763555d3b2aa0fd 100644
+--- a/language/bert/tf_freeze_bert.py
++++ b/language/bert/tf_freeze_bert.py
+@@ -74,7 +74,7 @@ def save_model(fname, sess, graph=None):
+         input_nodes,
+         output_nodes,
+         transforms)
+-    save("build/data/bert_tf_v1_1_large_fp32_384_v2/model.pb", graph_def)
++    save("build/data/bert_model/model.pb", graph_def)
+ 
+ 
+ def create_model(
+@@ -119,12 +119,15 @@ def create_model(
+ 
+ 
+ def main():
++    raise RuntimeError(
++        "MissingInputPresentationError: freezing requires an unspecified input shape."
++    )
+     bert_config = modeling.BertConfig.from_json_file("bert_config.json")
+-    init_checkpoint = "build/data/bert_tf_v1_1_large_fp32_384_v2/model.ckpt-5474"
++    init_checkpoint = "build/data/bert_model/model.ckpt-5474"
+ 
+-    input_ids = tf.placeholder(tf.int32, shape=(1, 384), name="input_ids")
+-    input_mask = tf.placeholder(tf.int32, shape=(1, 384), name="input_mask")
+-    segment_ids = tf.placeholder(tf.int32, shape=(1, 384), name="segment_ids")
++    input_ids = tf.placeholder(tf.int32, shape=(1, None), name="input_ids")
++    input_mask = tf.placeholder(tf.int32, shape=(1, None), name="input_mask")
++    segment_ids = tf.placeholder(tf.int32, shape=(1, None), name="segment_ids")
+ 
+     logits = create_model(
+         bert_config=bert_config,

@@ -1,0 +1,166 @@
+diff --git a/language/bert/Dockerfile b/language/bert/Dockerfile
+deleted file mode 100644
+index e522a710bd413a2a7bad998fb1155f95d8a92755..0000000000000000000000000000000000000000
+--- a/language/bert/Dockerfile
++++ /dev/null
+@@ -1,43 +0,0 @@
+-# Copyright (c) 2019, NVIDIA CORPORATION.  All rights reserved.
+-#
+-# Licensed under the Apache License, Version 2.0 (the "License");
+-# you may not use this file except in compliance with the License.
+-# You may obtain a copy of the License at
+-#
+-#     http://www.apache.org/licenses/LICENSE-2.0
+-#
+-# Unless required by applicable law or agreed to in writing, software
+-# distributed under the License is distributed on an "AS IS" BASIS,
+-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-# See the License for the specific language governing permissions and
+-# limitations under the License.
+-
+-ARG BASE_IMAGE
+-FROM ${BASE_IMAGE}
+-
+-# Install LoadGen
+-# Cloning the LoadGen so that we have clean git repo from within the docker container.
+-RUN cd /tmp \
+- && git clone https://github.com/mlperf/inference.git \
+- && cd inference \
+- && git submodule update --init third_party/pybind \
+- && cd loadgen \
+- && python3 setup.py install \
+- && cd /tmp \
+- && rm -rf inference
+-
+-# Install dependencies
+-RUN python3 -m pip install torch==1.4.0 onnx==1.6.0 transformers==2.4.0 \ 
+-    onnxruntime==1.2.0 numpy==1.18.0 tokenization==1.0.7
+-
+-# Add user
+-ARG GID
+-ARG UID
+-ARG GROUP
+-ARG USER
+-RUN echo root:root | chpasswd \
+- && groupadd -f -g ${GID} ${GROUP} \
+- && useradd -G sudo -g ${GID} -u ${UID} -m ${USER} \
+- && echo ${USER}:${USER} | chpasswd \
+- && echo -e "\nexport PS1=\"(mlperf) \\u@\\h:\\w\\$ \"" | tee -a /home/${USER}/.bashrc \
+- && echo -e "\n%sudo ALL=(ALL:ALL) NOPASSWD:ALL\n" | tee -a /etc/sudoers
+diff --git a/language/bert/Makefile b/language/bert/Makefile
+index edb2937dff01c7c191bd04c001afd56848c63a30..84866963ff3efa7c038634070c2ab7812c5b85da 100644
+--- a/language/bert/Makefile
++++ b/language/bert/Makefile
+@@ -20,9 +20,6 @@ UID := $(shell id -u `whoami`)
+ GROUPNAME := $(shell id -gn `whoami`)
+ GROUPID := $(shell id -g `whoami`)
+ 
+-HOST_VOL ?= ${PWD}
+-CONTAINER_VOL ?= /workspace
+-
+ BUILD_DIR := build
+ DATA_DIR := $(BUILD_DIR)/data
+ BERT_DIR := $(DATA_DIR)/bert_tf_v1_1_large_fp32_384_v2
+@@ -30,13 +27,6 @@ RESULT_DIR := $(BUILD_DIR)/result
+ MLPERF_CONF := $(BUILD_DIR)/mlperf.conf
+ FEATURE_CACHE := eval_features.pickle
+ 
+-# Handle different nvidia-docker version
+-ifneq ($(wildcard /usr/bin/nvidia-docker),)
+-	DOCKER_RUN_CMD := nvidia-docker run
+-else
+-	DOCKER_RUN_CMD := docker run --gpus=all
+-endif
+-
+ .PHONY: setup
+ setup:
+ 	@if [ ! -e $(BUILD_DIR) ]; then \
+@@ -116,22 +106,6 @@ download_onnx_model:
+ 		wget -O $(BERT_DIR)/vocab.txt https://zenodo.org/record/3733910/files/vocab.txt?download=1; \
+ 	fi
+ 
+-.PHONY: build_docker
+-build_docker:
+-	@docker pull nvcr.io/nvidia/tensorrtserver:19.08-py3
+-	@cd DeepLearningExamples/TensorFlow/LanguageModeling/BERT && docker build . --rm -t mlperf-inference-bert
+-	@docker build --build-arg GID=$(GROUPID) --build-arg UID=$(UID) --build-arg GROUP=$(GROUPNAME) --build-arg USER=$(UNAME) \
+-		--build-arg BASE_IMAGE=mlperf-inference-bert -t mlperf-inference-bert - < Dockerfile
+-
+-.PHONY: launch_docker
+-launch_docker:
+-	@$(DOCKER_RUN_CMD) --rm -it -w /workspace -v $(HOST_VOL):$(CONTAINER_VOL) -v ${HOME}:/mnt/${HOME} \
+-		--shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 \
+-		-v /etc/timezone:/etc/timezone:ro -v /etc/localtime:/etc/localtime:ro \
+-		--security-opt apparmor=unconfined --security-opt seccomp=unconfined \
+-		--name mlperf-inference-bert-$(UNAME) -h mlperf-inference-bert-$(UNAME) --add-host mlperf-inference-bert-$(UNAME):127.0.0.1 \
+-		--user $(UID):$(GROUPID) --net host --device /dev/fuse --cap-add SYS_ADMIN $(DOCKER_ARGS) mlperf-inference-bert
+-
+ .PHONY: run_tf_performance
+ run_tf_performance:
+ 	@python3 run.py --backend=tf
+diff --git a/language/bert/README.md b/language/bert/README.md
+index 80fc8189eaf7c1b84fedd7bebe1981dbfcee7a1d..f5e15e538c48dc7a21fbf054da0ddf49b962a219 100644
+--- a/language/bert/README.md
++++ b/language/bert/README.md
+@@ -8,7 +8,6 @@ Please see the [new docs site](https://docs.mlcommons.org/inference/benchmarks/l
+ 
+ ## Prerequisites
+ 
+-- [nvidia-docker](https://github.com/NVIDIA/nvidia-docker)
+ - Any NVIDIA GPU supported by TensorFlow or PyTorch
+ 
+ ## Supported Models
+@@ -24,52 +23,11 @@ Please see the [new docs site](https://docs.mlcommons.org/inference/benchmarks/l
+ ## Disclaimer
+ This benchmark app is a reference implementation that is not meant to be the fastest implementation possible.
+ 
+-## Automated command to run the benchmark via MLCFlow
+-
+-Please see the [new docs site](https://docs.mlcommons.org/inference/benchmarks/language/bert/) for an automated way to run this benchmark across different available implementations and do an end-to-end submission with or without docker.
+-
+-You can also do `pip install mlc-scripts` and then use `mlcr` commands for downloading the model and datasets using the commands given in the later sections.
+-
+-### Download model through MLCFlow Automation
+-
+-**Pytorch Framework**
+-
+-```
+-mlcr get,ml-model,bert-large,_pytorch --outdirname=<path_to_download> -j
+-```
+-
+-**Onnx Framework**
+-
+-```
+-mlcr get,ml-model,bert-large,_onnx --outdirname=<path_to_download> -j
+-```
+-
+-**TensorFlow Framework**
+-
+-```
+-mlcr get,ml-model,bert-large,_tensorflow --outdirname=<path_to_download> -j
+-```
+-
+-### Download dataset through MLCFlow Automation
+-
+-**Validation**
+-```
+-mlcr get,dataset,squad,validation  --outdirname=<path_to_download> -j
+-```
+-
+-**Calibration**
+-```
+-mlcr get,dataset,squad,_calib1 --outdirname=<path_to_download> -j
+-```
+-
+ ## Commands
+ 
+ Please run the following commands:
+ 
+-- `make setup`: initialize submodule, download datasets, and download models.
+-- `make build_docker`: build docker image.
+-- `make launch_docker`: launch docker container with an interaction session.
+-- `python3 run.py --backend=[tf|pytorch|onnxruntime|tf_estimator] --scenario=[Offline|SingleStream|MultiStream|Server] [--accuracy] [--quantized]`: run the harness inside the docker container. Performance or Accuracy results will be printed in console.
++- `python3 run.py --backend=[tf|pytorch|onnxruntime|tf_estimator] --scenario=[Offline|SingleStream|MultiStream|Server] [--accuracy] [--quantized]`: run the harness. Performance or Accuracy results will be printed in console.
+ 
+ * ENV variable `MLC_MAX_NUM_THREADS` can be used to control the number of parallel threads issuing queries.
+ 

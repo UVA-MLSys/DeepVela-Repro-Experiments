@@ -172,6 +172,7 @@ The scripts that build these sheets are not included. [`dataset/failure_taxonomy
 
 | Tool | Purpose |
 | --- | --- |
+| `python -m evaluation.mask check <task folder> [--source <clone>]` | Rebuilds a task's masked source from its pinned commit, `source-files.txt` and `source-mask.patch`, and compares it with `source.tar.gz`. `write` derives the two files. |
 | `python -m evaluation.setup [--init]` | Reports this machine's GPUs, scheduler, tools, free space, input sets and unanswered deployment answers. `--init` creates the ignored local preferences file. |
 | `python -m evaluation.warmup <source_id> [--tasks c0,c2]` | Reports which inputs are ready. With `--from <dir>` or `--download`, gets the rest, checks them against [`dataset/inputs/`](dataset/inputs/) and builds the input sets in the cache directory. BERT and 3D U-Net C0–C6 only. `evaluation.prepare` refuses to launch such a task until its set is built and verifies. |
 | `python -m evaluation.departures <launch.json> [--write]` | A judge model counts departures from the documented route. Run `--write` after `scorer --write`. |
@@ -201,7 +202,7 @@ skills/
   agent-evaluation-profile/    harness skill: set up a task and prepare each arm's workspace
   SOURCES.json                 package names, the agent each targets, and file digests
 .claude/skills/, .agents/skills/   links that load the harness skill in this repository
-evaluation/                    setup.py and settings.py (deployment answers), cache.py (cache directory), warmup.py (input sets), task_prompt.py (render prompts), bundle.py (seal bundles), prepare.py (build arm workspaces), launch.py (start and freeze runs), scorer.py, checkers.py, transcript.py, schema.py (score a frozen run), departures.py, table.py (see Experiments)
+evaluation/                    setup.py and settings.py (deployment answers), mask.py (masked sources), cache.py (cache directory), warmup.py (input sets), task_prompt.py (render prompts), bundle.py (seal bundles), prepare.py (build arm workspaces), launch.py (start and freeze runs), scorer.py, checkers.py, transcript.py, schema.py (score a frozen run), departures.py, table.py (see Experiments)
 dataset/tasks/                 task records (MLPerf Inference and other benchmarks)
 dataset/inputs/                public sources and checksums of task inputs (BERT and 3D U-Net C0-C6 so far)
 dataset/mlperf-c0-c6/          C0–C6 task bundles and earlier run outputs

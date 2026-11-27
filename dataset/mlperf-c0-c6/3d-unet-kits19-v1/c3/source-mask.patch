@@ -1,0 +1,110 @@
+diff --git a/vision/medical_imaging/3d-unet-kits19/Makefile b/vision/medical_imaging/3d-unet-kits19/Makefile
+index 7c45a3e6599172244fb5cd5d964544e16a6cf42c..60c4163728dbb33e0a79f7a71d5e75b898a3451d 100644
+--- a/vision/medical_imaging/3d-unet-kits19/Makefile
++++ b/vision/medical_imaging/3d-unet-kits19/Makefile
+@@ -64,34 +64,13 @@ endif
+ 
+ .PHONY: setup
+ setup: create_directories
+-	@$(MAKE) -f $(MAKEFILE_NAME) download_kits19_and_duplicate
++	@$(MAKE) -f $(MAKEFILE_NAME) duplicate_kits19_case_00185
+ 	@$(MAKE) -f $(MAKEFILE_NAME) download_models
+ 	@if [ ! -e $(MLPERF_CONF) ]; then \
+ 		cp ../../../mlperf.conf $(MLPERF_CONF); \
+ 	fi
+ 	@echo "Done basic setup (prepare directories, setup mlperf.conf, download KiTS19 dataset and models)..."
+ 
+-.PHONY: download_kits19_and_duplicate
+-download_kits19_and_duplicate:
+-	@$(MAKE) -f $(MAKEFILE_NAME) download_kits19_raw_data
+-	@$(MAKE) -f $(MAKEFILE_NAME) duplicate_kits19_case_00185
+-
+-.PHONY: download_kits19_raw_data
+-download_kits19_raw_data:
+-	@if [ ! -s $(DOWNLOAD_DATA_DIR)/case_00137/imaging.nii.gz ]; then \
+-		echo "Cloning KITS19 repo and download RAW data into $(DOWNLOAD_DATA_DIR)..." \
+-		  && rm -Rf kits19_raw_data_dir \
+-			&& mkdir -p kits19_raw_data_dir \
+-			&& cd kits19_raw_data_dir \
+-			&& git clone https://github.com/neheller/kits19 \
+-			&& cd kits19 \
+-			&& pip3 install -r requirements.txt \
+-			&& python3 -m starter_code.get_imaging \
+-			export DOWNLOAD_DATA_DIR=$(PWD)/kits19_raw_data_dir/kits19/data; \
+-	else \
+-		echo "Valid KITS RAW data likely found in $(DOWNLOAD_DATA_DIR), skipping download..."; \
+-	fi
+-
+ .PHONY: duplicate_kits19_case_00185
+ duplicate_kits19_case_00185:
+ 	@if [ -s $(DOWNLOAD_DATA_DIR)/case_00185/imaging.nii.gz ]; then \
+diff --git a/vision/medical_imaging/3d-unet-kits19/README.md b/vision/medical_imaging/3d-unet-kits19/README.md
+index dfb808d8004e0b5cfcaa78349a339bec2bbb4202..2fd6137c170ca42587e9b11a279cc8985549f16e 100644
+--- a/vision/medical_imaging/3d-unet-kits19/README.md
++++ b/vision/medical_imaging/3d-unet-kits19/README.md
+@@ -1,6 +1,6 @@
+ # MLPerf Inference Benchmarks for Medical Image 3D Segmentation
+ 
+-The chosen model is 3D-UNet ([3D U-Net](https://arxiv.org/abs/1606.06650), [nnUNet](https://github.com/MIC-DKFZ/nnUNet)) performing [KiTS 2019](https://kits19.grand-challenge.org/) kidney tumor segmentation task.
++The chosen model is 3D-UNet ([3D U-Net](https://arxiv.org/abs/1606.06650), [nnUNet](https://github.com/MIC-DKFZ/nnUNet)) performing KiTS 2019 kidney tumor segmentation task.
+ 
+ This model performing KiTS19 dataset for kidney tumor segmentation task is proposed to be used in MLPerf-Inference submissions from the year 2022.
+ 
+@@ -23,10 +23,10 @@ If you would like to run on NVIDIA GPU, you will need:
+ 
+ | framework | accuracy | dataset | model link | model source | precision |
+ | --------- | -------- | ------- | ---------- | ------------ | --------- |
+-| PyTorch | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Trained in PyTorch using codes from [MLPerf-Training](https://github.com/mlcommons/training/tree/master/image_segmentation/pytorch) | fp32 |
+-| PyTorch/checkpoint | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Trained in PyTorch using codes from [MLPerf-Training](https://github.com/mlcommons/training/tree/master/image_segmentation/pytorch) | fp32 |
+-| ONNX | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Converted from the PyTorch model using [script](unet_pytorch_to_onnx.py) | fp32 |
+-| Tensorflow | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Converted from the ONNX model using [script](unet_onnx_to_tensorflow.py) | fp32 |
++| PyTorch | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of KiTS 2019 | [from zenodo](https://zenodo.org/record/5597155) | Trained in PyTorch using codes from [MLPerf-Training](https://github.com/mlcommons/training/tree/master/image_segmentation/pytorch) | fp32 |
++| PyTorch/checkpoint | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of KiTS 2019 | [from zenodo](https://zenodo.org/record/5597155) | Trained in PyTorch using codes from [MLPerf-Training](https://github.com/mlcommons/training/tree/master/image_segmentation/pytorch) | fp32 |
++| ONNX | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of KiTS 2019 | [from zenodo](https://zenodo.org/record/5597155) | Converted from the PyTorch model using [script](unet_pytorch_to_onnx.py) | fp32 |
++| Tensorflow | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of KiTS 2019 | [from zenodo](https://zenodo.org/record/5597155) | Converted from the ONNX model using [script](unet_onnx_to_tensorflow.py) | fp32 |
+ 
+ ## Disclaimer
+ This benchmark app is a reference implementation that is not meant to be the fastest implementation possible.
+@@ -50,34 +50,12 @@ mlcr get,ml-model,3d-unet,_onnx --outdirname=<path_to_download> -j
+ mlcr get,ml-model,3d-unet,_tensorflow --outdirname=<path_to_download> -j
+ ```
+ 
+-### Download dataset through MLCFlow Automation
+-
+-#### Unprocessed dataset
+-
+-**Validation**
+-```
+-mlcr get,dataset,kits19,_validation --outdirname=<path_to_download> -j
+-```
+-
+-**Calibration**
+-```
+-mlcr get,dataset,kits19,_calibration --outdirname=<path_to_download> -j
+-```
+-
+-#### Preprocessed dataset
+-
+-```
+-mlcr get,dataset,kits19,preprocessed --outdirname=<path_to_download> -j
+-```
+-
+-
+ ## Commands
+ 
+ Please run the following commands, in the suggested order:
+ 
+ - `git clone https://github.com/mlcommons/inference.git`
+ - `cd [.../inference]/vision/medical_imaging/3d-unet-kits19`
+-- `make setup`
+ - `make build_docker`
+ - `make launch_docker`
+ - `make preprocess_data`
+@@ -89,7 +67,6 @@ Other useful commands:
+ - `make preprocess_calibration_data`: preprocess calibration dataset
+ - `make convert_onnx_model`: convert pytorch model to ONNX
+ - `make convert_tensorflow_model`: convert ONNX model to TensorFlow
+-- `make download_kits19_and_duplicate`: manually download KITS19 raw data and duplicate case_00185 as case_00400
+ - `make download_models`: manually download all the models (pytorch, ONNX, tensorflow)
+ - `python3 run.py --backend=[tensorflow|pytorch|pytorch_checkpoint|onnxruntime] --scenario=[Offline|SingleStream|MultiStream|Server] [--accuracy] --model=[path/to/model]`: run the harness inside the docker container. Performance or Accuracy results will be printed in console
+ - `python3 accuracy_kits.py --log_file=<LOADGEN_LOG>`: compute accuracy from a LoadGen accuracy JSON log file

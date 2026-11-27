@@ -147,6 +147,10 @@ newest `<arm>-*` run under `<runs root>/<task_id>/` and say which one. Do not as
      place, is listed as unmasked in `masked.txt`, and the user is told.
    - When the commit states no reference value, `masked.txt` says so and the archive is the
      unmasked pinned commit.
+   - Record the mask as data: `python -m evaluation.mask write <task folder> --source <clone> --other
+     <another condition's source.tar.gz>` writes `source-files.txt` and `source-mask.patch` (edits and
+     deletions against the pinned commit) and checks that they rebuild the archive exactly. An archive that
+     adds files the commit lacks cannot be recorded this way; change the archive, not the check.
 5. Render the task prompt from the source's dataset record (`dataset/tasks/<source_id>.json`; a
    controlled study's own record is `dataset/tasks/<study>/<name>.json`,
    [schema](../../docs/dataset-schema.md)); never write it by hand:
@@ -187,7 +191,8 @@ newest `<arm>-*` run under `<runs root>/<task_id>/` and say which one. Do not as
    python -m evaluation.bundle seal <profile_id> <task_id>
    ```
 
-   The manifest covers `prompt.md`, `tasks.json`, `masked.txt`, and `source.tar.gz` with the rubrics.
+   The manifest covers `prompt.md`, `tasks.json`, `masked.txt`, `source.tar.gz`, `source-files.txt` and
+   `source-mask.patch` with the rubrics.
 7. Update `<bundle_root>/INDEX.md` in this same pass:
    - if step 2 created a new `profile_id`, add one row: `profile_id`, domain/reproduction-shape
      summary, and the new `task_id`;

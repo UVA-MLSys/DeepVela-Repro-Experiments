@@ -29,7 +29,8 @@ Each version has seven masking conditions (C0–C6), three workflows (`plain`, `
 
 ```text
 bundle.yaml, MANIFEST.sha256
-<version>/<condition>/        prompt.md, tasks.json, masked.txt, manifest.yaml, source.tar.gz, rubrics/
+<version>/<condition>/        prompt.md, tasks.json, masked.txt, manifest.yaml, source.tar.gz, rubrics/,
+                              source-files.txt and source-mask.patch (the MLPerf mask)
                               BERT C2 and C4 also: dle-mask.patch, dle-files.sha256 (the DeepLearningExamples mask)
 run_outputs/<version>/
   index.json                  one entry per run: condition, workflow, trial, reported result, source run folder
@@ -38,6 +39,8 @@ run_outputs/<version>/
 ```
 
 The profile id is `reproduce`; a task id is `<version>/<condition>`, for example `bert-squad-v1/c0`.
+
+Each condition's `source.tar.gz` is the masked part of MLPerf Inference commit `3fbc329939999c13d0a7b5e67fb2092287e06047`. `source-files.txt` lists the commit files it starts from, and `source-mask.patch` holds its edits and deletions; C0's patch is empty. `python -m evaluation.mask check <version>/<condition> --source <clone of mlcommons/inference>` rebuilds the source from the commit and fails unless every file, its bytes, executable bit and symlink target equal the archive's. All 28 pass. `masked.txt` describes the same changes in prose.
 
 ## Running a task
 
@@ -56,7 +59,7 @@ No benchmark has been run with these bundles, so do not pool new results with th
 
 ## Differences from the bundles of the earlier runs
 
-The rubrics, `masked.txt`, source archives and DeepLearningExamples patch files are unchanged, and `tasks.json` holds the same records. Prompts and manifests changed:
+The rubrics, `masked.txt`, source archives and DeepLearningExamples patch files are unchanged, `source-files.txt` and `source-mask.patch` are new, and `tasks.json` holds the same records. Prompts and manifests changed:
 
 - Inputs come from a verified input set, `{{INPUT_ROOT}}`, and each manifest pins it with `input_set_sha256`. All prompts of a benchmark name the inputs alike.
 - BERT: C0, C1, C3, C5 and C6 share one set; C2 and C4, which also mask DeepLearningExamples, have their own. 3D U-Net: all conditions share one set, because its conditions mask only the source archive.

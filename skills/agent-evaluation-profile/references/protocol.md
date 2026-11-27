@@ -129,7 +129,8 @@ Setup runs once per task, in a session of its own started from the fixed author-
 under one bundle digest in `tasks/<task_id>/`:
 
 - the rubric, with the user's metric, reference, and tolerance;
-- `source.tar.gz`, the pinned commit without history and with the reference masked, and
+- `source.tar.gz`, the pinned commit without history and with the reference masked, with
+  `source-files.txt` and `source-mask.patch`, which rebuild it from the commit (`evaluation.mask check`), and
   `masked.txt`, what was masked and where;
 - `prompt.md`, the task prompt, rendered from the dataset record and `assets/task_prompt.md` by `evaluation.task_prompt`,
   and `tasks.json`, the selected tasks' records it points to, copied into the workspace at launch.

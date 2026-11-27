@@ -1,0 +1,38 @@
+diff --git a/language/bert/Makefile b/language/bert/Makefile
+index edb2937dff01c7c191bd04c001afd56848c63a30..8458cab0dc6ef90d628f50b5d5669ab1f4a211dc 100644
+--- a/language/bert/Makefile
++++ b/language/bert/Makefile
+@@ -58,9 +58,7 @@ download_data:
+ 	@if [ ! -e $(DATA_DIR) ]; then \
+ 		mkdir $(DATA_DIR); \
+ 	fi
+-	@if [ ! -e $(DATA_DIR)/dev-v1.1.json ]; then \
+-		wget -O $(DATA_DIR)/dev-v1.1.json https://github.com/rajpurkar/SQuAD-explorer/blob/master/dataset/dev-v1.1.json?raw=true; \
+-	fi
++	@echo "Use the staged SQUAD_DIR/dev-v1.1.json input."
+ 	@if [ ! -e $(DATA_DIR)/evaluate-v1.1.py ]; then \
+ 		wget -O $(DATA_DIR)/evaluate-v1.1.py https://github.com/allenai/bi-att-flow/raw/master/squad/evaluate-v1.1.py; \
+ 	fi
+diff --git a/language/bert/README.md b/language/bert/README.md
+index 80fc8189eaf7c1b84fedd7bebe1981dbfcee7a1d..2535befdc3fdb73b662df339cc04f2971100e02e 100644
+--- a/language/bert/README.md
++++ b/language/bert/README.md
+@@ -50,18 +50,6 @@ mlcr get,ml-model,bert-large,_onnx --outdirname=<path_to_download> -j
+ mlcr get,ml-model,bert-large,_tensorflow --outdirname=<path_to_download> -j
+ ```
+ 
+-### Download dataset through MLCFlow Automation
+-
+-**Validation**
+-```
+-mlcr get,dataset,squad,validation  --outdirname=<path_to_download> -j
+-```
+-
+-**Calibration**
+-```
+-mlcr get,dataset,squad,_calib1 --outdirname=<path_to_download> -j
+-```
+-
+ ## Commands
+ 
+ Please run the following commands:

@@ -1,0 +1,32 @@
+diff --git a/vision/medical_imaging/3d-unet-kits19/README.md b/vision/medical_imaging/3d-unet-kits19/README.md
+index dfb808d8004e0b5cfcaa78349a339bec2bbb4202..15bb7482fba22a9ec1ed1ab11778d353e5f42c0f 100644
+--- a/vision/medical_imaging/3d-unet-kits19/README.md
++++ b/vision/medical_imaging/3d-unet-kits19/README.md
+@@ -23,10 +23,10 @@ If you would like to run on NVIDIA GPU, you will need:
+ 
+ | framework | accuracy | dataset | model link | model source | precision |
+ | --------- | -------- | ------- | ---------- | ------------ | --------- |
+-| PyTorch | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Trained in PyTorch using codes from [MLPerf-Training](https://github.com/mlcommons/training/tree/master/image_segmentation/pytorch) | fp32 |
+-| PyTorch/checkpoint | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Trained in PyTorch using codes from [MLPerf-Training](https://github.com/mlcommons/training/tree/master/image_segmentation/pytorch) | fp32 |
+-| ONNX | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Converted from the PyTorch model using [script](unet_pytorch_to_onnx.py) | fp32 |
+-| Tensorflow | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Converted from the ONNX model using [script](unet_onnx_to_tensorflow.py) | fp32 |
++| PyTorch | <masked reference result> | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Trained in PyTorch using codes from [MLPerf-Training](https://github.com/mlcommons/training/tree/master/image_segmentation/pytorch) | fp32 |
++| PyTorch/checkpoint | <masked reference result> | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Trained in PyTorch using codes from [MLPerf-Training](https://github.com/mlcommons/training/tree/master/image_segmentation/pytorch) | fp32 |
++| ONNX | <masked reference result> | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Converted from the PyTorch model using [script](unet_pytorch_to_onnx.py) | fp32 |
++| Tensorflow | <masked reference result> | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Converted from the ONNX model using [script](unet_onnx_to_tensorflow.py) | fp32 |
+ 
+ ## Disclaimer
+ This benchmark app is a reference implementation that is not meant to be the fastest implementation possible.
+diff --git a/vision/medical_imaging/3d-unet-kits19/accuracy_kits.py b/vision/medical_imaging/3d-unet-kits19/accuracy_kits.py
+index 1beb601558736d45447116494d1a96d50bde1cb2..aea68dc1654bfea619ca7b0448e6ce4d9f2968fc 100644
+--- a/vision/medical_imaging/3d-unet-kits19/accuracy_kits.py
++++ b/vision/medical_imaging/3d-unet-kits19/accuracy_kits.py
+@@ -214,8 +214,6 @@ def save_evaluation_summary(postprocessed_data_dir, dice_scores):
+         )
+ 
+     df.set_index("case", inplace=True)
+-    # consider NaN as a crash hence zero
+-    df.loc["mean"] = df.fillna(0).mean()
+ 
+     df.to_csv(sum_path)
+ 

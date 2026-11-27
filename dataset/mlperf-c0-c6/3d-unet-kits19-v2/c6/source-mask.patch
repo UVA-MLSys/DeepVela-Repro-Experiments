@@ -1,0 +1,28 @@
+diff --git a/vision/medical_imaging/3d-unet-kits19/README.md b/vision/medical_imaging/3d-unet-kits19/README.md
+index dfb808d8004e0b5cfcaa78349a339bec2bbb4202..80b9fef09a4b4fa188011174ca23ff496f049462 100644
+--- a/vision/medical_imaging/3d-unet-kits19/README.md
++++ b/vision/medical_imaging/3d-unet-kits19/README.md
+@@ -1,11 +1,5 @@
+ # MLPerf Inference Benchmarks for Medical Image 3D Segmentation
+ 
+-The chosen model is 3D-UNet ([3D U-Net](https://arxiv.org/abs/1606.06650), [nnUNet](https://github.com/MIC-DKFZ/nnUNet)) performing [KiTS 2019](https://kits19.grand-challenge.org/) kidney tumor segmentation task.
+-
+-This model performing KiTS19 dataset for kidney tumor segmentation task is proposed to be used in MLPerf-Inference submissions from the year 2022.
+-
+-[3D-UNet BraTS19 model](https://github.com/mlcommons/inference/tree/master/vision/medical_imaging/3d-unet-brats19), which has been used for MLPerf-Inference v0.7 and v1.0, is the valid model for the submissions until the end of year 2021. Please use BraTS19 model for v.1.1 submission.
+-
+ ## Automated command to run the benchmark via MLCFlow
+ 
+ Please see the [new docs site](https://docs.mlcommons.org/inference/benchmarks/medical_imaging/3d-unet/) for an automated way to run this benchmark across different available implementations and do an end-to-end submission with or without docker.
+@@ -28,11 +22,6 @@ If you would like to run on NVIDIA GPU, you will need:
+ | ONNX | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Converted from the PyTorch model using [script](unet_pytorch_to_onnx.py) | fp32 |
+ | Tensorflow | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Converted from the ONNX model using [script](unet_onnx_to_tensorflow.py) | fp32 |
+ 
+-## Disclaimer
+-This benchmark app is a reference implementation that is not meant to be the fastest implementation possible.
+-This benchmark app is built by refactoring lots of codes from [MLPerf-Training 3D-UNet](https://github.com/mlcommons/training/blob/master/image_segmentation/pytorch) and [MLPerf-Inference 3D-UNet BraTS](https://github.com/mlcommons/inference/tree/master/vision/medical_imaging/3d-unet)
+-
+-
+ ### Download model through MLCFlow Automation
+ 
+ **PyTorch**

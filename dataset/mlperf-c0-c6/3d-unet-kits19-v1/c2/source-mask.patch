@@ -1,0 +1,153 @@
+diff --git a/vision/medical_imaging/3d-unet-kits19/README.md b/vision/medical_imaging/3d-unet-kits19/README.md
+index dfb808d8004e0b5cfcaa78349a339bec2bbb4202..15bb7482fba22a9ec1ed1ab11778d353e5f42c0f 100644
+--- a/vision/medical_imaging/3d-unet-kits19/README.md
++++ b/vision/medical_imaging/3d-unet-kits19/README.md
+@@ -23,10 +23,10 @@ If you would like to run on NVIDIA GPU, you will need:
+ 
+ | framework | accuracy | dataset | model link | model source | precision |
+ | --------- | -------- | ------- | ---------- | ------------ | --------- |
+-| PyTorch | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Trained in PyTorch using codes from [MLPerf-Training](https://github.com/mlcommons/training/tree/master/image_segmentation/pytorch) | fp32 |
+-| PyTorch/checkpoint | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Trained in PyTorch using codes from [MLPerf-Training](https://github.com/mlcommons/training/tree/master/image_segmentation/pytorch) | fp32 |
+-| ONNX | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Converted from the PyTorch model using [script](unet_pytorch_to_onnx.py) | fp32 |
+-| Tensorflow | **mean = 0.86170** kidney = 0.9347 tumor = 0.7887 | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Converted from the ONNX model using [script](unet_onnx_to_tensorflow.py) | fp32 |
++| PyTorch | <masked reference result> | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Trained in PyTorch using codes from [MLPerf-Training](https://github.com/mlcommons/training/tree/master/image_segmentation/pytorch) | fp32 |
++| PyTorch/checkpoint | <masked reference result> | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Trained in PyTorch using codes from [MLPerf-Training](https://github.com/mlcommons/training/tree/master/image_segmentation/pytorch) | fp32 |
++| ONNX | <masked reference result> | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Converted from the PyTorch model using [script](unet_pytorch_to_onnx.py) | fp32 |
++| Tensorflow | <masked reference result> | [Eval set](meta/inference_cases.json) of [KiTS 2019](https://kits19.grand-challenge.org/) | [from zenodo](https://zenodo.org/record/5597155) | Converted from the ONNX model using [script](unet_onnx_to_tensorflow.py) | fp32 |
+ 
+ ## Disclaimer
+ This benchmark app is a reference implementation that is not meant to be the fastest implementation possible.
+diff --git a/vision/medical_imaging/3d-unet-kits19/global_vars.py b/vision/medical_imaging/3d-unet-kits19/global_vars.py
+index b5fa192d9ddd040c052a3544d0748c429fccec0b..b5e825129910309296671f792267456b15490957 100644
+--- a/vision/medical_imaging/3d-unet-kits19/global_vars.py
++++ b/vision/medical_imaging/3d-unet-kits19/global_vars.py
+@@ -57,8 +57,6 @@ CHECKSUM_CALIB_FILE = Path(
+     "checksum_calibration.json").absolute()
+ assert INFERENCE_CASE_FILE.is_file(), "inference_cases.json is not found"
+ assert CALIBRATION_CASE_FILE.is_file(), "calibration_cases.json is not found"
+-assert CHECKSUM_INFER_FILE.is_file(), "checksum_inference.json is not found"
+-assert CHECKSUM_CALIB_FILE.is_file(), "checksum_calibration.json is not found"
+ 
+ # cases used for inference and calibration
+ with open(INFERENCE_CASE_FILE, "r") as f:
+@@ -72,7 +70,7 @@ STDDEV_VAL = 76.9
+ MIN_CLIP_VAL = -79.0
+ MAX_CLIP_VAL = 304.0
+ PADDING_VAL = -2.2
+-TARGET_SPACING = [1.6, 1.2, 1.2]
++TARGET_SPACING = None
+ ROI_SHAPE = [128, 128, 128]
+ SLIDE_OVERLAP_FACTOR = 0.5
+ assert (
+diff --git a/vision/medical_imaging/3d-unet-kits19/meta/checksum_calibration.json b/vision/medical_imaging/3d-unet-kits19/meta/checksum_calibration.json
+deleted file mode 100644
+index 04bde7b872fcc728f52c074c1bc34dddf5569c58..0000000000000000000000000000000000000000
+--- a/vision/medical_imaging/3d-unet-kits19/meta/checksum_calibration.json
++++ /dev/null
+@@ -1,22 +0,0 @@
+-{
+-    "case_00047.pkl": "c95635f08840845772c6e31dce231288",
+-    "case_00050.pkl": "eb415edf6afd636f74281ea6d0da1ad5",
+-    "case_00053.pkl": "f7501170f9d9f506c3957668a02a3cc3",
+-    "case_00073.pkl": "6c99ba7a29e1c41a260251eed8d998b0",
+-    "case_00081.pkl": "639551c36d3fe6aac245a8d3f406f850",
+-    "case_00090.pkl": "ee6ed52d283dedf9674663b3dbb8e74a",
+-    "case_00091.pkl": "f3fb59a2893a85b9a9eaf61b2c9adc8c",
+-    "case_00100.pkl": "bcf9e25be506b5e29007227172993633",
+-    "case_00117.pkl": "408db20dbcf4fdaa1dc29f2a7aa1445e",
+-    "case_00130.pkl": "f80b34f198bc1419599cb7b153e08e8a",
+-    "case_00136.pkl": "1778263747a1ab94ed307558b0f56865",
+-    "case_00141.pkl": "9d4f05f9cc5e915725df9126621e1dae",
+-    "case_00144.pkl": "58d8a08b2c06cf9b27ab3ac9e9942cfb",
+-    "case_00147.pkl": "f0cbef2bb88527f3202c408899e44236",
+-    "case_00148.pkl": "f40db481d2deba02a29341ef4ede9f62",
+-    "case_00149.pkl": "c0fb9fa4ee50738af46999c1765ccacf",
+-    "case_00150.pkl": "1868b7fb2450db8a8523c6d2edab38c7",
+-    "case_00172.pkl": "66baf7fa2f75f4556342844e7a26de11",
+-    "case_00183.pkl": "c0a1e1eda7f61a0d4d2b7a38719832d1",
+-    "case_00196.pkl": "38b8ebc0ef50b1cc9cb08220230e2d2d"
+-}
+\ No newline at end of file
+diff --git a/vision/medical_imaging/3d-unet-kits19/meta/checksum_inference.json b/vision/medical_imaging/3d-unet-kits19/meta/checksum_inference.json
+deleted file mode 100644
+index 66f0ce46276853616eaea12b735567cf00111bd3..0000000000000000000000000000000000000000
+--- a/vision/medical_imaging/3d-unet-kits19/meta/checksum_inference.json
++++ /dev/null
+@@ -1,45 +0,0 @@
+-{
+-    "case_00000.pkl": "470ec60377be417a9c271ffd81c1d610",
+-    "case_00003.pkl": "a5536433cf1c01aaa8c4293ef59a826c",
+-    "case_00005.pkl": "dbb4141573d72278c1724debe16311f5",
+-    "case_00006.pkl": "4a81aa95c7a7613138d9c148eea05a66",
+-    "case_00012.pkl": "a4f576fd327ba35242802b01f204dede",
+-    "case_00024.pkl": "f0c24290a38491c3a3901e389df345bc",
+-    "case_00034.pkl": "a40e1ef70291072b4790f2d3056972cc",
+-    "case_00041.pkl": "4ddaf586d0a7ea7f55491f9ec776ad24",
+-    "case_00044.pkl": "b7b2e115ed7fcd3e0e757ff8ac164733",
+-    "case_00049.pkl": "0b7d71d0c11458a602d71490449943d3",
+-    "case_00052.pkl": "7fd78f6dd694fe90ff6b5332c6c30f19",
+-    "case_00056.pkl": "1ff976858ecd43a9045b2c571ac18b42",
+-    "case_00061.pkl": "f631a2edb275f4fa2bc662c210dc29e2",
+-    "case_00065.pkl": "c7d63dc01cf8ca5c08075c0dee7fd9ae",
+-    "case_00066.pkl": "d3741a5f717ca978f3bb49fabd2d6651",
+-    "case_00070.pkl": "347b40ea5c3e30a8e313f6fad5504acd",
+-    "case_00076.pkl": "d572f849e8de3e352009f7156f0988ce",
+-    "case_00078.pkl": "de564386f95f97c9c276e11883acb018",
+-    "case_00080.pkl": "23cd0e88a3c1f7995082137bb7d5ab7b",
+-    "case_00084.pkl": "2a61a63abff567c4b107efeec24528ad",
+-    "case_00086.pkl": "69453d214225bcc67417c1726b1c6f31",
+-    "case_00087.pkl": "3ef7fc6c59b3a629fb4feddca92825f0",
+-    "case_00092.pkl": "4da4423b41cc606f42ad40fa769229af",
+-    "case_00111.pkl": "9f43e5824fd5459bfa7d523197346003",
+-    "case_00112.pkl": "18b9a976fd0683990a997241f1f6c588",
+-    "case_00125.pkl": "10c8971914f9d7beb66ff2d5e87f3bf4",
+-    "case_00128.pkl": "f1c1d420474ad5254ffdd6d8fbaffaa9",
+-    "case_00138.pkl": "8661d26af4271de29fb8593d1da3f195",
+-    "case_00157.pkl": "55a47901624695e3aacd9b0fb8467555",
+-    "case_00160.pkl": "0b1b2d50203070898af64ac6457c7568",
+-    "case_00161.pkl": "0e4b57e587e36042d5473de11d1792c2",
+-    "case_00162.pkl": "89f53aac7e1a421505f9b6cacdc5f09e",
+-    "case_00169.pkl": "f6c0594e20016e2b5086eae22963d051",
+-    "case_00171.pkl": "00a2700e3ff23896d7fd1ca5a30ddf6a",
+-    "case_00176.pkl": "430f5f2da6247f52b68346d549ed672e",
+-    "case_00185.pkl": "2ae858449b63e2fe4466c29087540e9c",
+-    "case_00187.pkl": "15022874121b70aa7f5f18d1a197816b",
+-    "case_00189.pkl": "966297c3adc7766655e050220b840dee",
+-    "case_00198.pkl": "cbfbd56f5c1a2570cc9d73c9fad8222a",
+-    "case_00203.pkl": "f82f9adab8d3ea22391a2e9af5572288",
+-    "case_00206.pkl": "0e59b9a2ef5bd4549938a97d136b06a8",
+-    "case_00207.pkl": "4c437995fb990736385e0dc2241255aa",
+-    "case_00400.pkl": "2ae858449b63e2fe4466c29087540e9c"
+-}
+\ No newline at end of file
+diff --git a/vision/medical_imaging/3d-unet-kits19/preprocess.py b/vision/medical_imaging/3d-unet-kits19/preprocess.py
+index 76f6a88c7901bd52e6fdff676f6f9d7ae2a85592..9107dbd7308ced2e6a4625dda7d97828b9d1a475 100644
+--- a/vision/medical_imaging/3d-unet-kits19/preprocess.py
++++ b/vision/medical_imaging/3d-unet-kits19/preprocess.py
+@@ -135,7 +135,7 @@ class Preprocessor:
+     A class processing images in KiTS19 dataset
+     Pre-processing includes below steps (128x128x128 window with 50% overlap as an example)
+         1. Get a pair of CT-imaging/segmentation data
+-        2. Resample to the same, predetermined common voxel spacing (1.6, 1.2, 1.2)[mm]
++        2. Resample to the same, predetermined common voxel spacing
+         3. Pad every volume so it is equal or larger than 128
+         4. Pad/crop volumes so they are divisible by 64
+     Preprocessed data are saved as pickle format for easy consumption
+@@ -270,7 +270,7 @@ class Preprocessor:
+         """
+         Picks up the case from KiTS19 RAW data and perform preprocessing:
+         1. Get a pair of CT-imaging/segmentation data for the case
+-        2. Resample to the same, predetermined common voxel spacing (1.6, 1.2, 1.2)[mm]
++        2. Resample to the same, predetermined common voxel spacing
+         3. Pad every volume so it is equal or larger than 128
+         4. Pad/Crop volumes so they are divisible by 64
+         Then save the preprocessed data in pickle format for easy consumption
+@@ -304,7 +304,7 @@ class Preprocessor:
+     def load_and_resample(self, case: str):
+         """
+         Gets a pair of CT-imaging/segmentation data for the case
+-        Then, resample to the same, predetermined common voxel spacing (1.6, 1.2, 1.2)[mm]
++        Then, resample to the same, predetermined common voxel spacing
+         Also store auxiliary info for future use
+         """
+         aux = dict()

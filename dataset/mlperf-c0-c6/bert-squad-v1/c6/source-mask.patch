@@ -1,0 +1,32 @@
+diff --git a/language/bert/README.md b/language/bert/README.md
+index 80fc8189eaf7c1b84fedd7bebe1981dbfcee7a1d..9fe967efb64dc8533da67eea5accce02bfa03ff5 100644
+--- a/language/bert/README.md
++++ b/language/bert/README.md
+@@ -1,11 +1,5 @@
+ # MLPerf Inference Benchmarks for Natural Language Processing
+ 
+-This is the reference implementation for MLPerf Inference benchmarks for Natural Language Processing.
+-
+-The chosen model is BERT-Large performing SQuAD v1.1 question answering task.
+-
+-Please see the [new docs site](https://docs.mlcommons.org/inference/benchmarks/language/bert) for an automated way to run this benchmark across different available implementations and do an end-to-end submission with or without docker.
+-
+ ## Prerequisites
+ 
+ - [nvidia-docker](https://github.com/NVIDIA/nvidia-docker)
+@@ -21,15 +15,6 @@ Please see the [new docs site](https://docs.mlcommons.org/inference/benchmarks/l
+ | BERT-Large | ONNX | f1_score=90.067% | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3750364) | Fine-tuned based on the PyTorch model and converted with [bert_tf_to_pytorch.py](bert_tf_to_pytorch.py) | int8, symetrically per-tensor quantized without bias | See [MLPerf INT8 BERT Finetuning.pdf](MLPerf INT8 BERT Finetuning.pdf) for details about the fine-tuning process |
+ | BERT-Large | PyTorch | f1_score=90.633% | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/4792496) | Fine-tuned based on [Huggingface bert-large-uncased pretrained model](https://huggingface.co/bert-large-uncased) | int8, symetrically per-tensor quantized without bias | See README.md at Zenodo link for details about the fine-tuning process |
+ 
+-## Disclaimer
+-This benchmark app is a reference implementation that is not meant to be the fastest implementation possible.
+-
+-## Automated command to run the benchmark via MLCFlow
+-
+-Please see the [new docs site](https://docs.mlcommons.org/inference/benchmarks/language/bert/) for an automated way to run this benchmark across different available implementations and do an end-to-end submission with or without docker.
+-
+-You can also do `pip install mlc-scripts` and then use `mlcr` commands for downloading the model and datasets using the commands given in the later sections.
+-
+ ### Download model through MLCFlow Automation
+ 
+ **Pytorch Framework**

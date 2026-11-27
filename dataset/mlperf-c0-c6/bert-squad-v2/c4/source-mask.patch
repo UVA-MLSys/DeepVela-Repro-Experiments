@@ -1,0 +1,807 @@
+diff --git a/language/bert/Makefile b/language/bert/Makefile
+index edb2937dff01c7c191bd04c001afd56848c63a30..b7cd411ae56776b2e6828bbebbb05bf6889501e3 100644
+--- a/language/bert/Makefile
++++ b/language/bert/Makefile
+@@ -61,9 +61,6 @@ download_data:
+ 	@if [ ! -e $(DATA_DIR)/dev-v1.1.json ]; then \
+ 		wget -O $(DATA_DIR)/dev-v1.1.json https://github.com/rajpurkar/SQuAD-explorer/blob/master/dataset/dev-v1.1.json?raw=true; \
+ 	fi
+-	@if [ ! -e $(DATA_DIR)/evaluate-v1.1.py ]; then \
+-		wget -O $(DATA_DIR)/evaluate-v1.1.py https://github.com/allenai/bi-att-flow/raw/master/squad/evaluate-v1.1.py; \
+-	fi
+ 	@if [ ! -e $(BERT_DIR) ]; then \
+ 		mkdir $(BERT_DIR) ; \
+ 	fi
+@@ -164,10 +161,6 @@ run_onnxruntime_quantized_performance:
+ run_onnxruntime_quantized_accuracy:
+ 	@python3 run.py --backend=onnxruntime --quantized --accuracy
+ 
+-.PHONY: evaluate
+-evaluate:
+-	@python3 $(DATA_DIR)/evaluate-v1.1.py.json $(DATA_DIR)/dev-v1.1.json $(RESULT_DIR)/predictions.json
+-
+ .PHONY: clean
+ clean:
+ 	@rm -rf ${BUILD_DIR}
+diff --git a/language/bert/README.md b/language/bert/README.md
+index 80fc8189eaf7c1b84fedd7bebe1981dbfcee7a1d..506bc5fc8f14d3ffad51a6055bb401bf09a3e7b0 100644
+--- a/language/bert/README.md
++++ b/language/bert/README.md
+@@ -15,11 +15,11 @@ Please see the [new docs site](https://docs.mlcommons.org/inference/benchmarks/l
+ 
+ | model | framework | accuracy | dataset | model link | model source | precision | notes |
+ | ----- | --------- | -------- | ------- | ---------- | ------------ | --------- | ----- |
+-| BERT-Large | TensorFlow | f1_score=90.874% | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3733868) [from zenodo](https://zenodo.org/record/3939747) | [BERT-Large](https://github.com/google-research/bert), trained with [NVIDIA DeepLearningExamples](https://github.com/NVIDIA/DeepLearningExamples/tree/master/TensorFlow/LanguageModeling/BERT) | fp32 | |
+-| BERT-Large | PyTorch | f1_score=90.874% | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3733896) | [BERT-Large](https://github.com/google-research/bert), trained with [NVIDIA DeepLearningExamples](https://github.com/NVIDIA/DeepLearningExamples/tree/master/TensorFlow/LanguageModeling/BERT), converted with [bert_tf_to_pytorch.py](bert_tf_to_pytorch.py) | fp32 | |
+-| BERT-Large | ONNX | f1_score=90.874% | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3733910) | [BERT-Large](https://github.com/google-research/bert), trained with [NVIDIA DeepLearningExamples](https://github.com/NVIDIA/DeepLearningExamples/tree/master/TensorFlow/LanguageModeling/BERT), converted with [bert_tf_to_pytorch.py](bert_tf_to_pytorch.py) | fp32 | |
+-| BERT-Large | ONNX | f1_score=90.067% | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3750364) | Fine-tuned based on the PyTorch model and converted with [bert_tf_to_pytorch.py](bert_tf_to_pytorch.py) | int8, symetrically per-tensor quantized without bias | See [MLPerf INT8 BERT Finetuning.pdf](MLPerf INT8 BERT Finetuning.pdf) for details about the fine-tuning process |
+-| BERT-Large | PyTorch | f1_score=90.633% | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/4792496) | Fine-tuned based on [Huggingface bert-large-uncased pretrained model](https://huggingface.co/bert-large-uncased) | int8, symetrically per-tensor quantized without bias | See README.md at Zenodo link for details about the fine-tuning process |
++| BERT-Large | TensorFlow | withheld | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3733868) [from zenodo](https://zenodo.org/record/3939747) | BERT-Large | fp32 | |
++| BERT-Large | PyTorch | withheld | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3733896) | BERT-Large | fp32 | |
++| BERT-Large | ONNX | withheld | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3733910) | BERT-Large | fp32 | |
++| BERT-Large | ONNX | withheld | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/3750364) | Fine-tuned model | int8 | |
++| BERT-Large | PyTorch | withheld | SQuAD v1.1 validation set | [from zenodo](https://zenodo.org/record/4792496) | Fine-tuned model | int8 | |
+ 
+ ## Disclaimer
+ This benchmark app is a reference implementation that is not meant to be the fastest implementation possible.
+@@ -76,20 +76,13 @@ Please run the following commands:
+ ## Details
+ 
+ - SUT implementations are in [tf_SUT.py](tf_SUT.py), [tf_estimator_SUT.py](tf_estimator_SUT.py) and [pytorch_SUT.py](pytorch_SUT.py). QSL implementation is in [squad_QSL.py](squad_QSL.py).
+-- The script [accuracy-squad.py](accuracy-squad.py) parses LoadGen accuracy log, post-processes it, and computes the accuracy.
++- The script [accuracy-squad.py](accuracy-squad.py) parses the LoadGen accuracy log.
+ - Tokenization and detokenization (post-processing) are not included in the timed path.
+ - The inputs to the SUT are `input_ids`, `input_make`, and `segment_ids`. The output from SUT is `start_logits` and `end_logits` concatenated together.
+ - `max_seq_length` is 384.
+ - The script [tf_freeze_bert.py] freezes the TensorFlow model into pb file.
+ - The script [bert_tf_to_pytorch.py] converts the TensorFlow model into the PyTorch `BertForQuestionAnswering` module in [HuggingFace Transformers](https://github.com/huggingface/transformers) and also exports the model to [ONNX](https://github.com/onnx/onnx) format.
+ 
+-### Evaluate the accuracy through MLCFlow Automation
+-```bash
+-mlcr process,mlperf,accuracy,_squad --result_dir=<Path to directory where files are generated after the benchmark run>
+-```
+-
+-Please click [here](https://github.com/mlcommons/inference/blob/master/language/bert/accuracy-squad.py) to view the Python script for evaluating accuracy for the squad dataset.
+-
+ ## Automated command for submission generation via MLCFlow
+ 
+ Please see the [new docs site](https://docs.mlcommons.org/inference/submission/) for an automated way to generate submission through MLCFlow. 
+diff --git a/language/bert/accuracy-squad.py b/language/bert/accuracy-squad.py
+index 514258de38a6629dd9ff9d80dc27c9d57ad609a3..bd0693ee66c0c6f6505aa9971007e3389b6185b6 100644
+--- a/language/bert/accuracy-squad.py
++++ b/language/bert/accuracy-squad.py
+@@ -2,66 +2,31 @@
+ # Copyright 2021 Arm Limited and affiliates.
+ # Copyright (c) 2020 NVIDIA CORPORATION. All rights reserved.
+ # Copyright 2018 The Google AI Language Team Authors.
+-#
+-# Licensed under the Apache License, Version 2.0 (the "License");
+-# you may not use this file except in compliance with the License.
+-# You may obtain a copy of the License at
+-#
+-#     http://www.apache.org/licenses/LICENSE-2.0
+-#
+-# Unless required by applicable law or agreed to in writing, software
+-# distributed under the License is distributed on an "AS IS" BASIS,
+-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-# See the License for the specific language governing permissions and
+-# limitations under the License.
++
++"""Load feature records and raw logits; logits-to-score binding is withheld."""
+ 
+ import argparse
+ import collections
+ import json
+-import math
+ import os
+-import subprocess
++import pickle
+ import sys
+ 
+ import numpy as np
+ import pkg_resources
+-import six
+ from transformers import BertTokenizer
+ 
+-# To support feature cache.
+-import pickle
+-
+ sys.path.insert(0, os.path.dirname(__file__))
+-
+ installed = {pkg.key for pkg in pkg_resources.working_set}
+ if "tensorflow" in installed:
+     import tensorflow
+-
+-    sys.path.insert(
+-        0,
+-        os.path.join(
+-            os.path.dirname(__file__),
+-            "DeepLearningExamples",
+-            "TensorFlow",
+-            "LanguageModeling",
+-            "BERT",
+-        ),
+-    )
++    sys.path.insert(0, os.path.join(os.path.dirname(__file__),
++                    "DeepLearningExamples", "TensorFlow", "LanguageModeling", "BERT"))
+ elif "torch" in installed:
+     import torch
+-
+-    sys.path.insert(
+-        0,
+-        os.path.join(
+-            os.path.dirname(__file__),
+-            "DeepLearningExamples",
+-            "PyTorch",
+-            "LanguageModeling",
+-            "BERT",
+-        ),
+-    )
++    sys.path.insert(0, os.path.join(os.path.dirname(__file__),
++                    "DeepLearningExamples", "PyTorch", "LanguageModeling", "BERT"))
+ try:
+-    import tokenization
+     from create_squad_data import convert_examples_to_features, read_squad_examples
+ except ImportError:
+     raise Exception("Error importing local modules")
+@@ -72,456 +37,104 @@ max_query_length = 64
+ doc_stride = 128
+ 
+ RawResult = collections.namedtuple(
+-    "RawResult", ["unique_id", "start_logits", "end_logits"]
+-)
++    "RawResult", ["unique_id", "start_logits", "end_logits"])
+ 
+ dtype_map = {
+-    "int8": np.int8,
+-    "int16": np.int16,
+-    "int32": np.int32,
+-    "int64": np.int64,
+-    "float16": np.float16,
+-    "float32": np.float32,
++    "int8": np.int8, "int16": np.int16, "int32": np.int32,
++    "int64": np.int64, "float16": np.float16, "float32": np.float32,
+     "float64": np.float64}
+ 
+ 
+-def get_final_text(pred_text, orig_text, do_lower_case):
+-    """Project the tokenized prediction back to the original text."""
+-
+-    # When we created the data, we kept track of the alignment between original
+-    # (whitespace tokenized) tokens and our WordPiece tokenized tokens. So
+-    # now `orig_text` contains the span of our original text corresponding to the
+-    # span that we predicted.
+-    #
+-    # However, `orig_text` may contain extra characters that we don't want in
+-    # our prediction.
+-    #
+-    # For example, let's say:
+-    #     pred_text = steve smith
+-    #     orig_text = Steve Smith's
+-    #
+-    # We don't want to return `orig_text` because it contains the extra "'s".
+-    #
+-    # We don't want to return `pred_text` because it's already been normalized
+-    # (the SQuAD eval script also does punctuation stripping/lower casing but
+-    # our tokenizer does additional normalization like stripping accent
+-    # characters).
+-    #
+-    # What we really want to return is "Steve Smith".
+-    #
+-    # Therefore, we have to apply a semi-complicated alignment heruistic between
+-    # `pred_text` and `orig_text` to get a character-to-charcter alignment. This
+-    # can fail in certain cases in which case we just return `orig_text`.
+-
+-    def _strip_spaces(text):
+-        ns_chars = []
+-        ns_to_s_map = collections.OrderedDict()
+-        for i, c in enumerate(text):
+-            if c == " ":
+-                continue
+-            ns_to_s_map[len(ns_chars)] = i
+-            ns_chars.append(c)
+-        ns_text = "".join(ns_chars)
+-        return (ns_text, ns_to_s_map)
+-
+-    # We first tokenize `orig_text`, strip whitespace from the result
+-    # and `pred_text`, and check if they are the same length. If they are
+-    # NOT the same length, the heuristic has failed. If they are the same
+-    # length, we assume the characters are one-to-one aligned.
+-    tokenizer = tokenization.BasicTokenizer(do_lower_case=do_lower_case)
+-
+-    tok_text = " ".join(tokenizer.tokenize(orig_text))
+-
+-    start_position = tok_text.find(pred_text)
+-    if start_position == -1:
+-        return orig_text
+-    end_position = start_position + len(pred_text) - 1
+-
+-    (orig_ns_text, orig_ns_to_s_map) = _strip_spaces(orig_text)
+-    (tok_ns_text, tok_ns_to_s_map) = _strip_spaces(tok_text)
+-
+-    if len(orig_ns_text) != len(tok_ns_text):
+-        return orig_text
+-
+-    # We then project the characters in `pred_text` back to `orig_text` using
+-    # the character-to-character alignment.
+-    tok_s_to_ns_map = {}
+-    for i, tok_index in six.iteritems(tok_ns_to_s_map):
+-        tok_s_to_ns_map[tok_index] = i
+-
+-    orig_start_position = None
+-    if start_position in tok_s_to_ns_map:
+-        ns_start_position = tok_s_to_ns_map[start_position]
+-        if ns_start_position in orig_ns_to_s_map:
+-            orig_start_position = orig_ns_to_s_map[ns_start_position]
+-
+-    if orig_start_position is None:
+-        return orig_text
+-
+-    orig_end_position = None
+-    if end_position in tok_s_to_ns_map:
+-        ns_end_position = tok_s_to_ns_map[end_position]
+-        if ns_end_position in orig_ns_to_s_map:
+-            orig_end_position = orig_ns_to_s_map[ns_end_position]
+-
+-    if orig_end_position is None:
+-        return orig_text
+-
+-    output_text = orig_text[orig_start_position: (orig_end_position + 1)]
+-    return output_text
+-
+-
+-def _get_best_indexes(logits, n_best_size):
+-    """Get the n-best logits from a list."""
+-    index_and_score = sorted(
+-        enumerate(logits),
+-        key=lambda x: x[1],
+-        reverse=True)
+-
+-    best_indexes = []
+-    for i in range(len(index_and_score)):
+-        if i >= n_best_size:
+-            break
+-        best_indexes.append(index_and_score[i][0])
+-    return best_indexes
+-
+-
+-def _compute_softmax(scores):
+-    """Compute softmax probability over raw logits."""
+-    if not scores:
+-        return []
+-
+-    max_score = None
+-    for score in scores:
+-        if max_score is None or score > max_score:
+-            max_score = score
+-
+-    exp_scores = []
+-    total_sum = 0.0
+-    for score in scores:
+-        x = math.exp(score - max_score)
+-        exp_scores.append(x)
+-        total_sum += x
+-
+-    probs = []
+-    for score in exp_scores:
+-        probs.append(score / total_sum)
+-    return probs
+-
+-
+-def write_predictions(
+-    all_examples,
+-    all_features,
+-    all_results,
+-    n_best_size,
+-    max_answer_length,
+-    do_lower_case,
+-    output_prediction_file,
+-    max_examples=None,
+-):
+-    """Write final predictions to the json file and log-odds of null if needed."""
+-    print("Writing predictions to: %s" % (output_prediction_file))
+-
+-    example_index_to_features = collections.defaultdict(list)
+-    for feature in all_features:
+-        example_index_to_features[feature.example_index].append(feature)
+-
+-    unique_id_to_result = {}
+-    for result in all_results:
+-        unique_id_to_result[result.unique_id] = result
+-
+-    _PrelimPrediction = collections.namedtuple(  # pylint: disable=invalid-name
+-        "PrelimPrediction",
+-        ["feature_index", "start_index", "end_index", "start_logit", "end_logit"],
++def _missing_evaluation_binding(*args, **kwargs):
++    raise RuntimeError(
++        "The packaged evidence does not specify the logits-to-score evaluation binding."
+     )
+ 
+-    all_predictions = collections.OrderedDict()
+-    all_nbest_json = collections.OrderedDict()
+-    scores_diff_json = collections.OrderedDict()
+-
+-    for example_index, example in enumerate(all_examples):
+-        if max_examples and example_index == max_examples:
+-            break
+ 
+-        features = example_index_to_features[example_index]
++def get_final_text(*args, **kwargs):
++    return _missing_evaluation_binding(*args, **kwargs)
+ 
+-        prelim_predictions = []
+-        # keep track of the minimum score of null start+end of position 0
+-        score_null = 1000000  # large and positive
+-        min_null_feature_index = 0  # the paragraph slice with min mull score
+-        null_start_logit = 0  # the start logit at the slice with min null score
+-        null_end_logit = 0  # the end logit at the slice with min null score
+-        for feature_index, feature in enumerate(features):
+-            # FIX: During compliance/audit runs, we only generate a small subset of
+-            # all entries from the dataset. As a result, sometimes dict retrieval
+-            # fails because a key is missing.
+-            # result = unique_id_to_result[feature.unique_id]
+-            result = unique_id_to_result.get(feature.unique_id, None)
+-            if result is None:
+-                continue
+-            start_indexes = _get_best_indexes(result.start_logits, n_best_size)
+-            end_indexes = _get_best_indexes(result.end_logits, n_best_size)
+-            # if we could have irrelevant answers, get the min score of
+-            # irrelevant
+-            for start_index in start_indexes:
+-                for end_index in end_indexes:
+-                    # We could hypothetically create invalid predictions, e.g., predict
+-                    # that the start of the span is in the question. We throw out all
+-                    # invalid predictions.
+-                    if start_index >= len(feature.tokens):
+-                        continue
+-                    if end_index >= len(feature.tokens):
+-                        continue
+-                    if start_index not in feature.token_to_orig_map:
+-                        continue
+-                    if end_index not in feature.token_to_orig_map:
+-                        continue
+-                    if not feature.token_is_max_context.get(
+-                            start_index, False):
+-                        continue
+-                    if end_index < start_index:
+-                        continue
+-                    length = end_index - start_index + 1
+-                    if length > max_answer_length:
+-                        continue
+-                    prelim_predictions.append(
+-                        _PrelimPrediction(
+-                            feature_index=feature_index,
+-                            start_index=start_index,
+-                            end_index=end_index,
+-                            start_logit=result.start_logits[start_index],
+-                            end_logit=result.end_logits[end_index],
+-                        )
+-                    )
+ 
+-        prelim_predictions = sorted(
+-            prelim_predictions,
+-            key=lambda x: (x.start_logit + x.end_logit),
+-            reverse=True,
+-        )
++def _get_best_indexes(*args, **kwargs):
++    return _missing_evaluation_binding(*args, **kwargs)
+ 
+-        _NbestPrediction = collections.namedtuple(  # pylint: disable=invalid-name
+-            "NbestPrediction", ["text", "start_logit", "end_logit"]
+-        )
+ 
+-        seen_predictions = {}
+-        nbest = []
+-        for pred in prelim_predictions:
+-            if len(nbest) >= n_best_size:
+-                break
+-            feature = features[pred.feature_index]
+-            tok_tokens = feature.tokens[pred.start_index: (pred.end_index + 1)]
+-            orig_doc_start = feature.token_to_orig_map[pred.start_index]
+-            orig_doc_end = feature.token_to_orig_map[pred.end_index]
+-            orig_tokens = example.doc_tokens[orig_doc_start: (
+-                orig_doc_end + 1)]
+-            tok_text = " ".join(tok_tokens)
++def _compute_softmax(*args, **kwargs):
++    return _missing_evaluation_binding(*args, **kwargs)
+ 
+-            # De-tokenize WordPieces that have been split off.
+-            tok_text = tok_text.replace(" ##", "")
+-            tok_text = tok_text.replace("##", "")
+ 
+-            # Clean whitespace
+-            tok_text = tok_text.strip()
+-            tok_text = " ".join(tok_text.split())
+-            orig_text = " ".join(orig_tokens)
++def write_predictions(raw_start_end_logits, feature_records, question_ids,
++                      contexts, annotations, *args, **kwargs):
++    """Generic withheld interface: logits and records to SQuAD metrics."""
++    return _missing_evaluation_binding(raw_start_end_logits, feature_records,
++                                       question_ids, contexts, annotations)
+ 
+-            final_text = get_final_text(tok_text, orig_text, do_lower_case)
+-            if final_text in seen_predictions:
+-                continue
+ 
+-            seen_predictions[final_text] = True
+-
+-            nbest.append(
+-                _NbestPrediction(
+-                    text=final_text,
+-                    start_logit=pred.start_logit,
+-                    end_logit=pred.end_logit,
+-                )
+-            )
+-
+-        # In very rare edge cases we could have no valid predictions. So we
+-        # just create a nonce prediction in this case to avoid failure.
+-        if not nbest:
+-            nbest.append(
+-                _NbestPrediction(
+-                    text="empty",
+-                    start_logit=0.0,
+-                    end_logit=0.0))
+-
+-        assert len(nbest) >= 1
+-
+-        total_scores = []
+-        best_non_null_entry = None
+-        for entry in nbest:
+-            total_scores.append(entry.start_logit + entry.end_logit)
+-            if not best_non_null_entry:
+-                if entry.text:
+-                    best_non_null_entry = entry
+-
+-        probs = _compute_softmax(total_scores)
+-
+-        nbest_json = []
+-        for i, entry in enumerate(nbest):
+-            output = collections.OrderedDict()
+-            output["text"] = entry.text
+-            output["probability"] = probs[i]
+-            output["start_logit"] = entry.start_logit
+-            output["end_logit"] = entry.end_logit
+-            nbest_json.append(output)
+-
+-        assert len(nbest_json) >= 1
+-
+-        all_predictions[example.qas_id] = nbest_json[0]["text"]
+-
+-    with open(output_prediction_file, "w") as writer:
+-        writer.write(json.dumps(all_predictions, indent=4) + "\n")
+-
+-
+-def load_loadgen_log(
+-    log_path, eval_features, dtype=np.float32, output_transposed=False
+-):
++def load_loadgen_log(log_path, eval_features, dtype=np.float32,
++                     output_transposed=False):
+     with open(log_path) as f:
+         predictions = json.load(f)
+-
+     results = []
+     for prediction in predictions:
+         qsl_idx = prediction["qsl_idx"]
+         if output_transposed:
+-            logits = np.frombuffer(bytes.fromhex(prediction["data"]), dtype).reshape(
+-                2, -1
+-            )
++            logits = np.frombuffer(bytes.fromhex(prediction["data"]), dtype).reshape(2, -1)
+             logits = np.transpose(logits)
+         else:
+-            logits = np.frombuffer(bytes.fromhex(prediction["data"]), dtype).reshape(
+-                -1, 2
+-            )
+-        # Pad logits to max_seq_length
++            logits = np.frombuffer(bytes.fromhex(prediction["data"]), dtype).reshape(-1, 2)
+         seq_length = logits.shape[0]
+         start_logits = np.ones(max_seq_length) * -10000.0
+         end_logits = np.ones(max_seq_length) * -10000.0
+         start_logits[:seq_length] = logits[:, 0]
+         end_logits[:seq_length] = logits[:, 1]
+-        results.append(
+-            RawResult(
+-                unique_id=eval_features[qsl_idx].unique_id,
+-                start_logits=start_logits.tolist(),
+-                end_logits=end_logits.tolist(),
+-            )
+-        )
+-
++        results.append(RawResult(
++            unique_id=eval_features[qsl_idx].unique_id,
++            start_logits=start_logits.tolist(), end_logits=end_logits.tolist()))
+     return results
+ 
+ 
+ def main():
+     parser = argparse.ArgumentParser()
+-    parser.add_argument(
+-        "--vocab_file",
+-        default="build/data/bert_tf_v1_1_large_fp32_384_v2/vocab.txt",
+-        help="Path to vocab.txt",
+-    )
+-    parser.add_argument(
+-        "--val_data", default="build/data/dev-v1.1.json", help="Path to validation data"
+-    )
+-    parser.add_argument(
+-        "--log_file",
+-        default="build/logs/mlperf_log_accuracy.json",
+-        help="Path to LoadGen accuracy log",
+-    )
+-    parser.add_argument(
+-        "--out_file",
+-        default="build/result/predictions.json",
+-        help="Path to output predictions file",
+-    )
+-    parser.add_argument(
+-        "--features_cache_file",
+-        default="eval_features.pickle",
+-        help="Path to features' cache file",
+-    )
+-    parser.add_argument(
+-        "--output_transposed", action="store_true", help="Transpose the output"
+-    )
+-    parser.add_argument(
+-        "--output_dtype",
+-        default="float32",
+-        choices=dtype_map.keys(),
+-        help="Output data type",
+-    )
+-    parser.add_argument(
+-        "--max_examples",
+-        type=int,
+-        help="Maximum number of examples to consider (not limited by default)",
+-    )
++    parser.add_argument("--vocab_file",
++        default="build/data/bert_tf_v1_1_large_fp32_384_v2/vocab.txt")
++    parser.add_argument("--val_data", default="build/data/dev-v1.1.json")
++    parser.add_argument("--log_file", default="build/logs/mlperf_log_accuracy.json")
++    parser.add_argument("--out_file", default="build/result/predictions.json")
++    parser.add_argument("--features_cache_file", default="eval_features.pickle")
++    parser.add_argument("--output_transposed", action="store_true")
++    parser.add_argument("--output_dtype", default="float32", choices=dtype_map.keys())
++    parser.add_argument("--max_examples", type=int)
+     args = parser.parse_args()
+-
+     output_dtype = dtype_map[args.output_dtype]
+-
+     print("Reading examples...")
+     eval_examples = read_squad_examples(
+-        input_file=args.val_data, is_training=False, version_2_with_negative=False
+-    )
+-
++        input_file=args.val_data, is_training=False, version_2_with_negative=False)
+     eval_features = []
+-    # Load features if cached, convert from examples otherwise.
+     cache_path = args.features_cache_file
+     if os.path.exists(cache_path):
+         print("Loading cached features from '%s'..." % cache_path)
+         with open(cache_path, "rb") as cache_file:
+             eval_features = pickle.load(cache_file)
+     else:
+-        print(
+-            "No cached features at '%s'... converting from examples..." %
+-            cache_path)
+-
++        print("No cached features at '%s'... converting from examples..." % cache_path)
+         print("Creating tokenizer...")
+         tokenizer = BertTokenizer(args.vocab_file)
+-
+         print("Converting examples to features...")
+-
+         def append_feature(feature):
+             eval_features.append(feature)
+-
+         convert_examples_to_features(
+-            examples=eval_examples,
+-            tokenizer=tokenizer,
+-            max_seq_length=max_seq_length,
+-            doc_stride=doc_stride,
+-            max_query_length=max_query_length,
+-            is_training=False,
+-            output_fn=append_feature,
+-            verbose_logging=False,
+-        )
+-
++            examples=eval_examples, tokenizer=tokenizer, max_seq_length=max_seq_length,
++            doc_stride=doc_stride, max_query_length=max_query_length, is_training=False,
++            output_fn=append_feature, verbose_logging=False)
+         print("Caching features at '%s'..." % cache_path)
+         with open(cache_path, "wb") as cache_file:
+             pickle.dump(eval_features, cache_file)
+-
+     print("Loading LoadGen logs...")
+-    results = load_loadgen_log(
+-        args.log_file, eval_features, output_dtype, args.output_transposed
+-    )
+-
+-    print("Post-processing predictions...")
+-    write_predictions(
+-        eval_examples,
+-        eval_features,
+-        results,
+-        20,
+-        30,
+-        True,
+-        args.out_file,
+-        args.max_examples,
+-    )
+-
+-    print("Evaluating predictions...")
+-    cmd = "python3 {:}/evaluate_v1.1.py {:} {:} {}".format(
+-        os.path.dirname(os.path.abspath(__file__)),
+-        args.val_data,
+-        args.out_file,
+-        "--max_examples {}".format(
+-            args.max_examples) if args.max_examples else "",
+-    )
+-    subprocess.check_call(cmd, shell=True)
++    results = load_loadgen_log(args.log_file, eval_features, output_dtype,
++                               args.output_transposed)
++    write_predictions(results, eval_features,
++                      [example.qas_id for example in eval_examples],
++                      [example.doc_tokens for example in eval_examples], None)
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/language/bert/evaluate_v1.1.py b/language/bert/evaluate_v1.1.py
+index 4f09fb5e8f99f7fbfd61e82540d240b230f11dee..e5812aa1f7ecfedc8145152c0b3a700d2c74c744 100644
+--- a/language/bert/evaluate_v1.1.py
++++ b/language/bert/evaluate_v1.1.py
+@@ -1,129 +1,45 @@
+-# Licensed under the Apache License, Version 2.0 (the "License");
+-# you may not use this file except in compliance with the License.
+-# You may obtain a copy of the License at
+-#
+-#     http://www.apache.org/licenses/LICENSE-2.0
+-#
+-# Unless required by applicable law or agreed to in writing, software
+-# distributed under the License is distributed on an "AS IS" BASIS,
+-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-# See the License for the specific language governing permissions and
+-# limitations under the License.
+-#
+-# Source:
+-# https://github.com/allenai/bi-att-flow/blob/master/squad/evaluate-v1.1.py
+-
+-""" Official evaluation script for v1.1 of the SQuAD dataset. """
+-from collections import Counter
+-import string
+-import re
+-import argparse
+-import json
+-import sys
+-
+-
+-def normalize_answer(s):
+-    """Lower text and remove punctuation, articles and extra whitespace."""
+-
+-    def remove_articles(text):
+-        return re.sub(r"\b(a|an|the)\b", " ", text)
++"""Interface for the withheld SQuAD logits-to-score evaluation binding."""
+ 
+-    def white_space_fix(text):
+-        return " ".join(text.split())
++import argparse
+ 
+-    def remove_punc(text):
+-        exclude = set(string.punctuation)
+-        return "".join(ch for ch in text if ch not in exclude)
+ 
+-    def lower(text):
+-        return text.lower()
++def _missing_evaluation_binding(*args, **kwargs):
++    raise RuntimeError(
++        "The packaged evidence does not specify the logits-to-score evaluation binding."
++    )
+ 
+-    return white_space_fix(remove_articles(remove_punc(lower(s))))
+ 
++def normalize_answer(*args, **kwargs):
++    return _missing_evaluation_binding(*args, **kwargs)
+ 
+-def f1_score(prediction, ground_truth):
+-    prediction_tokens = normalize_answer(prediction).split()
+-    ground_truth_tokens = normalize_answer(ground_truth).split()
+-    common = Counter(prediction_tokens) & Counter(ground_truth_tokens)
+-    num_same = sum(common.values())
+-    if num_same == 0:
+-        return 0
+-    precision = 1.0 * num_same / len(prediction_tokens)
+-    recall = 1.0 * num_same / len(ground_truth_tokens)
+-    f1 = (2 * precision * recall) / (precision + recall)
+-    return f1
+ 
++def f1_score(*args, **kwargs):
++    return _missing_evaluation_binding(*args, **kwargs)
+ 
+-def exact_match_score(prediction, ground_truth):
+-    return normalize_answer(prediction) == normalize_answer(ground_truth)
+ 
++def exact_match_score(*args, **kwargs):
++    return _missing_evaluation_binding(*args, **kwargs)
+ 
+-def metric_max_over_ground_truths(metric_fn, prediction, ground_truths):
+-    scores_for_ground_truths = []
+-    for ground_truth in ground_truths:
+-        score = metric_fn(prediction, ground_truth)
+-        scores_for_ground_truths.append(score)
+-    return max(scores_for_ground_truths)
+ 
++def metric_max_over_ground_truths(*args, **kwargs):
++    return _missing_evaluation_binding(*args, **kwargs)
+ 
+-def evaluate(dataset, predictions, max_examples=None):
+-    f1 = exact_match = total = 0
+-    for article in dataset:
+-        if max_examples and max_examples == total:
+-            break
+-        for paragraph in article["paragraphs"]:
+-            if max_examples and max_examples == total:
+-                break
+-            for qa in paragraph["qas"]:
+-                total += 1
+-                if max_examples and max_examples == total:
+-                    break
+ 
+-                if qa["id"] not in predictions:
+-                    message = (
+-                        "Unanswered question " +
+-                        qa["id"] + " will receive score 0."
+-                    )
+-                    print(message, file=sys.stderr)
+-                    continue
+-                ground_truths = list(map(lambda x: x["text"], qa["answers"]))
+-                prediction = predictions[qa["id"]]
+-                exact_match += metric_max_over_ground_truths(
+-                    exact_match_score, prediction, ground_truths
+-                )
+-                f1 += metric_max_over_ground_truths(
+-                    f1_score, prediction, ground_truths)
++def evaluate(raw_start_end_logits, feature_records, question_ids, contexts,
++             annotations):
++    """Return ``exact_match`` and ``f1`` for the supplied generic inputs."""
++    return _missing_evaluation_binding(raw_start_end_logits, feature_records,
++                                       question_ids, contexts, annotations)
+ 
+-    exact_match = 100.0 * exact_match / total
+-    f1 = 100.0 * f1 / total
+ 
+-    return {"exact_match": exact_match, "f1": f1}
++def main():
++    parser = argparse.ArgumentParser(description="SQuAD evaluation interface")
++    parser.add_argument("dataset_file")
++    parser.add_argument("prediction_file")
++    parser.add_argument("--max_examples", type=int)
++    parser.parse_args()
++    return _missing_evaluation_binding()
+ 
+ 
+ if __name__ == "__main__":
+-    expected_version = "1.1"
+-    parser = argparse.ArgumentParser(
+-        description="Evaluation for SQuAD " + expected_version
+-    )
+-    parser.add_argument("dataset_file", help="Dataset file")
+-    parser.add_argument("prediction_file", help="Prediction File")
+-    parser.add_argument(
+-        "--max_examples",
+-        type=int,
+-        help="Maximum number of examples to consider (not limited by default)",
+-    )
+-    args = parser.parse_args()
+-    with open(args.dataset_file) as dataset_file:
+-        dataset_json = json.load(dataset_file)
+-        if dataset_json["version"] != expected_version:
+-            print(
+-                "Evaluation expects v-"
+-                + expected_version
+-                + ", but got dataset with v-"
+-                + dataset_json["version"],
+-                file=sys.stderr,
+-            )
+-        dataset = dataset_json["data"]
+-    with open(args.prediction_file) as prediction_file:
+-        predictions = json.load(prediction_file)
+-    print(json.dumps(evaluate(dataset, predictions, args.max_examples)))
++    main()
